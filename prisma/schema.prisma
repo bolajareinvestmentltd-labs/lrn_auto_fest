@@ -1,0 +1,350 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// ENUMS - Event Configuration
+// ============================================
+
+enum TicketType {
+  REGULAR
+  VIP_BRONZE
+  VIP_SILVER
+  VIP_GOLD
+  VIP_DIAMOND
+}
+
+enum GroupSize {
+  SINGLE
+  GROUP_2
+  GROUP_4
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  PAYSTACK
+  FLUTTERWAVE
+  OPAY
+  BANK_TRANSFER
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum VendorStatus {
+  PENDING_PAYMENT
+  CONFIRMED
+  SETUP_COMPLETE
+  CANCELLED
+}
+
+enum ScanStatus {
+  PENDING
+  SCANNED
+  USED
+}
+
+// ============================================
+// USER & AUTHENTICATION
+// ============================================
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  firstName     String
+  lastName      String
+  phone         String?
+  phoneCountry  String   @default("+234") // Nigeria
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  orders        Order[]
+  ticketOrders  TicketOrder[]
+  vendors       Vendor[]
+
+  @@index([email])
+}
+
+// ============================================
+// TICKETING SYSTEM
+// ============================================
+
+model TicketPrice {
+  id                String   @id @default(cuid())
+  ticketType        TicketType @unique
+  name              String   // "Regular", "Bronze VIP", "Silver VIP", etc.
+  description       String
+  totalUnits        Int      // 80 for Bronze, 70 for Silver, 30 for Gold, 20 for Diamond
+  soldUnits         Int      @default(0)
+  presaleActive     Boolean  @default(true)
+  presaleEndDate    DateTime @default("2026-03-31T23:59:59Z")
+  
+  // Presale pricing
+  presaleSinglePrice    Int? // in NGN (₦3,000 for Regular, ₦7,500 for Bronze, etc.)
+  presaleGroup2Price    Int?
+  presaleGroup4Price    Int?
+  
+  // On-sale pricing (April 1, 2026 onwards)
+  onsaleSinglePrice     Int? // in NGN (₦5,000 for Regular, ₦9,000 for Bronze, etc.)
+  onsaleGroup2Price     Int?
+  onsaleGroup4Price     Int?
+  
+  // VIP Benefits
+  vipSeating            Boolean  @default(false)
+  eventPack             Boolean  @default(false) // chops + drink + pen
+  merchandise           Boolean  @default(false) // top + cap (Silver+)
+  premiumExperience     String?  // "drift_car_ride" or "bike_ride" (Gold+)
+  priorityRide          Boolean  @default(false) // Diamond only
+  pradoPickup           Boolean  @default(false) // Diamond only
+  highlightVideo        Int      @default(0) // number of highlight videos (Diamond: 1)
+  highlightPhotos       Int      @default(0) // number of photos (Diamond: 5)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  orders        Order[]
+
+  @@index([ticketType])
+}
+
+model Order {
+  id                String   @id @default(cuid())
+  orderNumber       String   @unique // IAF-2026-001, IAF-2026-002, etc.
+  userId            String
+  ticketPriceId     String
+  groupSize         GroupSize
+  quantity          Int      // number of tickets in this order
+  totalPrice        Int      // in NGN (price × quantity)
+  
+  // Parking calculation: Single/Group2 = 1, Group4 = 2
+  parkingPasses     Int      // auto-calculated based on groupSize
+  
+  // Payment info
+  paymentMethod     PaymentMethod
+  paymentStatus     PaymentStatus @default(PENDING)
+  paymentRefId      String?  // Paystack or Flutterwave reference
+  paidAt            DateTime?
+  
+  // Order status
+  orderStatus       OrderStatus @default(PENDING)
+  
+  // Customer info (denormalized for easy access)
+  customerEmail     String
+  customerPhone     String
+  customerName      String
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  expiresAt         DateTime? // For abandoned carts, expires after 30 mins
+
+  // Relations
+  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ticketPrice       TicketPrice @relation(fields: [ticketPriceId], references: [id])
+  tickets           TicketOrder[]
+  paymentWebhooks   PaymentWebhook[]
+
+  @@index([userId])
+  @@index([orderNumber])
+  @@index([paymentStatus])
+  @@index([orderStatus])
+}
+
+model TicketOrder {
+  id                String   @id @default(cuid())
+  orderId           String
+  userId            String
+  ticketCode        String   @unique // Unique identifier per ticket
+  qrCode            String   @unique // Encrypted QR code
+  qrCodeUrl         String?  // URL to QR code image
+  
+  // Parking pass info
+  parkingPass1      String?  // Parking ticket for first vehicle
+  parkingPass2      String?  // Parking ticket for second vehicle (if applicable)
+  
+  // Scanning/Entry
+  scanStatus        ScanStatus @default(PENDING)
+  scannedAt         DateTime?
+  scannedBy         String?  // Admin user ID who scanned
+  entryLocation     String?  // Gate info: "Gate A", "Gate B", etc.
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  order             Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([ticketCode])
+  @@index([qrCode])
+  @@index([userId])
+  @@index([scanStatus])
+}
+
+// ============================================
+// REAL-TIME INVENTORY (Optional Prisma Pulse)
+// ============================================
+
+model TicketInventoryLog {
+  id                String   @id @default(cuid())
+  ticketPriceId     String
+  action            String   // "purchase", "refund", "adjustment"
+  previousUnits     Int
+  newUnits          Int
+  orderId           String?
+  notes             String?
+  createdAt         DateTime @default(now())
+
+  @@index([ticketPriceId])
+  @@index([createdAt])
+}
+
+// ============================================
+// PAYMENT & WEBHOOKS
+// ============================================
+
+model PaymentWebhook {
+  id                String   @id @default(cuid())
+  orderId           String
+  provider          String   // "paystack" or "flutterwave"
+  webhookData       Json
+  reference         String?  // Payment reference from provider
+  isProcessed       Boolean  @default(false)
+  processedAt       DateTime?
+  createdAt         DateTime @default(now())
+
+  // Relations
+  order             Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([reference])
+  @@index([isProcessed])
+}
+
+// ============================================
+// VENDOR MANAGEMENT
+// ============================================
+
+model Vendor {
+  id                String   @id @default(cuid())
+  ticketId          String   @unique  // Generated ticket ID (VND-xxx)
+  userId            String?
+  businessName      String
+  contactPerson     String
+  email             String
+  phone             String
+  productType       String   // "food", "drink", "eatables", etc.
+  productDescription String?
+  boothType         String   // "food", "merch", "corporate"
+  
+  // Booking details
+  bookingFee        Int      @default(100000) // ₦50k, ₦80k, or ₦250k
+  status            VendorStatus @default(CONFIRMED) // Auto-approved after payment
+  
+  // Payment info
+  paymentRefId      String?  // Paystack reference
+  paidAt            DateTime @default(now())
+  
+  // Vendor documents
+  businessLicense   String?
+  insuranceDoc      String?
+  
+  // Setup
+  vendorGuideDownloaded Boolean @default(false)
+  receipt           String?  // URL to receipt
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  bookedAt          DateTime @default(now())
+
+  // Relations
+  user              User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([status])
+  @@index([email])
+  @@unique([email]) // Only one vendor per email
+}
+
+// ============================================
+// ADMIN & SETTINGS
+// ============================================
+
+model EventConfig {
+  id                String   @id @default(cuid())
+  eventName         String   @default("Ilorin Automotive Festival 2026")
+  eventDate         DateTime @default("2026-05-30T00:00:00Z")
+  eventLocation     String   @default("Metropolitan Square, Asadam Road, Ilorin, Nigeria")
+  presaleEndDate    DateTime @default("2026-03-31T23:59:59Z")
+  onSaleStartDate   DateTime @default("2026-04-01T00:00:00Z")
+  
+  // Limits
+  maxVendors        Int      @default(20)
+  vendorBookingFee  Int      @default(100000) // ₦100,000
+  
+  // Settings
+  maintenanceMode   Boolean  @default(false)
+  maintenanceMessage String?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model AdminUser {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  passwordHash      String
+  firstName         String
+  lastName          String
+  role              String   @default("viewer") // "admin", "operator", "viewer"
+  
+  lastLogin         DateTime?
+  isActive          Boolean  @default(true)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([email])
+}
+
+// ============================================
+// AUDIT & LOGGING
+// ============================================
+
+model AuditLog {
+  id                String   @id @default(cuid())
+  action            String   // "order_created", "payment_processed", "ticket_scanned", etc.
+  entityType        String   // "Order", "Vendor", "Ticket", etc.
+  entityId          String
+  userId            String?
+  changes           Json?
+  ipAddress         String?
+  userAgent         String?
+  createdAt         DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([action])
+  @@index([userId])
+  @@index([createdAt])
+}

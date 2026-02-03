@@ -1,26 +1,40 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-background: #050505;
+  --color-foreground: #ededed;
+
+  /* Your Brand Colors */
+  --color-brand-orange: #FF4500;
+  --color-brand-blue: #00F0FF;
+
+  /* FIX: Define the missing "electric" color map to stop the crash */
+  --color-electric-400: #00F0FF; 
+  --color-electric-500: #00C0CC;
+  --color-electric-600: #009099;
+
+  --font-heading: var(--font-orbitron);
+  --font-sans: var(--font-inter);
+  
+  --radius: 0.5rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* We are NOT using @apply for colors here to avoid "unknown class" errors.
+  We handle base styles safely below.
+*/
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  *, ::after, ::before {
+    border-color: var(--color-gray-800, currentColor);
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
 }

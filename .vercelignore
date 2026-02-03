@@ -1,0 +1,13 @@
+# Skip these from Vercel builds
+src/**/*.test.ts
+src/**/*.test.tsx
+__tests__
+tests
+.env.*.local
+.env.development
+*.tsbuildinfo
+node_modules
+.git
+.gitignore
+.prettierignore
+*.md

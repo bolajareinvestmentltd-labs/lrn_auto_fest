@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+    <defs>
+        <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#0a0a0a"/>
+            <stop offset="50%" style="stop-color:#1a1a2e"/>
+            <stop offset="100%" style="stop-color:#0f0f0f"/>
+        </linearGradient>
+        <radialGradient id="glowOrange" cx="30%" cy="70%" r="50%">
+            <stop offset="0%" style="stop-color:#FF6B35;stop-opacity:0.3"/>
+            <stop offset="100%" style="stop-color:#FF6B35;stop-opacity:0"/>
+        </radialGradient>
+        <radialGradient id="glowBlue" cx="70%" cy="30%" r="50%">
+            <stop offset="0%" style="stop-color:#00A8E8;stop-opacity:0.2"/>
+            <stop offset="100%" style="stop-color:#00A8E8;stop-opacity:0"/>
+        </radialGradient>
+    </defs>
+
+    <!-- Background -->
+    <rect width="100%" height="100%" fill="url(#bgGradient)"/>
+
+    <!-- Glow effects -->
+    <rect width="100%" height="100%" fill="url(#glowOrange)"/>
+    <rect width="100%" height="100%" fill="url(#glowBlue)"/>
+
+    <!-- Grid pattern -->
+    <defs>
+        <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
+            <path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,107,53,0.05)" stroke-width="1"/>
+        </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#grid)"/>
+
+    <!-- Abstract car silhouette hint -->
+    <path d="M400 700 Q500 650 600 680 L800 680 Q900 650 950 700 L980 750 L320 750 Z" fill="none" stroke="rgba(255,107,53,0.15)" stroke-width="3"/>
+
+    <!-- Speed lines -->
+    <line x1="100" y1="400" x2="500" y2="400" stroke="rgba(0,168,232,0.1)" stroke-width="2"/>
+    <line x1="200" y1="450" x2="700" y2="450" stroke="rgba(255,107,53,0.08)" stroke-width="3"/>
+    <line x1="50" y1="500" x2="450" y2="500" stroke="rgba(0,168,232,0.06)" stroke-width="2"/>
+</svg>
