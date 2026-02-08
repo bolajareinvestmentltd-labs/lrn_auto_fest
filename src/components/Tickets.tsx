@@ -12,13 +12,15 @@ interface TicketTier {
     ticketType: string;
     name: string;
     description?: string;
-    presaleSinglePrice: number;
-    onsaleSinglePrice: number;
+    presaleSinglePrice: number | null;
+    onsaleSinglePrice: number | null;
     totalUnits: number;
     soldUnits: number;
     vipSeating?: boolean;
     eventPack?: boolean;
     merchandise?: boolean;
+    presaleActive?: boolean;
+    presaleEndDate?: string;
 }
 
 export default function Tickets() {
@@ -32,14 +34,34 @@ export default function Tickets() {
     useEffect(() => {
         async function fetchTickets() {
             try {
-                const res = await fetch('/api/tickets');
-                if (!res.ok) throw new Error('Failed to fetch tickets');
+                const res = await fetch('/api/tickets', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    console.error(`API error ${res.status}:`, errorText);
+                    throw new Error(`Failed to fetch tickets (${res.status})`);
+                }
+                
                 const data = await res.json();
+                
+                if (!Array.isArray(data)) {
+                    console.error('Invalid data format - expected array, got:', typeof data);
+                    throw new Error('Invalid response format from API');
+                }
+                
+                if (data.length === 0) {
+                    console.warn('No tickets returned from API');
+                }
+                
                 setTiers(data);
                 setError(null);
             } catch (error) {
-                console.error("Failed to load tickets", error);
-                setError(error instanceof Error ? error.message : 'Unknown error');
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+                console.error("Failed to load tickets:", errorMessage, error);
+                setError(errorMessage);
             } finally {
                 setLoading(false);
             }
@@ -126,10 +148,10 @@ export default function Tickets() {
                                                 </CardTitle>
                                                 <div className="mt-4">
                                                     <span className="text-4xl font-bold text-white">
-                                                        ₦{tier.presaleSinglePrice.toLocaleString()}
+                                                        ₦{(tier.presaleSinglePrice || tier.onsaleSinglePrice || 0).toLocaleString()}
                                                     </span>
                                                     <p className="text-xs text-gray-400 mt-2">
-                                                        Presale Price (ends March 31)
+                                                        {tier.presaleSinglePrice ? 'Presale Price (ends March 31)' : 'Price'}
                                                     </p>
                                                 </div>
                                                 <div className="mt-3 text-xs text-gray-500">

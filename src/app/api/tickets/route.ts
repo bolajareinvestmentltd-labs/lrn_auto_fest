@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 // Mock data for development when database is unavailable
 const MOCK_TICKETS = [
@@ -132,7 +130,7 @@ export async function GET() {
         // Check if DATABASE_URL is configured
         if (!process.env.DATABASE_URL) {
             console.log("No DATABASE_URL configured, returning mock data");
-            return NextResponse.json(MOCK_TICKETS);
+            return NextResponse.json(MOCK_TICKETS, { status: 200 });
         }
 
         // Fetch all ticket tiers from the database, ordered by price
@@ -142,14 +140,15 @@ export async function GET() {
 
         // If no tiers found in DB, return mock data
         if (!tiers || tiers.length === 0) {
-            return NextResponse.json(MOCK_TICKETS);
+            console.log("No tickets found in database, returning mock data");
+            return NextResponse.json(MOCK_TICKETS, { status: 200 });
         }
 
-        return NextResponse.json(tiers);
+        return NextResponse.json(tiers, { status: 200 });
     } catch (error) {
         console.error("Failed to fetch tickets from database, using mock data:", error);
 
         // Always return mock data when database is unavailable
-        return NextResponse.json(MOCK_TICKETS);
+        return NextResponse.json(MOCK_TICKETS, { status: 200 });
     }
 }

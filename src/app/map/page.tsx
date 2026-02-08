@@ -3,8 +3,6 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export const dynamic = 'force-dynamic';
-
 import {
     Car,
     Utensils,
@@ -309,8 +307,8 @@ export default function InteractiveMap() {
                                 key={filter.id}
                                 onClick={() => setActiveFilter(filter.id)}
                                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${activeFilter === filter.id
-                                        ? `${filter.color} text-white shadow-lg`
-                                        : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                                    ? `${filter.color} text-white shadow-lg`
+                                    : 'bg-white/10 text-gray-300 hover:bg-white/20'
                                     }`}
                             >
                                 <filter.icon className="w-4 h-4" />

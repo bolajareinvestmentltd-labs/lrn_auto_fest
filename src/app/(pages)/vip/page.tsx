@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Check,
@@ -17,9 +17,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import CheckoutModal from "@/components/CheckoutModal";
 
 interface TicketTier {
@@ -50,14 +48,14 @@ type GroupSize = "SINGLE" | "GROUP_2" | "GROUP_4";
 
 // VIP tier configuration
 const VIP_CONFIG: Record<string, {
-  icon: any;
+  icon: React.ElementType;
   gradient: string;
   border: string;
   bg: string;
   accent: string;
   badge: string;
   shadow: string;
-  benefits: { icon: any; text: string }[];
+  benefits: { icon: React.ElementType; text: string }[];
 }> = {
   VIP_BRONZE: {
     icon: Crown,
@@ -194,7 +192,6 @@ export default function VIPPage() {
 
   return (
     <main className="bg-[#050505] min-h-screen">
-      <Navbar />
 
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-4 relative overflow-hidden">
@@ -261,8 +258,8 @@ export default function VIPPage() {
                 if (!config) return null;
 
                 const groupSize = selectedGroupSize[tier.id] || "SINGLE";
-                const price = getPrice(tier, groupSize);
-                const onSalePrice = getOnSalePrice(tier, groupSize);
+                const _price = getPrice(tier, groupSize);
+                const _onSalePrice = getOnSalePrice(tier, groupSize);
                 const remaining = getRemainingUnits(tier);
                 const soldOut = isSoldOut(tier);
                 const IconComponent = config.icon;
@@ -328,8 +325,8 @@ export default function VIPPage() {
                                   onClick={() => setSelectedGroupSize({ ...selectedGroupSize, [tier.id]: gs })}
                                   disabled={soldOut}
                                   className={`w-full flex justify-between items-center p-4 rounded-lg border-2 transition-all ${groupSize === gs
-                                      ? `${config.border} ${config.bg}`
-                                      : "border-white/10 hover:border-white/30"
+                                    ? `${config.border} ${config.bg}`
+                                    : "border-white/10 hover:border-white/30"
                                     }`}
                                 >
                                   <div className="flex items-center gap-3">
@@ -374,8 +371,8 @@ export default function VIPPage() {
                           onClick={() => handleBuyClick(tier)}
                           disabled={soldOut}
                           className={`w-full h-14 font-bold text-lg uppercase tracking-wider rounded-full transition-all ${soldOut
-                              ? "bg-gray-600 cursor-not-allowed"
-                              : `bg-gradient-to-r ${config.gradient} hover:opacity-90 text-black shadow-lg ${config.shadow}`
+                            ? "bg-gray-600 cursor-not-allowed"
+                            : `bg-gradient-to-r ${config.gradient} hover:opacity-90 text-black shadow-lg ${config.shadow}`
                             }`}
                         >
                           {soldOut ? "Sold Out" : `Get ${tier.name} Access`}
@@ -436,8 +433,6 @@ export default function VIPPage() {
           </div>
         </div>
       </section>
-
-      <Footer />
 
       {/* Checkout Modal */}
       <CheckoutModal

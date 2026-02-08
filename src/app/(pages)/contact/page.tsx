@@ -36,7 +36,7 @@ export default function ContactPage() {
     }
   };
 
-  const whatsappNumber = "2348012345678"; // Replace with actual number
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "234XXXXXXXXXX";
   const whatsappMessage = encodeURIComponent("Hi, I have a question about the Ilorin Automotive Festival 2026");
 
   return (
@@ -79,15 +79,15 @@ export default function ContactPage() {
               <ContactCard
                 icon={<Phone className="w-6 h-6" />}
                 title="Phone"
-                value="+234 801 234 5678"
-                href="tel:+2348012345678"
+                value={process.env.NEXT_PUBLIC_CONTACT_PHONE || '+234 XXX XXX XXXX'}
+                href={`tel:${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ''}`}
                 color="brand-orange"
               />
               <ContactCard
                 icon={<Mail className="w-6 h-6" />}
                 title="Email"
-                value="info@iaf2026.com"
-                href="mailto:info@iaf2026.com"
+                value={process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'info@ilorinautofest.com'}
+                href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'info@ilorinautofest.com'}`}
                 color="brand-blue"
               />
               <ContactCard

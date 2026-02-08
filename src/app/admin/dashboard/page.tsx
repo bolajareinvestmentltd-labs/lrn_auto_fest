@@ -3,8 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
-export const dynamic = 'force-dynamic';
-
 import {
     Ticket,
     Users,
@@ -19,7 +17,6 @@ import {
     TrendingUp,
     Calendar,
     LogOut,
-    Settings,
     BarChart3,
     Home
 } from "lucide-react";

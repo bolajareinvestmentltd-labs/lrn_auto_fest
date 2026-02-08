@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
-import { Orbitron, Inter } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron' });
-
+// Force all pages to be server-rendered on demand (no static prerendering)
+// This avoids Windows path casing issues that cause dual React instances during SSG
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+
+// Use CSS variables with system fonts as fallback to avoid Google Fonts network issues
+// The CSS will define --font-inter and --font-orbitron using @font-face or system fallbacks
 
 export const metadata: Metadata = {
   title: 'Ilorin Automotive Festival 2026 | Buy Tickets Now',
@@ -61,11 +61,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${orbitron.variable}`}>
+    <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
+        {/* Google Fonts loaded via link tag - more reliable than next/font/google */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
       </head>
       <body className="bg-background text-foreground antialiased selection:bg-brand-orange selection:text-white">
         <Navbar />

@@ -78,18 +78,18 @@ export default function Footer() {
                         <h4 className="font-semibold text-white mb-4 uppercase text-sm">Contact</h4>
                         <div className="space-y-3">
                             <a
-                                href="https://wa.me/2348012345678"
+                                href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '234XXXXXXXXXX'}`}
                                 className="flex items-center gap-2 text-white/60 hover:text-brand-blue transition-colors text-sm"
                             >
                                 <Phone className="w-4 h-4" />
-                                +234 (0) 801 234 5678
+                                {process.env.NEXT_PUBLIC_CONTACT_PHONE || '+234 XXX XXX XXXX'}
                             </a>
                             <a
-                                href="mailto:info@iaf2026.com"
+                                href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'info@ilorinautofest.com'}`}
                                 className="flex items-center gap-2 text-white/60 hover:text-brand-blue transition-colors text-sm"
                             >
                                 <Mail className="w-4 h-4" />
-                                info@iaf2026.com
+                                {process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'info@ilorinautofest.com'}
                             </a>
                             <div className="flex items-start gap-2 text-white/60 text-sm">
                                 <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
@@ -109,21 +109,21 @@ export default function Footer() {
                         <p className="text-white/60 text-sm">Follow Us</p>
                         <div className="flex gap-4">
                             <a
-                                href="https://instagram.com"
+                                href={process.env.NEXT_PUBLIC_INSTAGRAM_URL || 'https://instagram.com/ilorinautofest'}
                                 className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-brand-blue/20 transition-all"
                                 title="Instagram"
                             >
                                 <Instagram className="w-5 h-5 text-brand-blue" />
                             </a>
                             <a
-                                href="https://facebook.com"
+                                href={process.env.NEXT_PUBLIC_FACEBOOK_URL || 'https://facebook.com/ilorinautofest'}
                                 className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-brand-blue/20 transition-all"
                                 title="Facebook"
                             >
                                 <span className="text-brand-blue font-bold">f</span>
                             </a>
                             <a
-                                href="https://twitter.com"
+                                href={process.env.NEXT_PUBLIC_TWITTER_URL || 'https://twitter.com/ilorinautofest'}
                                 className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-brand-blue/20 transition-all"
                                 title="Twitter"
                             >

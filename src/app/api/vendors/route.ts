@@ -3,8 +3,8 @@ import { prisma } from "@/lib/prisma";
 
 // Environment variables
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@iaf2026.com";
+const _RESEND_API_KEY = process.env.RESEND_API_KEY;
+const _ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@iaf2026.com";
 
 /**
  * POST /api/vendors
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
       ticketId,
       paymentReference,
       amount,
-      status
+      status: _status
     } = body;
 
     // Validate required fields
@@ -101,6 +101,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get("status") || "CONFIRMED";
 
     const vendors = await prisma.vendor.findMany({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       where: { status: status as any },
       orderBy: { createdAt: "desc" },
       select: {
@@ -163,10 +164,11 @@ async function verifyPaystackPayment(reference: string): Promise<boolean> {
 /**
  * Send confirmation email to vendor with ticket ID
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function sendVendorConfirmationEmail(vendor: any) {
   try {
     // Using Resend API (or replace with your email service)
-    const emailContent = `
+    const _emailContent = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -264,9 +266,10 @@ async function sendVendorConfirmationEmail(vendor: any) {
 /**
  * Send admin notification of new vendor
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function sendAdminNotificationEmail(vendor: any) {
   try {
-    const adminEmailContent = `
+    const _adminEmailContent = `
 <!DOCTYPE html>
 <html>
 <head>

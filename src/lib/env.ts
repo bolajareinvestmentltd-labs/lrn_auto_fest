@@ -5,10 +5,7 @@ export const env = {
   appUrl: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
   nodeEnv: (process.env.NODE_ENV || 'development') as 'development' | 'production' | 'test',
 
-  // Supabase
-  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-  supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+  // Database
   databaseUrl: process.env.DATABASE_URL || '',
 
   // Payment Gateways
@@ -17,17 +14,22 @@ export const env = {
     secretKey: process.env.PAYSTACK_SECRET_KEY || '',
     webhookSecret: process.env.PAYSTACK_WEBHOOK_SECRET || '',
   },
-  flutterwave: {
-    publicKey: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || '',
-    secretKey: process.env.FLUTTERWAVE_SECRET_KEY || '',
-    webhookSecret: process.env.FLUTTERWAVE_WEBHOOK_SECRET || '',
-  },
 
   // Email
   resend: {
     apiKey: process.env.RESEND_API_KEY || '',
-    supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || '',
-    adminEmail: process.env.NEXT_PUBLIC_ADMIN_EMAIL || '',
+    supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@ilorinautofest.com',
+    adminEmail: process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'admin@ilorinautofest.com',
+  },
+
+  // Contact Info (used across the site)
+  contact: {
+    phone: process.env.NEXT_PUBLIC_CONTACT_PHONE || '+234 XXX XXX XXXX',
+    whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '234XXXXXXXXXX',
+    email: process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'info@ilorinautofest.com',
+    instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL || 'https://instagram.com/ilorinautofest',
+    facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL || 'https://facebook.com/ilorinautofest',
+    twitter: process.env.NEXT_PUBLIC_TWITTER_URL || 'https://twitter.com/ilorinautofest',
   },
 
   // Event Configuration
@@ -45,12 +47,9 @@ export const env = {
 // Validate required environment variables in production
 if (env.nodeEnv === 'production') {
   const requiredVars = [
-    'NEXT_PUBLIC_SUPABASE_URL',
-    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
     'DATABASE_URL',
     'NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY',
     'PAYSTACK_SECRET_KEY',
-    'RESEND_API_KEY',
   ];
 
   const missing = requiredVars.filter((v) => !process.env[v]);

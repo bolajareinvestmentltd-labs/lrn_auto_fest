@@ -5,8 +5,6 @@ import { motion } from "framer-motion";
 import { Check, Loader2, Users, Car, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import CheckoutModal from "@/components/CheckoutModal";
 
 interface TicketTier {
@@ -163,7 +161,6 @@ export default function TicketsPage() {
 
   return (
     <main className="bg-[#050505] min-h-screen">
-      <Navbar />
 
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-4">
@@ -280,8 +277,8 @@ export default function TicketsPage() {
                                   key={opt.value}
                                   onClick={() => setSelectedGroupSize({ ...selectedGroupSize, [tier.id]: opt.value })}
                                   className={`flex justify-between items-center p-3 rounded-lg border transition-all ${groupSize === opt.value
-                                      ? `${colors.border} ${colors.bg} border-2`
-                                      : "border-white/10 hover:border-white/30"
+                                    ? `${colors.border} ${colors.bg} border-2`
+                                    : "border-white/10 hover:border-white/30"
                                     }`}
                                   disabled={soldOut}
                                 >
@@ -338,10 +335,10 @@ export default function TicketsPage() {
                           onClick={() => handleBuyClick(tier)}
                           disabled={soldOut || !available}
                           className={`w-full h-12 font-bold text-lg uppercase tracking-wider rounded-full transition-all ${soldOut || !available
-                              ? "bg-gray-600 cursor-not-allowed"
-                              : isVip
-                                ? "bg-gradient-to-r from-brand-orange to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg shadow-orange-900/30"
-                                : "bg-brand-blue hover:bg-blue-600 text-white"
+                            ? "bg-gray-600 cursor-not-allowed"
+                            : isVip
+                              ? "bg-gradient-to-r from-brand-orange to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg shadow-orange-900/30"
+                              : "bg-brand-blue hover:bg-blue-600 text-white"
                             }`}
                         >
                           {soldOut ? "Sold Out" : !available ? "Unavailable" : "Buy Now"}
@@ -355,8 +352,6 @@ export default function TicketsPage() {
           </div>
         </section>
       )}
-
-      <Footer />
 
       {/* Checkout Modal */}
       <CheckoutModal

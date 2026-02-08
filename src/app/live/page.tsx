@@ -3,8 +3,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export const dynamic = 'force-dynamic';
-
 import {
     Users,
     Car,
@@ -20,7 +18,7 @@ import {
     PartyPopper
 } from "lucide-react";
 
-interface LiveStats {
+export interface LiveStats {
     totalAttendees: number;
     checkedIn: number;
     vipGuests: number;
@@ -43,6 +41,19 @@ interface SocialPost {
     time: string;
 }
 
+// Generate confetti data outside the component to avoid react-hooks/purity errors
+function generateConfettiParticles() {
+    const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4'];
+    return Array.from({ length: 50 }, () => ({
+        color: colors[Math.floor(Math.random() * 5)],
+        left: `${Math.random() * 100}%`,
+        rotate: Math.random() * 360,
+        duration: 2 + Math.random() * 2,
+    }));
+}
+
+const CONFETTI_PARTICLES = generateConfettiParticles();
+
 export default function LiveDashboard() {
     const [stats, setStats] = useState<LiveStats>({
         totalAttendees: 5000,
@@ -53,14 +64,14 @@ export default function LiveDashboard() {
     });
 
     const [currentTime, setCurrentTime] = useState(new Date());
-    const [announcements, setAnnouncements] = useState<Announcement[]>([
+    const [announcements, _setAnnouncements] = useState<Announcement[]>([
         { id: 1, message: "🎉 Welcome to Ilorin Auto Festival 2026!", type: 'info', time: '10:00 AM' },
         { id: 2, message: "🚗 First car reveal in 30 minutes at Main Stage!", type: 'alert', time: '10:15 AM' },
         { id: 3, message: "⭐ VIP Lounge now open - Complimentary drinks available", type: 'vip', time: '10:30 AM' },
         { id: 4, message: "🏆 Sponsored by Premium Motors - Visit Booth A1", type: 'sponsor', time: '10:45 AM' },
     ]);
 
-    const [socialPosts, setSocialPosts] = useState<SocialPost[]>([
+    const [socialPosts, _setSocialPosts] = useState<SocialPost[]>([
         { id: 1, username: "@car_lover_ng", content: "This festival is INSANE! The Lamborghini section is 🔥 #IAF2026", likes: 234, time: "2m ago" },
         { id: 2, username: "@ilorin_vibes", content: "VIP treatment is top notch! Best event in Kwara State 💯", likes: 189, time: "5m ago" },
         { id: 3, username: "@auto_enthusiast", content: "Just saw the new Tesla Cybertruck in person! Mind blown 🤯", likes: 456, time: "8m ago" },
@@ -122,7 +133,7 @@ export default function LiveDashboard() {
                         }));
                     }
                 }
-            } catch (error) {
+            } catch {
                 console.log('Using simulated stats');
             }
         };
@@ -164,22 +175,22 @@ export default function LiveDashboard() {
                         exit={{ opacity: 0 }}
                         className="fixed inset-0 pointer-events-none z-50"
                     >
-                        {[...Array(50)].map((_, i) => (
+                        {CONFETTI_PARTICLES.map((particle, i) => (
                             <motion.div
                                 key={i}
                                 className="absolute w-3 h-3 rounded-full"
                                 style={{
-                                    background: ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4'][Math.floor(Math.random() * 5)],
-                                    left: `${Math.random() * 100}%`,
+                                    background: particle.color,
+                                    left: particle.left,
                                 }}
                                 initial={{ y: -20, opacity: 1 }}
                                 animate={{
                                     y: typeof window !== 'undefined' ? window.innerHeight + 20 : 800,
                                     opacity: 0,
-                                    rotate: Math.random() * 360
+                                    rotate: particle.rotate
                                 }}
                                 transition={{
-                                    duration: 2 + Math.random() * 2,
+                                    duration: particle.duration,
                                     ease: "easeOut"
                                 }}
                             />
@@ -310,8 +321,8 @@ export default function LiveDashboard() {
                                 <motion.div
                                     key={i}
                                     className={`flex items-center gap-4 p-3 rounded-xl transition-all ${item.active
-                                            ? 'bg-gradient-to-r from-purple-500/30 to-pink-500/30 border border-purple-500/50'
-                                            : 'hover:bg-white/5'
+                                        ? 'bg-gradient-to-r from-purple-500/30 to-pink-500/30 border border-purple-500/50'
+                                        : 'hover:bg-white/5'
                                         }`}
                                     initial={{ x: -20, opacity: 0 }}
                                     animate={{ x: 0, opacity: 1 }}
@@ -406,8 +417,8 @@ export default function LiveDashboard() {
                                 {[...announcements, ...announcements].map((ann, i) => (
                                     <span key={i} className="inline-flex items-center gap-2">
                                         <span className={`w-2 h-2 rounded-full ${ann.type === 'vip' ? 'bg-amber-400' :
-                                                ann.type === 'alert' ? 'bg-red-400' :
-                                                    ann.type === 'sponsor' ? 'bg-blue-400' : 'bg-green-400'
+                                            ann.type === 'alert' ? 'bg-red-400' :
+                                                ann.type === 'sponsor' ? 'bg-blue-400' : 'bg-green-400'
                                             }`} />
                                         {ann.message}
                                     </span>

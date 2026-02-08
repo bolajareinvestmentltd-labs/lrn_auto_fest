@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 
-export const dynamic = 'force-dynamic';
-
 import {
     QrCode,
     CheckCircle2,
@@ -241,8 +239,8 @@ export default function GateCheckInPage() {
                         {/* Scan Result */}
                         {scanResult && (
                             <div className={`rounded-2xl p-8 mb-6 border-2 ${scanResult.success
-                                    ? 'bg-green-500/10 border-green-500'
-                                    : 'bg-red-500/10 border-red-500'
+                                ? 'bg-green-500/10 border-green-500'
+                                : 'bg-red-500/10 border-red-500'
                                 }`}>
                                 <div className="flex items-start gap-6">
                                     {scanResult.success ? (
@@ -324,8 +322,8 @@ export default function GateCheckInPage() {
                                     <div
                                         key={index}
                                         className={`p-3 rounded-lg border ${scan.success
-                                                ? 'bg-green-500/10 border-green-500/30'
-                                                : 'bg-red-500/10 border-red-500/30'
+                                            ? 'bg-green-500/10 border-green-500/30'
+                                            : 'bg-red-500/10 border-red-500/30'
                                             }`}
                                     >
                                         <div className="flex items-center gap-2">

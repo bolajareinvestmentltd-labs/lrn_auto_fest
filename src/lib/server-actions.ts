@@ -12,7 +12,7 @@ export async function serverError(message: string) {
   };
 }
 
-export async function serverSuccess(data: any = null) {
+export async function serverSuccess(data: unknown = null) {
   return {
     success: true,
     data,

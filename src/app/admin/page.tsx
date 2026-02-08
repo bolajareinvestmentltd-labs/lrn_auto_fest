@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Lock, User, Eye, EyeOff, Shield, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function AdminLogin() {
     const router = useRouter();
@@ -15,12 +16,6 @@ export default function AdminLogin() {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
-
-    // Hardcoded credentials (in production, use proper auth)
-    const ADMIN_CREDENTIALS = {
-        username: "iaf_admin",
-        password: "IAF2026@admin"
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -34,21 +29,33 @@ export default function AdminLogin() {
             return;
         }
 
-        // Check credentials
-        setTimeout(() => {
-            if (
-                formData.username === ADMIN_CREDENTIALS.username &&
-                formData.password === ADMIN_CREDENTIALS.password
-            ) {
-                // Store auth in session storage
+        try {
+            // Authenticate via server-side API
+            const response = await fetch("/api/admin/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username: formData.username,
+                    password: formData.password,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                // Store auth token securely
                 sessionStorage.setItem("iaf_admin_auth", "true");
+                sessionStorage.setItem("iaf_admin_token", data.token);
                 sessionStorage.setItem("iaf_admin_user", formData.username);
                 router.push("/admin/dashboard");
             } else {
-                setError("Invalid credentials. Please try again.");
+                setError(data.error || "Invalid credentials. Please try again.");
             }
+        } catch {
+            setError("Network error. Please try again.");
+        } finally {
             setLoading(false);
-        }, 1000);
+        }
     };
 
     return (
@@ -160,12 +167,12 @@ export default function AdminLogin() {
 
                 {/* Footer Links */}
                 <div className="flex justify-center gap-6 mt-6 text-sm">
-                    <a href="/" className="text-gray-400 hover:text-white transition-colors">
+                    <Link href="/" className="text-gray-400 hover:text-white transition-colors">
                         ← Back to Website
-                    </a>
-                    <a href="/gate" className="text-gray-400 hover:text-white transition-colors">
+                    </Link>
+                    <Link href="/gate" className="text-gray-400 hover:text-white transition-colors">
                         Gate Check-In →
-                    </a>
+                    </Link>
                 </div>
             </div>
         </div>

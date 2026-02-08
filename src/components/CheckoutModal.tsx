@@ -168,7 +168,7 @@ export default function CheckoutModal({
             return;
         }
 
-        if (!paystackLoaded || !(window as any).PaystackPop) {
+        if (!paystackLoaded || !(window as unknown as Record<string, unknown>).PaystackPop) {
             alert("Payment system is loading. Please try again.");
             return;
         }
@@ -176,9 +176,16 @@ export default function CheckoutModal({
         setIsProcessing(true);
 
         // Use environment variable for Paystack key
-        const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "pk_test_858607a04052382e73797962635921e549646549";
+        const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
 
-        const handler = (window as any).PaystackPop.setup({
+        if (!paystackKey) {
+            alert("Payment configuration error. Please contact support.");
+            setIsProcessing(false);
+            return;
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const handler = ((window as unknown) as Record<string, any>).PaystackPop.setup({
             key: paystackKey,
             email: email,
             amount: total * 100, // Amount in kobo
@@ -198,6 +205,7 @@ export default function CheckoutModal({
             onClose: () => {
                 setIsProcessing(false);
             },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onSuccess: (transaction: any) => {
                 // Redirect to confirmation page
                 window.location.href = `/payment-confirmation?reference=${transaction.reference}`;

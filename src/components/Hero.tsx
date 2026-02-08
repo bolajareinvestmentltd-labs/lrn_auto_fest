@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import CountdownTimer from "./CountdownTimer";
-import { Calendar, MapPin } from "lucide-react";
+import { Calendar, MapPin, Volume2, VolumeX } from "lucide-react";
+import { useRef, useState } from "react";
 
 // Event configuration
 const EVENT_DATE = "2026-05-30T09:00:00";
@@ -12,24 +13,39 @@ const PRESALE_END_DATE = "2026-03-31T23:59:59";
 export default function Hero() {
   // Check if presale is still active
   const isPresaleActive = new Date() < new Date(PRESALE_END_DATE);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isMuted, setIsMuted] = useState(true);
+
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !videoRef.current.muted;
+      setIsMuted(videoRef.current.muted);
+    }
+  };
 
   return (
     <section className="relative min-h-screen w-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-900">
       {/* 1. VIDEO BACKGROUND with fallback */}
       <div className="absolute inset-0 bg-[url('/images/hero-fallback.svg')] bg-cover bg-center z-0" />
       <video
+        ref={videoRef}
         autoPlay
         muted
         loop
         playsInline
-        poster="/images/hero-poster.webp"
         className="absolute top-0 left-0 w-full h-full object-cover z-[1] opacity-60"
       >
-        <source src="/videos/hero-drift.mp4" type="video/mp4" />
-        <source src="/videos/hero-drift.webm" type="video/webm" />
+        <source src="/hero-drift.mp4" type="video/mp4" />
       </video>
 
-      {/* 2. DARK OVERLAY */}
+      {/* SOUND TOGGLE BUTTON */}
+      <button
+        onClick={toggleMute}
+        className="absolute bottom-6 right-6 z-30 bg-black/60 hover:bg-black/80 backdrop-blur-sm text-white p-3 rounded-full transition-all duration-300 border border-white/20 hover:border-white/40"
+        aria-label={isMuted ? "Unmute video" : "Mute video"}
+      >
+        {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+      </button>
       <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-black/50 to-black/30 z-10" />
 
       {/* 3. EARLY BIRD BANNER */}

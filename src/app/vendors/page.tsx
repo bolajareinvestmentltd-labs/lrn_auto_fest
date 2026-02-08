@@ -1,5 +1,4 @@
 "use client";
-import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -83,7 +82,7 @@ export default function VendorPage() {
             return;
         }
 
-        if (!paystackLoaded || !(window as any).PaystackPop) {
+        if (!paystackLoaded || !(window as unknown as Record<string, unknown>).PaystackPop) {
             alert("Payment system is loading. Please try again.");
             return;
         }
@@ -97,9 +96,16 @@ export default function VendorPage() {
         const newTicketId = generateTicketId();
 
         // Use environment variable for Paystack key
-        const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "pk_test_858607a04052382e73797962635921e549646549";
+        const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
 
-        const handler = (window as any).PaystackPop.setup({
+        if (!paystackKey) {
+            alert("Payment configuration error. Please contact support.");
+            setIsSubmitting(false);
+            return;
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const handler = ((window as unknown) as Record<string, any>).PaystackPop.setup({
             key: paystackKey,
             email: formData.email,
             amount: totalAmount * 100, // Amount in kobo (includes processing fee)
@@ -109,6 +115,7 @@ export default function VendorPage() {
                 setIsSubmitting(false);
                 alert("Payment cancelled. Your application was not submitted.");
             },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onSuccess: async (transaction: any) => {
                 try {
                     // Save vendor application to database
@@ -158,7 +165,6 @@ export default function VendorPage() {
 
     return (
         <main className="bg-[#050505] min-h-screen text-white">
-            <Navbar />
 
             <div className="container mx-auto px-4 py-32">
                 {/* Header */}
@@ -311,7 +317,7 @@ export default function VendorPage() {
                                     <div className="bg-brand-orange/10 border border-brand-orange/50 p-4 rounded-lg space-y-3">
                                         <p className="text-xs text-gray-400">💰 Selected Booth</p>
                                         <p className="text-lg font-bold text-brand-orange">{selectedBooth.emoji} {selectedBooth.name}</p>
-                                        
+
                                         {/* Price Breakdown */}
                                         <div className="space-y-1 text-sm bg-black/30 p-3 rounded">
                                             <div className="flex justify-between">
@@ -362,7 +368,7 @@ export default function VendorPage() {
                             <p className="text-gray-400 text-sm">No! We welcome new vendors. Just show passion for your product.</p>
                         </div>
                         <div>
-                            <h4 className="font-bold text-brand-orange mb-2">What's the event date?</h4>
+                            <h4 className="font-bold text-brand-orange mb-2">What&apos;s the event date?</h4>
                             <p className="text-gray-400 text-sm">May 30, 2026 at Metropolitan Square, Asadam Road, Ilorin.</p>
                         </div>
                         <div>

@@ -49,8 +49,8 @@ export default function SocialProof() {
                 <div className="mt-20 max-w-3xl mx-auto">
                     <div className="bg-white/5 border border-white/10 rounded-lg p-8 text-center backdrop-blur-sm">
                         <p className="text-white text-lg italic mb-6">
-                            "The Ilorin Automotive Festival 2026 is a celebration of everything automotive in Nigeria.
-                            From drift legends to exotic supercars, this event brings the entire community together."
+                            &ldquo;The Ilorin Automotive Festival 2026 is a celebration of everything automotive in Nigeria.
+                            From drift legends to exotic supercars, this event brings the entire community together.&rdquo;
                         </p>
                         <div>
                             <p className="text-brand-blue font-bold uppercase">Festival Organizer</p>
