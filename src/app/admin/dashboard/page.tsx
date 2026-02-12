@@ -18,7 +18,10 @@ import {
     Calendar,
     LogOut,
     BarChart3,
-    Home
+    Home,
+    ShoppingCart,
+    ShoppingBag,
+    Settings
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -200,14 +203,45 @@ export default function AdminDashboard() {
                             <BarChart3 className="w-5 h-5" />
                             Dashboard
                         </Link>
+                        
+                        <div className="pt-3 pb-1">
+                            <p className="px-4 text-xs font-semibold text-gray-500 uppercase">Management</p>
+                        </div>
+                        
+                        <Link href="/admin/tickets" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-white/5 rounded-xl transition-colors">
+                            <Ticket className="w-5 h-5" />
+                            Tickets
+                        </Link>
+                        <Link href="/admin/orders" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-white/5 rounded-xl transition-colors">
+                            <ShoppingCart className="w-5 h-5" />
+                            Orders
+                        </Link>
+                        <Link href="/admin/merchandise" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-white/5 rounded-xl transition-colors">
+                            <ShoppingBag className="w-5 h-5" />
+                            Merchandise
+                        </Link>
+                        
+                        <div className="pt-3 pb-1">
+                            <p className="px-4 text-xs font-semibold text-gray-500 uppercase">Event Day</p>
+                        </div>
+                        
                         <Link href="/gate" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-white/5 rounded-xl transition-colors">
                             <QrCode className="w-5 h-5" />
                             Gate Check-In
                         </Link>
-                        <Link href="/live" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-white/5 rounded-xl transition-colors">
+                        <Link href="/check-in" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-white/5 rounded-xl transition-colors">
                             <Users className="w-5 h-5" />
+                            Self Check-In
+                        </Link>
+                        <Link href="/live" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-white/5 rounded-xl transition-colors">
+                            <TrendingUp className="w-5 h-5" />
                             Live Dashboard
                         </Link>
+                        
+                        <div className="pt-3 pb-1">
+                            <p className="px-4 text-xs font-semibold text-gray-500 uppercase">Other</p>
+                        </div>
+                        
                         <Link href="/" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-white/5 rounded-xl transition-colors">
                             <Home className="w-5 h-5" />
                             View Website
