@@ -33,11 +33,18 @@ export default function Tickets() {
     // FETCH THE ENGINE DATA
     useEffect(() => {
         async function fetchTickets() {
+            // Create abort controller for timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
             try {
                 const res = await fetch('/api/tickets', {
                     method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { 'Content-Type': 'application/json' },
+                    signal: controller.signal,
                 });
+                
+                clearTimeout(timeoutId);
                 
                 if (!res.ok) {
                     const errorText = await res.text();
@@ -59,9 +66,15 @@ export default function Tickets() {
                 setTiers(data);
                 setError(null);
             } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-                console.error("Failed to load tickets:", errorMessage, error);
-                setError(errorMessage);
+                clearTimeout(timeoutId);
+                if (error instanceof Error && error.name === 'AbortError') {
+                    console.error("Request timed out");
+                    setError("Request timed out. Please refresh the page.");
+                } else {
+                    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+                    console.error("Failed to load tickets:", errorMessage, error);
+                    setError(errorMessage);
+                }
             } finally {
                 setLoading(false);
             }

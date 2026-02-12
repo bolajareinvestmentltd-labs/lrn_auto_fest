@@ -133,10 +133,18 @@ export async function GET() {
             return NextResponse.json(MOCK_TICKETS, { status: 200 });
         }
 
+        // Add a timeout for database queries (5 seconds)
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Database query timeout')), 5000);
+        });
+
         // Fetch all ticket tiers from the database, ordered by price
-        const tiers = await prisma.ticketPrice.findMany({
+        const queryPromise = prisma.ticketPrice.findMany({
             orderBy: { presaleSinglePrice: 'asc' }
         });
+
+        // Race between query and timeout
+        const tiers = await Promise.race([queryPromise, timeoutPromise]) as Awaited<typeof queryPromise>;
 
         // If no tiers found in DB, return mock data
         if (!tiers || tiers.length === 0) {
