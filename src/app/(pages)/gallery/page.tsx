@@ -79,7 +79,7 @@ export default function GalleryPage() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10" />
             <div className="absolute inset-0 flex items-center justify-center z-20">
               <a
-                href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                href={process.env.NEXT_PUBLIC_YOUTUBE_URL || 'https://youtube.com/@ilorinautomotivefestival'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center gap-4 px-8 py-4 bg-brand-orange/90 hover:bg-brand-orange rounded-full transition-all transform hover:scale-105"
