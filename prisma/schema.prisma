@@ -348,3 +348,82 @@ model AuditLog {
   @@index([userId])
   @@index([createdAt])
 }
+
+// ============================================
+// MERCHANDISE SYSTEM
+// ============================================
+
+enum MerchType {
+  CAP
+  SHORT_SLEEVE
+  LONG_SLEEVE
+}
+
+enum MerchOrderStatus {
+  PENDING
+  PAID
+  READY_FOR_PICKUP
+  PICKED_UP
+  CANCELLED
+}
+
+model MerchItem {
+  id                String   @id @default(cuid())
+  merchType         MerchType @unique
+  name              String   // "IAF 2026 Cap", "Short Sleeve T-Shirt", etc.
+  description       String
+  price             Int      // in NGN
+  imageUrl          String?
+  totalStock        Int      @default(100)
+  soldCount         Int      @default(0)
+  isAvailable       Boolean  @default(true)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  orders            MerchOrder[]
+
+  @@index([merchType])
+}
+
+model MerchOrder {
+  id                String   @id @default(cuid())
+  orderNumber       String   @unique // MERCH-2026-001, MERCH-2026-002, etc.
+  merchItemId       String
+  quantity          Int      @default(1)
+  size              String?  // "S", "M", "L", "XL", "XXL" for shirts
+  totalPrice        Int      // in NGN
+  
+  // Customer info
+  customerName      String
+  customerEmail     String
+  customerPhone     String
+  
+  // Payment info
+  paymentStatus     PaymentStatus @default(PENDING)
+  paymentRefId      String?  // Paystack reference
+  paidAt            DateTime?
+  
+  // Order status
+  orderStatus       MerchOrderStatus @default(PENDING)
+  
+  // QR Code for pickup verification
+  pickupCode        String   @unique // Unique pickup code
+  qrCode            String?  // QR code data
+  qrCodeUrl         String?  // URL to QR code image
+  pickedUpAt        DateTime?
+  pickedUpBy        String?  // Admin who verified pickup
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  merchItem         MerchItem @relation(fields: [merchItemId], references: [id])
+
+  @@index([orderNumber])
+  @@index([customerEmail])
+  @@index([paymentStatus])
+  @@index([orderStatus])
+  @@index([pickupCode])
+}

@@ -4,8 +4,9 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight, ShoppingBag, MessageCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, ShoppingBag, CreditCard } from "lucide-react";
 import Image from "next/image";
+import MerchandiseCheckoutModal from "./MerchandiseCheckoutModal";
 
 interface MerchItem {
     id: string;
@@ -42,11 +43,10 @@ const MERCHANDISE: MerchItem[] = [
     },
 ];
 
-// WhatsApp number for orders
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "+2349120220480";
-
 export default function Merchandise() {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+    const [selectedItem, setSelectedItem] = useState<MerchItem | null>(null);
 
     const nextSlide = () => {
         setCurrentIndex((prev) => (prev + 1) % MERCHANDISE.length);
@@ -68,11 +68,9 @@ export default function Merchandise() {
         }).format(price);
     };
 
-    const handleOrder = (item: MerchItem) => {
-        const message = encodeURIComponent(
-            `Hi! I'd like to order the ${item.name} (${formatPrice(item.price)}) from IAF 2026 Merchandise.`
-        );
-        window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/\+/g, "")}?text=${message}`, "_blank");
+    const handleBuyNow = (item: MerchItem) => {
+        setSelectedItem(item);
+        setIsCheckoutOpen(true);
     };
 
     const currentItem = MERCHANDISE[currentIndex];
@@ -169,15 +167,15 @@ export default function Merchandise() {
                                                     </div>
 
                                                     <Button
-                                                        onClick={() => handleOrder(currentItem)}
+                                                        onClick={() => handleBuyNow(currentItem)}
                                                         className="bg-brand-orange hover:bg-orange-600 text-white font-bold py-6 text-lg group"
                                                     >
-                                                        <MessageCircle className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
-                                                        Order via WhatsApp
+                                                        <CreditCard className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
+                                                        Buy Now
                                                     </Button>
 
                                                     <p className="text-gray-500 text-sm mt-4 text-center">
-                                                        Payment on pickup at event
+                                                        Secure payment via Paystack
                                                     </p>
                                                 </div>
                                             </div>
@@ -247,6 +245,13 @@ export default function Merchandise() {
                     </div>
                 </div>
             </div>
+
+            {/* Checkout Modal */}
+            <MerchandiseCheckoutModal
+                isOpen={isCheckoutOpen}
+                onClose={() => setIsCheckoutOpen(false)}
+                item={selectedItem}
+            />
         </section>
     );
 }

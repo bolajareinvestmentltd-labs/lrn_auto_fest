@@ -336,3 +336,118 @@ export async function sendEmail(to: string, subject: string, html: string): Prom
         return false;
     }
 }
+
+// ============================================
+// MERCHANDISE EMAIL TEMPLATE
+// ============================================
+
+interface MerchandisePurchaseData {
+    customerName: string;
+    email: string;
+    orderNumber: string;
+    itemName: string;
+    quantity: number;
+    size?: string;
+    amount: number;
+    pickupCode: string;
+    qrCodeDataUrl?: string;
+    purchaseDate: string;
+}
+
+export function generateMerchandisePurchaseEmail(data: MerchandisePurchaseData): string {
+    const formattedAmount = new Intl.NumberFormat('en-NG', {
+        style: 'currency',
+        currency: 'NGN',
+        maximumFractionDigits: 0
+    }).format(data.amount);
+
+    // Extract first name for personalization
+    const firstName = data.customerName.split(' ')[0];
+
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your IAF 2026 Merchandise Order</title>
+    <style>${BASE_STYLES}</style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛍️ Order Confirmed!</h1>
+            <p>IAF 2026 Official Merchandise</p>
+        </div>
+        
+        <div class="content">
+            <p>Dear <strong>${firstName}</strong>,</p>
+            
+            <p>Thank you for your merchandise order! Your IAF 2026 gear has been reserved and will be ready for pickup at the event.</p>
+            
+            <div class="ticket-box">
+                <p style="margin:0 0 10px; color:#888; font-size:12px; text-transform:uppercase;">Your Order Number</p>
+                <p class="ticket-id">${data.orderNumber}</p>
+            </div>
+            
+            <div class="details-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Item</div>
+                    <div class="detail-value">${data.itemName}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Quantity</div>
+                    <div class="detail-value">${data.quantity}</div>
+                </div>
+                ${data.size ? `
+                <div class="detail-item">
+                    <div class="detail-label">Size</div>
+                    <div class="detail-value">${data.size}</div>
+                </div>
+                ` : ''}
+                <div class="detail-item">
+                    <div class="detail-label">Amount Paid</div>
+                    <div class="detail-value">${formattedAmount}</div>
+                </div>
+            </div>
+            
+            <div class="ticket-box" style="background: rgba(0,240,255,0.1); border-color: rgba(0,240,255,0.3);">
+                <p style="margin:0 0 10px; color:#888; font-size:12px; text-transform:uppercase;">Your Pickup Code</p>
+                <p class="ticket-id" style="color:#00F0FF;">${data.pickupCode}</p>
+                <p style="margin:10px 0 0; font-size:12px; color:#888;">Show this code at the merchandise booth to collect your order</p>
+            </div>
+            
+            ${data.qrCodeDataUrl ? `
+            <div class="qr-section">
+                <p style="margin:0 0 10px; color:#888; font-size:14px;">Your Pickup QR Code</p>
+                <img src="${data.qrCodeDataUrl}" alt="QR Code" class="qr-code" />
+                <p style="font-size:12px; color:#666;">Scan this at the merch booth for quick pickup</p>
+            </div>
+            ` : ''}
+            
+            <div class="info-box">
+                <p style="margin:0; color:#00F0FF;"><strong>📅 Pickup Date:</strong> May 30th, 2026</p>
+                <p style="margin:10px 0 0; color:#00F0FF;"><strong>📍 Pickup Location:</strong> IAF Merchandise Booth, Ilorin Metropolitan Square</p>
+                <p style="margin:10px 0 0; color:#00F0FF;"><strong>⏰ Booth Hours:</strong> 10:00 AM - 8:00 PM</p>
+            </div>
+            
+            <p style="margin-top:25px;">Need help? Reply to this email or chat with us on <a href="https://wa.me/2349120220480" style="color:#25D366;">WhatsApp</a>.</p>
+            
+            <p>See you at the festival! 🚗💨</p>
+            <p><strong>The IAF 2026 Team</strong></p>
+        </div>
+        
+        <div class="footer">
+            <div class="social-links">
+                <a href="https://instagram.com/ilorin_carshow">Instagram</a> |
+                <a href="https://twitter.com/ilorin_carshow">Twitter</a> |
+                <a href="https://lrn-auto-fest-gomc.vercel.app">Website</a>
+            </div>
+            <p>© 2026 Ilorin Automotive Festival. All rights reserved.</p>
+            <p>You received this email because you purchased merchandise for IAF 2026.</p>
+        </div>
+    </div>
+</body>
+</html>
+`;
+}
