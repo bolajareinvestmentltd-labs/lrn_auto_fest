@@ -427,3 +427,41 @@ model MerchOrder {
   @@index([orderStatus])
   @@index([pickupCode])
 }
+
+// ============================================
+// REGISTRATION SYSTEM - Event Participants
+// ============================================
+
+enum RegistrationCategory {
+  PERFORMER
+  DRAG_RACE
+  DRIFT_CHAMPIONSHIP
+  GUEST
+}
+
+enum RegistrationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model Registration {
+  id                String               @id @default(cuid())
+  fullName          String
+  email             String
+  phone             String
+  category          RegistrationCategory
+  assignedCategory  RegistrationCategory? // May differ if original category was full
+  instagramHandle   String?
+  carModel          String?              // For drag race and drift participants
+  plateNumber       String?              // For drag race and drift participants
+  status            RegistrationStatus   @default(CONFIRMED)
+  registrationCode  String               @unique
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  @@index([email])
+  @@index([category])
+  @@index([registrationCode])
+}
+

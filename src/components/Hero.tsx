@@ -1,27 +1,70 @@
 "use client";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import CountdownTimer from "./CountdownTimer";
-import { Calendar, MapPin, Volume2, VolumeX } from "lucide-react";
-import { useRef, useState } from "react";
+import { Calendar, MapPin, ExternalLink } from "lucide-react";
+import { useRef, useEffect, useState } from "react";
+import Image from "next/image";
 
 // Event configuration
 const EVENT_DATE = "2026-05-30T09:00:00";
 const PRESALE_END_DATE = "2026-03-31T23:59:59";
+const EVENT_VENUE = "Metropolitan Square, Asadam Road, Ilorin";
+const VENUE_COORDS = "8.4799,4.5418"; // Ilorin coordinates
 
 export default function Hero() {
   // Check if presale is still active
   const isPresaleActive = new Date() < new Date(PRESALE_END_DATE);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isMuted, setIsMuted] = useState(true);
+  const [titleIndex, setTitleIndex] = useState(0);
 
-  const toggleMute = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = !videoRef.current.muted;
-      setIsMuted(videoRef.current.muted);
-    }
-  };
+  // Animated title words
+  const titleParts = [
+    { text: "Ilorin", gradient: false },
+    { text: "Car Show", gradient: true },
+    { text: "3.0", gradient: false },
+  ];
+
+  // Cycle through title animation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTitleIndex((prev) => (prev + 1) % 4); // 0, 1, 2, 3 (3 = all visible)
+    }, 800);
+    
+    // Stop cycling after all parts are shown
+    const timeout = setTimeout(() => {
+      clearInterval(interval);
+      setTitleIndex(3);
+    }, 3200);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, []);
+
+  // Auto-play video with sound on page load
+  useEffect(() => {
+    const playVideoWithSound = async () => {
+      if (videoRef.current) {
+        videoRef.current.muted = false;
+        try {
+          await videoRef.current.play();
+        } catch (error) {
+          // If autoplay with sound fails, try muted first then unmute
+          videoRef.current.muted = true;
+          await videoRef.current.play();
+          setTimeout(() => {
+            if (videoRef.current) {
+              videoRef.current.muted = false;
+            }
+          }, 100);
+        }
+      }
+    };
+    playVideoWithSound();
+  }, []);
 
   return (
     <section className="relative min-h-screen w-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-900">
@@ -30,7 +73,6 @@ export default function Hero() {
       <video
         ref={videoRef}
         autoPlay
-        muted
         loop
         playsInline
         className="absolute top-0 left-0 w-full h-full object-cover z-[1] opacity-60"
@@ -38,14 +80,6 @@ export default function Hero() {
         <source src="/hero-drift.mp4" type="video/mp4" />
       </video>
 
-      {/* SOUND TOGGLE BUTTON */}
-      <button
-        onClick={toggleMute}
-        className="absolute bottom-6 right-6 z-30 bg-black/60 hover:bg-black/80 backdrop-blur-sm text-white p-3 rounded-full transition-all duration-300 border border-white/20 hover:border-white/40"
-        aria-label={isMuted ? "Unmute video" : "Mute video"}
-      >
-        {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-      </button>
       <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-black/50 to-black/30 z-10" />
 
       {/* 3. EARLY BIRD BANNER */}
@@ -63,15 +97,109 @@ export default function Hero() {
 
       {/* 4. CONTENT */}
       <div className="relative z-20 text-center px-4 max-w-5xl mx-auto mt-16 md:mt-20">
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="font-heading font-black italic tracking-tighter text-white uppercase text-4xl sm:text-6xl md:text-8xl leading-tight"
+        {/* BIG LOGO AT TOP */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+          className="mb-4"
         >
-          Ilorin <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-brand-orange">Automotive</span>
-          <br /> Festival 2026
-        </motion.h1>
+          <Image
+            src="/iaf_logo.jpeg"
+            alt="Ilorin Car Show Logo"
+            width={180}
+            height={180}
+            priority
+            className="mx-auto h-36 w-36 sm:h-44 sm:w-44 md:h-52 md:w-52 object-contain"
+          />
+        </motion.div>
+
+        {/* PRESENT text */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="text-white/70 text-xs sm:text-sm tracking-[0.3em] uppercase mb-4"
+        >
+          PRESENT
+        </motion.p>
+
+        {/* Animated Title - ILORIN CAR SHOW 3.0 */}
+        <div className="font-heading font-black italic tracking-tighter text-white uppercase text-4xl sm:text-6xl md:text-8xl leading-tight">
+          <AnimatePresence>
+            {titleIndex >= 0 && (
+              <motion.span
+                key="ilorin"
+                initial={{ opacity: 0, scale: 0.3, rotateX: -90 }}
+                animate={{ opacity: 1, scale: 1, rotateX: 0 }}
+                transition={{ 
+                  type: "spring", 
+                  stiffness: 200, 
+                  damping: 15,
+                  duration: 0.6 
+                }}
+                className="inline-block"
+              >
+                Ilorin{" "}
+              </motion.span>
+            )}
+          </AnimatePresence>
+          <AnimatePresence>
+            {titleIndex >= 1 && (
+              <motion.span
+                key="carshow"
+                initial={{ opacity: 0, scale: 0.3, y: 50 }}
+                animate={{ 
+                  opacity: 1, 
+                  scale: [1, 1.1, 1],
+                  y: 0,
+                }}
+                transition={{ 
+                  type: "spring", 
+                  stiffness: 150, 
+                  damping: 12,
+                  scale: { repeat: 2, repeatType: "reverse", duration: 0.3 }
+                }}
+                className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-brand-orange inline-block"
+              >
+                Car Show
+              </motion.span>
+            )}
+          </AnimatePresence>
+          <br />
+          <AnimatePresence>
+            {titleIndex >= 2 && (
+              <motion.span
+                key="3.0"
+                initial={{ opacity: 0, scale: 2, rotate: -10 }}
+                animate={{ 
+                  opacity: 1, 
+                  scale: [1, 1.2, 0.9, 1.1, 1],
+                  rotate: [0, 5, -5, 3, 0],
+                }}
+                transition={{ 
+                  type: "spring", 
+                  stiffness: 300, 
+                  damping: 10,
+                  duration: 0.8
+                }}
+                className="inline-block"
+              >
+                3.0
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* The Ribbon Edition */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="mt-2 text-brand-orange font-semibold text-lg sm:text-xl md:text-2xl italic"
+        >
+          [The Ribbon Edition]
+        </motion.p>
 
         <motion.p
           initial={{ opacity: 0 }}
@@ -79,7 +207,7 @@ export default function Hero() {
           transition={{ delay: 0.4 }}
           className="mt-4 text-gray-300 font-sans mx-auto max-w-xl text-base sm:text-xl"
         >
-          Cars. Bikes. Drift. Lifestyle. The Biggest Auto Experience in Ilorin.
+          Cars • Bikes • Drift • Lifestyle • The Biggest Auto Experience in Northern Nigeria
         </motion.p>
 
         {/* Event Date & Venue */}
@@ -89,15 +217,27 @@ export default function Hero() {
           transition={{ delay: 0.5 }}
           className="mt-6 flex flex-col sm:flex-row gap-4 justify-center items-center text-white/80"
         >
-          <div className="flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-brand-orange" />
-            <span className="text-sm md:text-base font-semibold">May 30, 2026</span>
-          </div>
+          <a
+            href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Ilorin%20Car%20Show%203.0%20-%20The%20Ribbon%20Edition&dates=20260530T080000Z/20260530T200000Z&details=The%20Biggest%20Auto%20Experience%20in%20Northern%20Nigeria&location=Metropolitan%20Square%2C%20Asadam%20Road%2C%20Ilorin"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 hover:text-brand-orange transition-colors cursor-pointer group"
+          >
+            <Calendar className="w-5 h-5 text-brand-orange group-hover:scale-110 transition-transform" />
+            <span className="text-sm md:text-base font-semibold group-hover:underline">May 30, 2026</span>
+            <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </a>
           <span className="hidden sm:block text-white/40">|</span>
-          <div className="flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-brand-blue" />
-            <span className="text-sm md:text-base">Metropolitan Square, Asadam Road, Ilorin</span>
-          </div>
+          <a
+            href={`https://www.google.com/maps/dir/?api=1&destination=${VENUE_COORDS}&travelmode=driving`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 hover:text-brand-blue transition-colors cursor-pointer group"
+          >
+            <MapPin className="w-5 h-5 text-brand-blue group-hover:scale-110 transition-transform" />
+            <span className="text-sm md:text-base group-hover:underline">{EVENT_VENUE}</span>
+            <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </a>
         </motion.div>
 
         {/* Countdown Timer */}
@@ -111,35 +251,36 @@ export default function Hero() {
           <CountdownTimer targetDate={EVENT_DATE} />
         </motion.div>
 
-        {/* CTA Buttons */}
+        {/* CTA Buttons - Row 1 */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
-          className="mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center"
+          className="mt-10 flex flex-wrap gap-3 justify-center items-center"
         >
+          <Link href="/register">
+            <Button size="lg" className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-green-900/20">
+              📝 Register
+            </Button>
+          </Link>
           <Link href="/tickets">
-            <Button size="lg" className="bg-brand-orange hover:bg-orange-600 text-white font-bold text-lg px-10 py-6 rounded-full uppercase shadow-lg shadow-orange-900/20">
-              🎟️ Buy Tickets
+            <Button size="lg" className="bg-brand-orange hover:bg-orange-600 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-orange-900/20">
+              🎟️ Get Tickets
             </Button>
           </Link>
           <Link href="/vip">
-            <Button size="lg" className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold text-lg px-10 py-6 rounded-full uppercase shadow-lg">
+            <Button size="lg" className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg">
               💎 VIP Packages
             </Button>
           </Link>
-        </motion.div>
-
-        {/* Secondary CTA */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="mt-4"
-        >
           <Link href="/vendors">
-            <Button variant="outline" size="lg" className="border-brand-blue text-brand-blue hover:bg-brand-blue/10 font-bold px-8 py-4 rounded-full uppercase">
-              Vendor Space →
+            <Button size="lg" className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-blue-900/20">
+              🏪 Vendor Space
+            </Button>
+          </Link>
+          <Link href="/merchandise">
+            <Button size="lg" className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-purple-900/20">
+              🛍️ Get Merch
             </Button>
           </Link>
         </motion.div>

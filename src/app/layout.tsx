@@ -11,9 +11,9 @@ export const dynamic = 'force-dynamic';
 // The CSS will define --font-inter and --font-orbitron using @font-face or system fallbacks
 
 export const metadata: Metadata = {
-  title: 'Ilorin Automotive Festival 2026 | Buy Tickets Now',
+  title: 'Ilorin Car Show 3.0 | Get Tickets Now',
   description:
-    'Experience the biggest automotive event in Ilorin. Cars, Bikes, Drift, Lifestyle. May 30, 2026 at Metropolitan Square.',
+    'Experience the biggest automotive event in Northern Nigeria. Cars, Bikes, Drift, Lifestyle. May 30, 2026 at Metropolitan Square, Ilorin.',,
   keywords: [
     'Ilorin Automotive Festival',
     'IAF 2026',
@@ -23,8 +23,8 @@ export const metadata: Metadata = {
     'Ilorin Events',
   ],
   openGraph: {
-    title: 'Ilorin Automotive Festival 2026',
-    description: 'The biggest automotive experience in Ilorin',
+    title: 'Ilorin Car Show 3.0 - The Ribbon Edition',
+    description: 'The biggest automotive experience in Northern Nigeria',
     url: 'https://ilorinautofest.com',
     siteName: 'IAF 2026',
     images: [
@@ -39,8 +39,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Ilorin Automotive Festival 2026',
-    description: 'The biggest automotive experience in Ilorin',
+    title: 'Ilorin Car Show 3.0 - The Ribbon Edition',
+    description: 'The biggest automotive experience in Northern Nigeria',
   },
   robots: {
     index: true,

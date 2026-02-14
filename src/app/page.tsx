@@ -3,7 +3,6 @@
 import Hero from '@/components/Hero';
 import Experience from '@/components/Experience';
 import Tickets from '@/components/Tickets';
-import Merchandise from '@/components/Merchandise';
 import Sponsors from '@/components/Sponsors';
 import SocialProof from '@/components/SocialProof';
 
@@ -13,7 +12,6 @@ export default function Home() {
       <Hero />
       <Experience />
       <Tickets />
-      <Merchandise />
       <Sponsors />
       <SocialProof />
     </div>

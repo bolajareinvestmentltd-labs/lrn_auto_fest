@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight, ShoppingBag, CreditCard } from "lucide-react";
+import { ChevronLeft, ChevronRight, ShoppingBag, CreditCard, Sparkles } from "lucide-react";
 import Image from "next/image";
 import MerchandiseCheckoutModal from "./MerchandiseCheckoutModal";
 
@@ -17,29 +17,49 @@ interface MerchItem {
     badge?: string;
 }
 
+// Main carousel items
 const MERCHANDISE: MerchItem[] = [
     {
         id: "cap",
-        name: "IAF 2026 Cap",
+        name: "ICS 3.0 Official Cap",
         price: 5000,
-        description: "Premium quality cap with embroidered IAF logo. Adjustable strap for perfect fit.",
-        image: "/images/merch/cap.jpg",
+        description: "Premium quality cap with embroidered Ilorin Car Show logo. Adjustable strap for perfect fit.",
+        image: "/images/merch/cap.PNG",
         badge: "Popular",
     },
     {
         id: "short-sleeve",
         name: "Short Sleeve T-Shirt",
         price: 15000,
-        description: "Comfortable cotton blend t-shirt with bold IAF 2026 graphic print. Available in multiple sizes.",
-        image: "/images/merch/short-sleeve.jpg",
+        description: "Comfortable cotton blend t-shirt with bold ICS 3.0 graphic print. Available in multiple sizes.",
+        image: "/images/merch/short-sleeve.PNG",
     },
     {
         id: "long-sleeve",
         name: "Long Sleeve T-Shirt",
         price: 22000,
-        description: "Premium long sleeve shirt with exclusive festival artwork. Perfect for cooler evenings.",
-        image: "/images/merch/long-sleeve.jpg",
+        description: "Premium long sleeve shirt with exclusive Ribbon Edition artwork. Perfect for cooler evenings.",
+        image: "/images/merch/long-sleeve.PNG",
         badge: "Premium",
+    },
+];
+
+// Promotional banner images
+const PROMO_IMAGES = [
+    {
+        id: "promo1",
+        image: "/images/merch/IMG_6778(1).PNG",
+        alt: "Ilorin Car Show 3.0 Merchandise Collection",
+    },
+    {
+        id: "promo2",
+        image: "/images/merch/IMG_6779.PNG",
+        alt: "The Ribbon Edition Official Gear",
+    },
+    {
+        id: "promo3",
+        image: "/images/merch/short-sleeve2.PNG",
+        alt: "Limited Edition Festival Apparel",
     },
 ];
 
@@ -224,6 +244,8 @@ export default function Merchandise() {
                             <button
                                 key={item.id}
                                 onClick={() => goToSlide(index)}
+                                aria-label={`View ${item.name}`}
+                                title={item.name}
                                 className={`relative w-20 h-20 rounded-lg overflow-hidden border-2 transition-all duration-300 ${
                                     index === currentIndex
                                         ? "border-brand-orange scale-110"
@@ -244,6 +266,54 @@ export default function Merchandise() {
                         ))}
                     </div>
                 </div>
+
+                {/* Promotional Gallery Section */}
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.3 }}
+                    className="mt-20"
+                >
+                    <div className="text-center mb-8">
+                        <div className="inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/30 rounded-full px-4 py-2 mb-4">
+                            <Sparkles className="w-4 h-4 text-purple-400" />
+                            <span className="text-purple-400 text-sm font-semibold">Collection Preview</span>
+                        </div>
+                        <h3 className="text-2xl md:text-3xl font-bold text-white">
+                            The Ribbon Edition Collection
+                        </h3>
+                        <p className="text-gray-400 mt-2">Limited edition gear - Get yours before they&apos;re gone!</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                        {PROMO_IMAGES.map((promo, index) => (
+                            <motion.div
+                                key={promo.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.1 * index }}
+                                className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 group cursor-pointer"
+                            >
+                                <Image
+                                    src={promo.image}
+                                    alt={promo.alt}
+                                    fill
+                                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                    onError={(e) => {
+                                        const target = e.target as HTMLImageElement;
+                                        target.src = "/images/merch/placeholder.jpg";
+                                    }}
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                                    <p className="text-white font-semibold text-sm">{promo.alt}</p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </motion.div>
             </div>
 
             {/* Checkout Modal */}

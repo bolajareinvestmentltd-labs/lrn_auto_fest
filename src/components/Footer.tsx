@@ -15,7 +15,7 @@ export default function Footer() {
                             </h3>
                         </Link>
                         <p className="text-white/60 text-sm">
-                            The Biggest Auto Experience in Ilorin. May 30, 2026.
+                            The Biggest Auto Experience in Northern Nigeria. May 30, 2026.
                         </p>
                     </div>
 

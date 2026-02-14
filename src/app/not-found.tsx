@@ -32,7 +32,7 @@ export default function NotFound() {
                         href="/tickets"
                         className="border border-brand-blue text-brand-blue hover:bg-brand-blue/10 font-semibold px-6 py-3 rounded-lg transition-colors inline-flex items-center justify-center gap-2"
                     >
-                        🎟️ Buy Tickets
+                        🎟️ Get Tickets
                     </Link>
                 </div>
 
