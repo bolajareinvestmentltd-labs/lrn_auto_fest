@@ -163,9 +163,9 @@ export default function Footer() {
                         </p>
                         <p className="mt-2">
                             Designed & Developed with <span className="text-brand-orange">❤️</span> by{' '}
-                            <a 
-                                href="https://jareschoicelabs.com" 
-                                target="_blank" 
+                            <a
+                                href="https://jareschoicelabs.com"
+                                target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-brand-blue hover:text-brand-orange transition-colors font-semibold"
                             >

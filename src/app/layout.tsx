@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Ilorin Car Show 3.0 | Get Tickets Now',
   description:
-    'Experience the biggest automotive event in Northern Nigeria. Cars, Bikes, Drift, Lifestyle. May 30, 2026 at Metropolitan Square, Ilorin.',,
+    'Experience the biggest automotive event in Northern Nigeria. Cars, Bikes, Drift, Lifestyle. May 30, 2026 at Metropolitan Square, Ilorin.',
   keywords: [
     'Ilorin Automotive Festival',
     'IAF 2026',

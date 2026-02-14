@@ -19,19 +19,12 @@ export default function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [titleIndex, setTitleIndex] = useState(0);
 
-  // Animated title words
-  const titleParts = [
-    { text: "Ilorin", gradient: false },
-    { text: "Car Show", gradient: true },
-    { text: "3.0", gradient: false },
-  ];
-
   // Cycle through title animation
   useEffect(() => {
     const interval = setInterval(() => {
       setTitleIndex((prev) => (prev + 1) % 4); // 0, 1, 2, 3 (3 = all visible)
     }, 800);
-    
+
     // Stop cycling after all parts are shown
     const timeout = setTimeout(() => {
       clearInterval(interval);
@@ -51,7 +44,7 @@ export default function Hero() {
         videoRef.current.muted = false;
         try {
           await videoRef.current.play();
-        } catch (error) {
+        } catch {
           // If autoplay with sound fails, try muted first then unmute
           videoRef.current.muted = true;
           await videoRef.current.play();
@@ -132,11 +125,11 @@ export default function Hero() {
                 key="ilorin"
                 initial={{ opacity: 0, scale: 0.3, rotateX: -90 }}
                 animate={{ opacity: 1, scale: 1, rotateX: 0 }}
-                transition={{ 
-                  type: "spring", 
-                  stiffness: 200, 
+                transition={{
+                  type: "spring",
+                  stiffness: 200,
                   damping: 15,
-                  duration: 0.6 
+                  duration: 0.6
                 }}
                 className="inline-block"
               >
@@ -149,14 +142,14 @@ export default function Hero() {
               <motion.span
                 key="carshow"
                 initial={{ opacity: 0, scale: 0.3, y: 50 }}
-                animate={{ 
-                  opacity: 1, 
+                animate={{
+                  opacity: 1,
                   scale: [1, 1.1, 1],
                   y: 0,
                 }}
-                transition={{ 
-                  type: "spring", 
-                  stiffness: 150, 
+                transition={{
+                  type: "spring",
+                  stiffness: 150,
                   damping: 12,
                   scale: { repeat: 2, repeatType: "reverse", duration: 0.3 }
                 }}
@@ -172,14 +165,14 @@ export default function Hero() {
               <motion.span
                 key="3.0"
                 initial={{ opacity: 0, scale: 2, rotate: -10 }}
-                animate={{ 
-                  opacity: 1, 
+                animate={{
+                  opacity: 1,
                   scale: [1, 1.2, 0.9, 1.1, 1],
                   rotate: [0, 5, -5, 3, 0],
                 }}
-                transition={{ 
-                  type: "spring", 
-                  stiffness: 300, 
+                transition={{
+                  type: "spring",
+                  stiffness: 300,
                   damping: 10,
                   duration: 0.8
                 }}

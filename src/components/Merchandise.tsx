@@ -114,7 +114,7 @@ export default function Merchandise() {
                         <ShoppingBag className="w-4 h-4 text-brand-orange" />
                         <span className="text-brand-orange text-sm font-semibold">Official Merch</span>
                     </motion.div>
-                    
+
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -179,7 +179,7 @@ export default function Merchandise() {
                                                     <p className="text-gray-400 mb-6">
                                                         {currentItem.description}
                                                     </p>
-                                                    
+
                                                     <div className="mb-6">
                                                         <span className="text-3xl md:text-4xl font-black text-brand-orange">
                                                             {formatPrice(currentItem.price)}
@@ -228,11 +228,10 @@ export default function Merchandise() {
                             <button
                                 key={item.id}
                                 onClick={() => goToSlide(index)}
-                                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                                    index === currentIndex
+                                className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentIndex
                                         ? "bg-brand-orange w-8"
                                         : "bg-white/30 hover:bg-white/50"
-                                }`}
+                                    }`}
                                 aria-label={`Go to ${item.name}`}
                             />
                         ))}
@@ -246,11 +245,10 @@ export default function Merchandise() {
                                 onClick={() => goToSlide(index)}
                                 aria-label={`View ${item.name}`}
                                 title={item.name}
-                                className={`relative w-20 h-20 rounded-lg overflow-hidden border-2 transition-all duration-300 ${
-                                    index === currentIndex
+                                className={`relative w-20 h-20 rounded-lg overflow-hidden border-2 transition-all duration-300 ${index === currentIndex
                                         ? "border-brand-orange scale-110"
                                         : "border-white/20 opacity-60 hover:opacity-100"
-                                }`}
+                                    }`}
                             >
                                 <Image
                                     src={item.image}
