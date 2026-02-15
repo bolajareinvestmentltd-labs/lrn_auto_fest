@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { generateTicketCode, generateQRCodeDataURL } from "@/lib/qrcode";
+import { generateTicketPurchaseEmail, generateAdminNotificationEmail, sendEmail } from "@/lib/email-templates";
 
 export async function POST(request: NextRequest) {
     try {
@@ -134,6 +135,56 @@ export async function POST(request: NextRequest) {
                     notes: `Order ${order.orderNumber} completed`
                 }
             });
+
+            // Get the first ticket for QR code in email
+            const firstTicket = await prisma.ticketOrder.findFirst({
+                where: { orderId: order.id },
+                orderBy: { createdAt: 'asc' }
+            });
+
+            // Send confirmation email to customer
+            try {
+                const groupSizeLabel = order.groupSize === "SINGLE" ? "single" : 
+                    order.groupSize === "GROUP_2" ? "group2" : "group4";
+                
+                const emailHtml = generateTicketPurchaseEmail({
+                    customerName: order.customerName,
+                    email: order.customerEmail,
+                    ticketId: firstTicket?.ticketCode || order.orderNumber,
+                    tier: order.ticketPrice.name,
+                    groupSize: groupSizeLabel,
+                    amount: order.totalAmount,
+                    parkingPasses: order.parkingPasses || 0,
+                    qrCodeDataUrl: firstTicket?.qrCodeUrl || undefined,
+                    purchaseDate: new Date().toISOString(),
+                });
+
+                await sendEmail(
+                    order.customerEmail,
+                    `🎉 Your Ilorin Car Show 3.0 Ticket Confirmed! - ${firstTicket?.ticketCode || order.orderNumber}`,
+                    emailHtml
+                );
+
+                // Send admin notification
+                const adminEmail = process.env.ADMIN_EMAIL || "admin@ilorincarshow.com";
+                const adminHtml = generateAdminNotificationEmail({
+                    type: 'ticket',
+                    customerName: order.customerName,
+                    email: order.customerEmail,
+                    ticketId: firstTicket?.ticketCode || order.orderNumber,
+                    amount: order.totalAmount,
+                    tier: order.ticketPrice.name,
+                });
+
+                await sendEmail(
+                    adminEmail,
+                    `🎫 New Ticket Purchase - ${order.customerName} - ₦${order.totalAmount.toLocaleString()}`,
+                    adminHtml
+                );
+            } catch (emailError) {
+                console.error("Failed to send confirmation email:", emailError);
+                // Don't fail the request if email fails
+            }
 
             return NextResponse.json({
                 success: true,

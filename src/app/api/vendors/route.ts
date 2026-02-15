@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { generateVendorConfirmationEmail, generateAdminNotificationEmail, sendEmail } from "@/lib/email-templates";
 
 // Environment variables
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
-const _RESEND_API_KEY = process.env.RESEND_API_KEY;
-const _ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@iaf2026.com";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@ilorincarshow.com";
 
 /**
  * POST /api/vendors
@@ -65,10 +65,10 @@ export async function POST(request: NextRequest) {
     });
 
     // Send confirmation email to vendor
-    await sendVendorConfirmationEmail(vendor);
+    await sendVendorConfirmationEmailToVendor(vendor);
 
     // Send notification to admin
-    await sendAdminNotificationEmail(vendor);
+    await sendAdminNotificationEmailForVendor(vendor);
 
     return NextResponse.json(
       {
@@ -165,98 +165,33 @@ async function verifyPaystackPayment(reference: string): Promise<boolean> {
  * Send confirmation email to vendor with ticket ID
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function sendVendorConfirmationEmail(vendor: any) {
+async function sendVendorConfirmationEmailToVendor(vendor: any) {
   try {
-    // Using Resend API (or replace with your email service)
-    const _emailContent = `
-<!DOCTYPE html>
-<html>
-<head>
-  <style>
-    body { font-family: Arial, sans-serif; background-color: #f5f5f5; }
-    .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
-    .header { background: linear-gradient(135deg, #FF4500 0%, #00F0FF 100%); color: white; padding: 20px; border-radius: 4px; text-align: center; }
-    .content { margin: 20px 0; line-height: 1.6; color: #333; }
-    .ticket-box { background: #f0f0f0; padding: 15px; border-left: 4px solid #FF4500; margin: 15px 0; }
-    .booth-info { background: #f9f9f9; padding: 15px; margin: 15px 0; border-radius: 4px; }
-    .footer { background: #f5f5f5; padding: 15px; text-align: center; font-size: 12px; color: #666; margin-top: 20px; border-top: 1px solid #ddd; }
-    .button { background: #FF4500; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; display: inline-block; margin: 10px 0; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>🎉 Vendor Application Approved!</h1>
-      <p>Your booth at Ilorin Automotive Festival 2026 is confirmed</p>
-    </div>
+    // Generate email using the template
+    const emailHtml = generateVendorConfirmationEmail({
+      businessName: vendor.businessName,
+      contactPerson: vendor.contactPerson,
+      ticketId: vendor.ticketId,
+      boothType: formatBoothType(vendor.boothType),
+      productType: vendor.productType,
+      amount: vendor.bookingFee,
+      confirmationDate: new Date().toISOString(),
+    });
 
-    <div class="content">
-      <p>Hi <strong>${vendor.contactPerson}</strong>,</p>
-      
-      <p>Thank you for your vendor application! We're excited to have <strong>${vendor.businessName}</strong> at our event.</p>
-      
-      <p><strong>Your payment has been verified and your booth is CONFIRMED.</strong></p>
+    // Send email using Resend
+    const success = await sendEmail(
+      vendor.email,
+      `✅ Vendor Application Approved - Ilorin Car Show 3.0 - ${vendor.ticketId}`,
+      emailHtml
+    );
 
-      <div class="ticket-box">
-        <strong>📋 Confirmation Ticket ID:</strong><br>
-        <code style="font-size: 16px; font-weight: bold; color: #FF4500;">${vendor.ticketId}</code>
-        <p style="font-size: 12px; color: #666; margin-top: 10px;">Save this ID for your records and event check-in.</p>
-      </div>
+    if (success) {
+      console.log(`✅ Confirmation email sent to ${vendor.email}`);
+    } else {
+      console.log(`⚠️ Failed to send email to ${vendor.email}`);
+    }
 
-      <div class="booth-info">
-        <strong>📍 Booth Details:</strong><br>
-        <ul style="list-style: none; padding: 0;">
-          <li>✓ <strong>Booth Type:</strong> ${formatBoothType(vendor.boothType)}</li>
-          <li>✓ <strong>Amount Paid:</strong> ₦${vendor.bookingFee.toLocaleString()}</li>
-          <li>✓ <strong>Status:</strong> <span style="color: green; font-weight: bold;">AUTO-APPROVED ✓</span></li>
-          <li>✓ <strong>Event Date:</strong> May 30, 2026</li>
-        </ul>
-      </div>
-
-      <p><strong>What's Next?</strong></p>
-      <ul>
-        <li>📧 Check your email for receipts and invoices (sent separately)</li>
-        <li>📋 Setup and logistics details will be sent 2 weeks before the event</li>
-        <li>💬 Our team may contact you if we need any additional information</li>
-        <li>📍 Arrive 1 hour before event start for booth setup</li>
-      </ul>
-
-      <p>If you have any questions, feel free to contact us at <strong>info@iaf2026.com</strong> or call <strong>+234 (0) 801 234 5678</strong></p>
-
-      <p>We can't wait to see you at the Ilorin Automotive Festival 2026!</p>
-
-      <p>Best regards,<br><strong>IAF 2026 Team</strong></p>
-    </div>
-
-    <div class="footer">
-      <p>© 2026 Ilorin Automotive Festival. All rights reserved.</p>
-      <p>Powered by Paystack for secure payments</p>
-    </div>
-  </div>
-</body>
-</html>
-        `;
-
-    // Note: Using fetch to Resend API or your email service
-    // Replace this with your actual email sending logic
-    console.log(`Sending confirmation email to ${vendor.email}`);
-
-    // For now, log the email (implement with Resend, SendGrid, etc.)
-    // const emailSent = await fetch("https://api.resend.com/emails", {
-    //     method: "POST",
-    //     headers: {
-    //         "Content-Type": "application/json",
-    //         "Authorization": `Bearer ${RESEND_API_KEY}`
-    //     },
-    //     body: JSON.stringify({
-    //         from: "noreply@iaf2026.com",
-    //         to: vendor.email,
-    //         subject: `✅ Vendor Application Approved - Ticket ID: ${vendor.ticketId}`,
-    //         html: emailContent
-    //     })
-    // });
-
-    return true;
+    return success;
   } catch (error) {
     console.error("Email sending error:", error);
     return false;
@@ -267,85 +202,30 @@ async function sendVendorConfirmationEmail(vendor: any) {
  * Send admin notification of new vendor
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function sendAdminNotificationEmail(vendor: any) {
+async function sendAdminNotificationEmailForVendor(vendor: any) {
   try {
-    const _adminEmailContent = `
-<!DOCTYPE html>
-<html>
-<head>
-  <style>
-    body { font-family: Arial, sans-serif; }
-    .container { max-width: 600px; margin: 0 auto; }
-    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-    th, td { padding: 10px; text-align: left; border: 1px solid #ddd; }
-    th { background: #FF4500; color: white; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h2>🚨 New Vendor Application - AUTO APPROVED</h2>
-    
-    <table>
-      <tr>
-        <th colspan="2">Vendor Details</th>
-      </tr>
-      <tr>
-        <td><strong>Ticket ID</strong></td>
-        <td><code style="font-weight: bold;">${vendor.ticketId}</code></td>
-      </tr>
-      <tr>
-        <td><strong>Business Name</strong></td>
-        <td>${vendor.businessName}</td>
-      </tr>
-      <tr>
-        <td><strong>Contact Person</strong></td>
-        <td>${vendor.contactPerson}</td>
-      </tr>
-      <tr>
-        <td><strong>Email</strong></td>
-        <td>${vendor.email}</td>
-      </tr>
-      <tr>
-        <td><strong>Phone</strong></td>
-        <td>${vendor.phone}</td>
-      </tr>
-      <tr>
-        <td><strong>Booth Type</strong></td>
-        <td>${formatBoothType(vendor.boothType)}</td>
-      </tr>
-      <tr>
-        <td><strong>Product Type</strong></td>
-        <td>${vendor.productType}</td>
-      </tr>
-      <tr>
-        <td><strong>Amount Paid</strong></td>
-        <td>₦${vendor.bookingFee.toLocaleString()}</td>
-      </tr>
-      <tr>
-        <td><strong>Payment Ref</strong></td>
-        <td><code>${vendor.paymentRefId}</code></td>
-      </tr>
-      <tr>
-        <td><strong>Status</strong></td>
-        <td style="color: green; font-weight: bold;">✓ AUTO-APPROVED</td>
-      </tr>
-      <tr>
-        <td><strong>Date Created</strong></td>
-        <td>${vendor.createdAt.toLocaleString()}</td>
-      </tr>
-    </table>
+    // Generate admin email using the template
+    const adminHtml = generateAdminNotificationEmail({
+      type: 'vendor',
+      customerName: vendor.contactPerson,
+      email: vendor.email,
+      ticketId: vendor.ticketId,
+      amount: vendor.bookingFee,
+      businessName: vendor.businessName,
+    });
 
-    <p>✅ This vendor was auto-approved upon successful payment verification.</p>
-    <p>No further action needed unless the vendor requests special accommodations.</p>
-  </div>
-</body>
-</html>
-        `;
+    // Send to admin
+    const success = await sendEmail(
+      ADMIN_EMAIL,
+      `🏪 New Vendor Registration - ${vendor.businessName} - ₦${vendor.bookingFee.toLocaleString()}`,
+      adminHtml
+    );
 
-    // Send to admin (implement with your email service)
-    console.log(`Sending admin notification to ${ADMIN_EMAIL}`);
+    if (success) {
+      console.log(`✅ Admin notification sent to ${ADMIN_EMAIL}`);
+    }
 
-    return true;
+    return success;
   } catch (error) {
     console.error("Admin email error:", error);
     return false;
