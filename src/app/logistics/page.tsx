@@ -108,7 +108,7 @@ export default function LogisticsPage() {
                     {/* Logo */}
                     <div className="flex justify-center mb-8">
                         <Image
-                            src="/iaf_logo.jpeg"
+                            src="/images/logo.png"
                             alt="Ilorin Car Show Logo"
                             width={120}
                             height={120}
@@ -264,11 +264,10 @@ export default function LogisticsPage() {
                                     {PICKUP_ROUTES.map((route) => (
                                         <Card
                                             key={route.id}
-                                            className={`cursor-pointer transition-all duration-300 ${
-                                                selectedRoute === route.id
+                                            className={`cursor-pointer transition-all duration-300 ${selectedRoute === route.id
                                                     ? "bg-brand-orange/20 border-brand-orange"
                                                     : "bg-white/5 border-white/10 hover:border-white/30"
-                                            }`}
+                                                }`}
                                             onClick={() => setSelectedRoute(route.id)}
                                         >
                                             <CardContent className="p-6">
