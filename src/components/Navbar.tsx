@@ -40,6 +40,9 @@ const Navbar = () => {
                 <Link href="/merchandise" className="text-white font-sans hover:text-brand-orange transition-colors px-3 py-2">Merch</Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
+                <Link href="/logistics" className="text-white font-sans hover:text-blue-400 transition-colors px-3 py-2">Logistics</Link>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
                 <Link href="/gallery" className="text-white font-sans hover:text-brand-blue transition-colors px-3 py-2">Gallery</Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
@@ -84,6 +87,7 @@ const Navbar = () => {
                 <Link href="/vip" className="text-white font-sans hover:text-brand-blue transition-colors text-lg">VIP Packages</Link>
                 <Link href="/vendors" className="text-white font-sans hover:text-brand-blue transition-colors text-lg">Vendors</Link>
                 <Link href="/merchandise" className="text-white font-sans hover:text-brand-orange transition-colors text-lg">Merchandise</Link>
+                <Link href="/logistics" className="text-white font-sans hover:text-blue-400 transition-colors text-lg">🚌 Logistics</Link>
                 <Link href="/gallery" className="text-white font-sans hover:text-brand-blue transition-colors text-lg">Gallery</Link>
                 <Link href="/map" className="text-white font-sans hover:text-brand-blue transition-colors text-lg">Event Map</Link>
                 <Link href="/live" className="text-white font-sans hover:text-brand-blue transition-colors text-lg flex items-center gap-2">

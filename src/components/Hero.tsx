@@ -283,6 +283,11 @@ export default function Hero() {
               🛍️ Get Merch
             </Button>
           </Link>
+          <Link href="/logistics">
+            <Button size="lg" className="bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-600 hover:to-indigo-600 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-indigo-900/20">
+              🚌 Logistics
+            </Button>
+          </Link>
         </motion.div>
       </div>
     </section>
