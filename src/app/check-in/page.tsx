@@ -98,7 +98,7 @@ export default function CheckInPage() {
             <header className="p-4 border-b border-white/10">
                 <div className="flex items-center justify-center gap-3">
                     <Image
-                        src="/images/logo.png"
+                        src="/iaf_logo.jpeg"
                         alt="IAF 2026"
                         width={40}
                         height={40}

@@ -108,7 +108,7 @@ export default function LogisticsPage() {
                     {/* Logo */}
                     <div className="flex justify-center mb-8">
                         <Image
-                            src="/images/logo.png"
+                            src="/iaf_logo.jpeg"
                             alt="Ilorin Car Show Logo"
                             width={120}
                             height={120}

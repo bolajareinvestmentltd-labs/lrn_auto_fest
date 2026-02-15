@@ -26,10 +26,9 @@ const nextConfig = {
     typescript: {
         ignoreBuildErrors: true,
     },
-    eslint: {
-        ignoreDuringBuilds: true,
-    },
     reactStrictMode: false,
+    // Empty turbopack config to acknowledge Turbopack usage in Next.js 16+
+    turbopack: {},
 
     webpack: (config, { isServer, webpack }) => {
         const nodeModulesPath = path.join(REAL_ROOT, 'node_modules');

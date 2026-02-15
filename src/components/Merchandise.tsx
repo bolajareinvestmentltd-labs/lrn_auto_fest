@@ -54,17 +54,17 @@ const MERCHANDISE: MerchItem[] = [
 const PROMO_IMAGES = [
     {
         id: "promo1",
-        image: "/images/merch/IMG_6778(1).PNG",
+        image: "/images/merch/IMG_6765.PNG",
         alt: "Ilorin Automotive Festival - LIMITLESS Collection",
     },
     {
         id: "promo2",
-        image: "/images/merch/IMG_6779.PNG",
+        image: "/images/merch/IMG_6782(1).PNG",
         alt: "The Reborn Edition Official Gear",
     },
     {
         id: "promo3",
-        image: "/images/merch/short-sleeve2.PNG",
+        image: "/images/merch/IMG_6783(1).PNG",
         alt: "Limited Edition Festival Apparel",
     },
 ];
