@@ -38,7 +38,7 @@ const MERCHANDISE: MerchItem[] = [
         id: "long-sleeve",
         name: "Long Sleeve T-Shirt",
         price: 22000,
-        description: "Premium long sleeve shirt with exclusive Ribbon Edition artwork. Perfect for cooler evenings.",
+        description: "Premium long sleeve shirt with exclusive Reborn Edition artwork. Perfect for cooler evenings.",
         image: "/images/merch/long-sleeve.PNG",
         badge: "Premium",
     },
@@ -54,7 +54,7 @@ const PROMO_IMAGES = [
     {
         id: "promo2",
         image: "/images/merch/IMG_6779.PNG",
-        alt: "The Ribbon Edition Official Gear",
+        alt: "The Reborn Edition Official Gear",
     },
     {
         id: "promo3",
@@ -229,8 +229,8 @@ export default function Merchandise() {
                                 key={item.id}
                                 onClick={() => goToSlide(index)}
                                 className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentIndex
-                                        ? "bg-brand-orange w-8"
-                                        : "bg-white/30 hover:bg-white/50"
+                                    ? "bg-brand-orange w-8"
+                                    : "bg-white/30 hover:bg-white/50"
                                     }`}
                                 aria-label={`Go to ${item.name}`}
                             />
@@ -246,8 +246,8 @@ export default function Merchandise() {
                                 aria-label={`View ${item.name}`}
                                 title={item.name}
                                 className={`relative w-20 h-20 rounded-lg overflow-hidden border-2 transition-all duration-300 ${index === currentIndex
-                                        ? "border-brand-orange scale-110"
-                                        : "border-white/20 opacity-60 hover:opacity-100"
+                                    ? "border-brand-orange scale-110"
+                                    : "border-white/20 opacity-60 hover:opacity-100"
                                     }`}
                             >
                                 <Image

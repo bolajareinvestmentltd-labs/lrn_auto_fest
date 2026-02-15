@@ -4,13 +4,12 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import { Loader2, Music, Car, Zap, Star, CheckCircle2, XCircle, ExternalLink } from "lucide-react";
+import { Loader2, Music, Car, Zap, CheckCircle2, XCircle, ExternalLink } from "lucide-react";
 
 interface CategorySlots {
     performer: { max: number; registered: number };
     dragRace: { max: number; registered: number };
     driftChampionship: { max: number; registered: number };
-    guest: { max: number; registered: number };
 }
 
 interface Category {
@@ -30,7 +29,6 @@ export default function RegisterPage() {
         performer: { max: 15, registered: 0 },
         dragRace: { max: 10, registered: 0 },
         driftChampionship: { max: 5, registered: 0 },
-        guest: { max: 6, registered: 0 },
     });
 
     // Google Form URLs for each category - Replace these with your actual Google Form URLs
@@ -64,16 +62,6 @@ export default function RegisterPage() {
             color: "from-blue-500 to-cyan-500",
             googleFormUrl: "https://forms.gle/driftICS30", // Replace with actual form URL
             email: "drift@ilorincarshow.com",
-        },
-        {
-            id: "guest",
-            name: "Guest",
-            description: "Special guest appearance at the event",
-            maxSlots: 6,
-            icon: <Star className="w-8 h-8" />,
-            color: "from-yellow-500 to-amber-500",
-            googleFormUrl: "https://forms.gle/guestICS30", // Replace with actual form URL
-            email: "guests@ilorincarshow.com",
         },
     ];
 
@@ -135,12 +123,6 @@ export default function RegisterPage() {
                     <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2">
                         Event Registration
                     </h1>
-                    <p className="text-gray-400 text-lg">
-                        Choose your category and register for Ilorin Car Show 3.0
-                    </p>
-                    <p className="text-gray-500 text-sm mt-2">
-                        Registration opens via Google Forms for each category
-                    </p>
                 </motion.div>
 
                 {/* Category Selection */}
@@ -150,9 +132,6 @@ export default function RegisterPage() {
                     transition={{ delay: 0.2 }}
                     className="mb-12"
                 >
-                    <h2 className="text-xl font-semibold text-white mb-6 text-center">
-                        Select Your Category to Register
-                    </h2>
 
                     {fetchingSlots ? (
                         <div className="flex justify-center items-center py-12">
@@ -173,8 +152,8 @@ export default function RegisterPage() {
                                     >
                                         <div
                                             className={`w-full p-6 rounded-xl border-2 transition-all duration-300 ${isFull
-                                                    ? "bg-gray-800/50 border-gray-700 opacity-60"
-                                                    : "bg-gray-800/50 border-gray-600 hover:border-gray-400 hover:bg-gray-800"
+                                                ? "bg-gray-800/50 border-gray-700 opacity-60"
+                                                : "bg-gray-800/50 border-gray-600 hover:border-gray-400 hover:bg-gray-800"
                                                 }`}
                                         >
                                             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
@@ -208,8 +187,8 @@ export default function RegisterPage() {
                                                         onClick={() => handleRegisterClick(category)}
                                                         disabled={isFull}
                                                         className={`w-full sm:w-auto ${isFull
-                                                                ? "bg-gray-600 cursor-not-allowed"
-                                                                : `bg-gradient-to-r ${category.color} hover:opacity-90`
+                                                            ? "bg-gray-600 cursor-not-allowed"
+                                                            : `bg-gradient-to-r ${category.color} hover:opacity-90`
                                                             } text-white font-bold px-6 py-3 rounded-lg`}
                                                     >
                                                         {isFull ? (
@@ -229,34 +208,6 @@ export default function RegisterPage() {
                             })}
                         </div>
                     )}
-                </motion.div>
-
-                {/* Info Section */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="bg-gray-800/30 rounded-xl p-6 border border-gray-700 mb-8"
-                >
-                    <h3 className="text-lg font-semibold text-white mb-4">Registration Information</h3>
-                    <ul className="space-y-2 text-gray-400 text-sm">
-                        <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                            <span>Each category has limited slots - register early to secure your spot</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                            <span>Registration is via Google Forms for secure data collection</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                            <span>You will receive a confirmation email after successful registration</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                            <span>For questions, contact the category-specific email provided above</span>
-                        </li>
-                    </ul>
                 </motion.div>
 
                 {/* Back to Home */}

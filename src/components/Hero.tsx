@@ -19,21 +19,22 @@ export default function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [titleIndex, setTitleIndex] = useState(0);
 
-  // Cycle through title animation
+  // Cycle through title animation - sequential reveal
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTitleIndex((prev) => (prev + 1) % 4); // 0, 1, 2, 3 (3 = all visible)
-    }, 800);
+    // Start from -1 (nothing visible)
+    setTitleIndex(-1);
 
-    // Stop cycling after all parts are shown
-    const timeout = setTimeout(() => {
-      clearInterval(interval);
-      setTitleIndex(3);
-    }, 3200);
+    // Reveal each part with delays
+    const timer1 = setTimeout(() => setTitleIndex(0), 500);   // Show ILORIN
+    const timer2 = setTimeout(() => setTitleIndex(1), 1200);  // Show CAR SHOW
+    const timer3 = setTimeout(() => setTitleIndex(2), 1900);  // Show 3.0
+    const timer4 = setTimeout(() => setTitleIndex(3), 2600);  // All complete
 
     return () => {
-      clearInterval(interval);
-      clearTimeout(timeout);
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+      clearTimeout(timer4);
     };
   }, []);
 
@@ -107,14 +108,15 @@ export default function Hero() {
           />
         </motion.div>
 
-        {/* PRESENT text */}
+        {/* PRESENT text - cursive */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-white/70 text-xs sm:text-sm tracking-[0.3em] uppercase mb-4"
+          className="text-white/80 text-xl sm:text-2xl md:text-3xl mb-4 italic"
+          style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
         >
-          PRESENT
+          Present
         </motion.p>
 
         {/* Animated Title - ILORIN CAR SHOW 3.0 */}
@@ -184,24 +186,29 @@ export default function Hero() {
           </AnimatePresence>
         </div>
 
-        {/* The Ribbon Edition */}
+        {/* The Reborn Edition */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
           className="mt-2 text-brand-orange font-semibold text-lg sm:text-xl md:text-2xl italic"
         >
-          [The Ribbon Edition]
+          [The Reborn Edition]
         </motion.p>
 
-        <motion.p
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="mt-4 text-gray-300 font-sans mx-auto max-w-xl text-base sm:text-xl"
+          className="mt-4 mx-auto max-w-xl"
         >
-          Cars • Bikes • Drift • Lifestyle • The Biggest Auto Experience in Northern Nigeria
-        </motion.p>
+          <p className="text-gray-300 font-sans text-base sm:text-xl">
+            Cars • Bikes • Drift • Lifestyle
+          </p>
+          <p className="text-gray-300 font-sans text-base sm:text-xl mt-2">
+            The Biggest Auto Experience in Northern Nigeria
+          </p>
+        </motion.div>
 
         {/* Event Date & Venue */}
         <motion.div
@@ -211,7 +218,7 @@ export default function Hero() {
           className="mt-6 flex flex-col sm:flex-row gap-4 justify-center items-center text-white/80"
         >
           <a
-            href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Ilorin%20Car%20Show%203.0%20-%20The%20Ribbon%20Edition&dates=20260530T080000Z/20260530T200000Z&details=The%20Biggest%20Auto%20Experience%20in%20Northern%20Nigeria&location=Metropolitan%20Square%2C%20Asadam%20Road%2C%20Ilorin"
+            href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Ilorin%20Car%20Show%203.0%20-%20The%20Reborn%20Edition&dates=20260530T080000Z/20260530T200000Z&details=The%20Biggest%20Auto%20Experience%20in%20Northern%20Nigeria&location=Metropolitan%20Square%2C%20Asadam%20Road%2C%20Ilorin"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 hover:text-brand-orange transition-colors cursor-pointer group"

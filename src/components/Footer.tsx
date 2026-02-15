@@ -11,11 +11,11 @@ export default function Footer() {
                     <div>
                         <Link href="/">
                             <h3 className="font-heading text-xl text-white font-bold mb-4 uppercase hover:text-brand-orange transition-colors">
-                                IAF 2026
+                                Ilorin Car Show 3.0
                             </h3>
                         </Link>
                         <p className="text-white/60 text-sm">
-                            The Biggest Auto Experience in Northern Nigeria. May 30, 2026.
+                            The Biggest Auto Experience in Northern Nigeria.
                         </p>
                     </div>
 
