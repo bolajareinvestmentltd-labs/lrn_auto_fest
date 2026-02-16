@@ -4,12 +4,12 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { 
-    Search, 
-    CheckCircle2, 
-    XCircle, 
-    Ticket, 
-    ShoppingBag, 
+import {
+    Search,
+    CheckCircle2,
+    XCircle,
+    Ticket,
+    ShoppingBag,
     Loader2,
     QrCode,
     User,
@@ -62,7 +62,7 @@ export default function CheckInPage() {
             }
 
             setResult(data);
-            
+
             // Auto check-in after verification
             if (data.valid && data.data.status === "PAID") {
                 await handleCheckIn(data.data.orderNumber, data.type);
@@ -209,21 +209,19 @@ export default function CheckInPage() {
                                         transition={{ type: "spring", delay: 0.2 }}
                                         className="flex flex-col items-center"
                                     >
-                                        <div className={`w-32 h-32 rounded-full flex items-center justify-center ${
-                                            isCheckedIn 
-                                                ? "bg-green-500" 
+                                        <div className={`w-32 h-32 rounded-full flex items-center justify-center ${isCheckedIn
+                                                ? "bg-green-500"
                                                 : "bg-green-500/20 border-4 border-green-500"
-                                        }`}>
-                                            <CheckCircle2 className={`w-16 h-16 ${
-                                                isCheckedIn ? "text-white" : "text-green-500"
-                                            }`} />
+                                            }`}>
+                                            <CheckCircle2 className={`w-16 h-16 ${isCheckedIn ? "text-white" : "text-green-500"
+                                                }`} />
                                         </div>
                                         <h2 className="text-3xl font-black text-green-500 mt-4">
                                             {isCheckedIn ? "CHECKED IN!" : "VALID TICKET"}
                                         </h2>
                                         <p className="text-gray-400 text-center mt-2">
-                                            {isCheckedIn 
-                                                ? "Show this screen to gate staff" 
+                                            {isCheckedIn
+                                                ? "Show this screen to gate staff"
                                                 : "Your ticket has been verified"
                                             }
                                         </p>
@@ -237,21 +235,19 @@ export default function CheckInPage() {
                                         className="bg-gradient-to-br from-white/10 to-white/5 rounded-2xl border border-white/20 overflow-hidden"
                                     >
                                         {/* Type Badge */}
-                                        <div className={`px-4 py-3 flex items-center gap-2 ${
-                                            result.type === "ticket" 
-                                                ? "bg-brand-orange/20" 
+                                        <div className={`px-4 py-3 flex items-center gap-2 ${result.type === "ticket"
+                                                ? "bg-brand-orange/20"
                                                 : "bg-brand-blue/20"
-                                        }`}>
+                                            }`}>
                                             {result.type === "ticket" ? (
                                                 <Ticket className="w-5 h-5 text-brand-orange" />
                                             ) : (
                                                 <ShoppingBag className="w-5 h-5 text-brand-blue" />
                                             )}
-                                            <span className={`font-bold ${
-                                                result.type === "ticket" 
-                                                    ? "text-brand-orange" 
+                                            <span className={`font-bold ${result.type === "ticket"
+                                                    ? "text-brand-orange"
                                                     : "text-brand-blue"
-                                            }`}>
+                                                }`}>
                                                 {result.type === "ticket" ? "EVENT TICKET" : "MERCHANDISE"}
                                             </span>
                                         </div>

@@ -193,8 +193,8 @@ export default function PublicAccessPage() {
                         >
                             <div
                                 className={`rounded-3xl p-6 sm:p-8 border-4 ${result.success
-                                        ? "bg-green-500/10 border-green-500"
-                                        : "bg-red-500/10 border-red-500"
+                                    ? "bg-green-500/10 border-green-500"
+                                    : "bg-red-500/10 border-red-500"
                                     }`}
                             >
                                 {/* Status Icon */}

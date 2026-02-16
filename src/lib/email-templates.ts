@@ -306,16 +306,36 @@ export function generateAdminNotificationEmail(data: {
 `;
 }
 
+/**
+ * Get the "from" email address based on environment
+ * - If RESEND_FROM_EMAIL is set: Use custom domain (production)
+ * - Default: Use Resend's test address (development/testing)
+ * 
+ * Note: With test address (onboarding@resend.dev), emails only deliver
+ * to the email associated with your Resend account.
+ */
+function getFromEmail(): string {
+    const customFrom = process.env.RESEND_FROM_EMAIL;
+    if (customFrom) {
+        return customFrom;
+    }
+    // Default to Resend's test address for development
+    return 'IAF 2026 <onboarding@resend.dev>';
+}
+
 // Helper function to send email using Resend
 export async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
     const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
     if (!RESEND_API_KEY) {
-        console.error('RESEND_API_KEY not configured');
+        console.error('[Email] RESEND_API_KEY not configured');
         return false;
     }
 
     try {
+        const fromEmail = getFromEmail();
+        console.log(`[Email] Sending to ${to} from ${fromEmail}`);
+        
         const response = await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: {
@@ -323,16 +343,25 @@ export async function sendEmail(to: string, subject: string, html: string): Prom
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                from: 'IAF 2026 <tickets@iaf2026.com>',
+                from: fromEmail,
                 to: [to],
                 subject: subject,
-                html: html
+                html: html,
+                reply_to: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@iaf2026.com'
             })
         });
 
-        return response.ok;
+        if (response.ok) {
+            const data = await response.json();
+            console.log(`[Email] Sent successfully: ${data.id}`);
+            return true;
+        } else {
+            const error = await response.json();
+            console.error('[Email] Failed to send:', error);
+            return false;
+        }
     } catch (error) {
-        console.error('Failed to send email:', error);
+        console.error('[Email] Error:', error);
         return false;
     }
 }
