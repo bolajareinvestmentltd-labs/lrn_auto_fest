@@ -185,7 +185,7 @@ export default function Merchandise() {
                                                     <p className="text-gray-400 mb-4">
                                                         {currentItem.description}
                                                     </p>
-                                                    
+
                                                     {/* Availability Badge */}
                                                     <div className="flex items-center gap-2 mb-4">
                                                         <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded-full">
@@ -343,7 +343,7 @@ export default function Merchandise() {
                             <span className="text-yellow-400 font-bold uppercase text-sm">Important Notice</span>
                         </div>
                         <p className="text-gray-300">
-                            All merchandise is <span className="text-yellow-400 font-semibold">limited edition</span>. 
+                            All merchandise is <span className="text-yellow-400 font-semibold">limited edition</span>.
                             Once sold out, it will <span className="text-yellow-400 font-semibold">not be reproduced</span>.
                         </p>
                     </div>

@@ -265,8 +265,8 @@ export default function LogisticsPage() {
                                         <Card
                                             key={route.id}
                                             className={`cursor-pointer transition-all duration-300 ${selectedRoute === route.id
-                                                    ? "bg-brand-orange/20 border-brand-orange"
-                                                    : "bg-white/5 border-white/10 hover:border-white/30"
+                                                ? "bg-brand-orange/20 border-brand-orange"
+                                                : "bg-white/5 border-white/10 hover:border-white/30"
                                                 }`}
                                             onClick={() => setSelectedRoute(route.id)}
                                         >

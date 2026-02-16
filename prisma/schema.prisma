@@ -41,6 +41,7 @@ enum PaymentMethod {
   FLUTTERWAVE
   OPAY
   BANK_TRANSFER
+  CASH         // For gate/manual sales
 }
 
 enum PaymentStatus {
@@ -48,6 +49,11 @@ enum PaymentStatus {
   COMPLETED
   FAILED
   REFUNDED
+}
+
+enum TicketSource {
+  ONLINE
+  CASH_GATE   // Manual gate sale
 }
 
 enum VendorStatus {
@@ -149,6 +155,10 @@ model Order {
   // Order status
   orderStatus       OrderStatus @default(PENDING)
   
+  // Ticket source tracking
+  ticketSource      TicketSource @default(ONLINE)  // ONLINE or CASH_GATE
+  soldByAdminId     String?  // Admin user who created manual sale
+  
   // Customer info (denormalized for easy access)
   customerEmail     String
   customerPhone     String
@@ -168,6 +178,7 @@ model Order {
   @@index([orderNumber])
   @@index([paymentStatus])
   @@index([orderStatus])
+  @@index([ticketSource])
 }
 
 model TicketOrder {
@@ -274,17 +285,40 @@ model Vendor {
   vendorGuideDownloaded Boolean @default(false)
   receipt           String?  // URL to receipt
   
+  // Vendor Access Control (5 total accesses)
+  maxAccessCount    Int      @default(5)  // Maximum allowed entries
+  usedAccessCount   Int      @default(0)  // Current used entries
+  
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   bookedAt          DateTime @default(now())
 
   // Relations
   user              User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  accessLogs        VendorAccessLog[]
 
   @@index([userId])
   @@index([status])
   @@index([email])
   @@unique([email]) // Only one vendor per email
+}
+
+// ============================================
+// VENDOR ACCESS LOG
+// ============================================
+
+model VendorAccessLog {
+  id              String   @id @default(cuid())
+  vendorId        String
+  accessNumber    Int      // Which access this is (1 of 5, 2 of 5, etc.)
+  entryTime       DateTime @default(now())
+  entryGate       String?  // "Main Gate", "VIP Gate", etc.
+  
+  // Relations
+  vendor          Vendor @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId])
+  @@index([entryTime])
 }
 
 // ============================================
@@ -465,3 +499,50 @@ model Registration {
   @@index([registrationCode])
 }
 
+// ============================================
+// ENTRY LOGGING SYSTEM
+// ============================================
+
+enum EntryStatus {
+  SUCCESS
+  BLOCKED
+  ALREADY_USED
+  INVALID
+}
+
+enum AccessType {
+  ATTENDEE
+  VENDOR
+}
+
+model EntryLog {
+  id              String      @id @default(cuid())
+  ticketId        String      // TicketCode for attendees, VND-xxx for vendors
+  accessType      AccessType  // ATTENDEE or VENDOR
+  ticketType      String      // REGULAR, VIP_BRONZE, etc. or VENDOR
+  paymentMethod   String      // ONLINE, CASH
+  entryTime       DateTime    @default(now())
+  entryStatus     EntryStatus // SUCCESS, BLOCKED, ALREADY_USED, INVALID
+  entryGate       String?     // "Main Gate", "VIP Gate", etc.
+  blockedReason   String?     // Reason if blocked
+  
+  @@index([ticketId])
+  @@index([accessType])
+  @@index([entryTime])
+  @@index([entryStatus])
+}
+
+// ============================================
+// MANUAL SALES LIMIT CONFIGURATION
+// ============================================
+
+model ManualSalesConfig {
+  id              String   @id @default(cuid())
+  ticketType      String   @unique // REGULAR, VIP_BRONZE, etc.
+  maxManualSales  Int      @default(100)  // Cap per ticket type
+  currentSales    Int      @default(0)    // Current manual sales count
+  isEnabled       Boolean  @default(true) // Whether manual sales are allowed
+  updatedAt       DateTime @updatedAt
+
+  @@index([ticketType])
+}

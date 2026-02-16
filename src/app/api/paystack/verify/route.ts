@@ -144,9 +144,9 @@ export async function POST(request: NextRequest) {
 
             // Send confirmation email to customer
             try {
-                const groupSizeLabel = order.groupSize === "SINGLE" ? "single" : 
+                const groupSizeLabel = order.groupSize === "SINGLE" ? "single" :
                     order.groupSize === "GROUP_2" ? "group2" : "group4";
-                
+
                 const emailHtml = generateTicketPurchaseEmail({
                     customerName: order.customerName,
                     email: order.customerEmail,

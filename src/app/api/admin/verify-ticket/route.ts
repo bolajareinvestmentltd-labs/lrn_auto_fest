@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
             }
         });
 
-        // Log the scan
+        // Log the scan in audit log
         await prisma.auditLog.create({
             data: {
                 action: 'ticket_scanned',
@@ -84,6 +84,18 @@ export async function POST(request: NextRequest) {
                     ticketCode: ticket.ticketCode,
                     scannedAt: new Date().toISOString()
                 }
+            }
+        });
+
+        // Log the entry in entry log table
+        await prisma.entryLog.create({
+            data: {
+                ticketId: ticket.ticketCode,
+                accessType: 'ATTENDEE',
+                ticketType: ticket.order.ticketPrice?.ticketType || 'UNKNOWN',
+                paymentMethod: ticket.order.paymentMethod,
+                entryStatus: 'SUCCESS',
+                entryGate: 'Main Gate'
             }
         });
 

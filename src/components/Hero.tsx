@@ -146,14 +146,13 @@ export default function Hero() {
                 initial={{ opacity: 0, scale: 0.3, y: 50 }}
                 animate={{
                   opacity: 1,
-                  scale: [1, 1.1, 1],
+                  scale: 1,
                   y: 0,
                 }}
                 transition={{
                   type: "spring",
                   stiffness: 150,
-                  damping: 12,
-                  scale: { repeat: 2, repeatType: "reverse", duration: 0.3 }
+                  damping: 12
                 }}
                 className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-brand-orange inline-block"
               >
@@ -169,14 +168,13 @@ export default function Hero() {
                 initial={{ opacity: 0, scale: 2, rotate: -10 }}
                 animate={{
                   opacity: 1,
-                  scale: [1, 1.2, 0.9, 1.1, 1],
-                  rotate: [0, 5, -5, 3, 0],
+                  scale: 1,
+                  rotate: 0,
                 }}
                 transition={{
                   type: "spring",
                   stiffness: 300,
-                  damping: 10,
-                  duration: 0.8
+                  damping: 10
                 }}
                 className="inline-block"
               >

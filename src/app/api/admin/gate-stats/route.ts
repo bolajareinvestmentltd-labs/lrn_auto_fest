@@ -29,6 +29,66 @@ export async function GET() {
             }
         });
 
+        // Cash vs Online breakdown
+        const onlineTickets = await prisma.ticketOrder.count({
+            where: {
+                order: {
+                    orderStatus: 'COMPLETED',
+                    ticketSource: 'ONLINE'
+                }
+            }
+        });
+
+        const cashTickets = await prisma.ticketOrder.count({
+            where: {
+                order: {
+                    orderStatus: 'COMPLETED',
+                    ticketSource: 'CASH_GATE'
+                }
+            }
+        });
+
+        // Revenue breakdown
+        const onlineRevenue = await prisma.order.aggregate({
+            _sum: { totalPrice: true },
+            where: {
+                orderStatus: 'COMPLETED',
+                ticketSource: 'ONLINE'
+            }
+        });
+
+        const cashRevenue = await prisma.order.aggregate({
+            _sum: { totalPrice: true },
+            where: {
+                orderStatus: 'COMPLETED',
+                ticketSource: 'CASH_GATE'
+            }
+        });
+
+        // Entry log stats
+        const successfulEntries = await prisma.entryLog.count({
+            where: { entryStatus: 'SUCCESS' }
+        });
+
+        const blockedEntries = await prisma.entryLog.count({
+            where: {
+                entryStatus: {
+                    in: ['BLOCKED', 'ALREADY_USED', 'INVALID']
+                }
+            }
+        });
+
+        // Today's entries
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const todayEntries = await prisma.entryLog.count({
+            where: {
+                entryStatus: 'SUCCESS',
+                entryTime: { gte: today }
+            }
+        });
+
         // Get VIP ticket breakdown by counting tickets per price tier
         const recentScans = await prisma.ticketOrder.findMany({
             where: {
@@ -49,6 +109,11 @@ export async function GET() {
 
         return NextResponse.json({
             success: true,
+            // Legacy format for existing gate page
+            scanned: scannedTickets,
+            total: totalTickets,
+            parkingUsed: parkingResult._sum.parkingPasses || 0,
+            // Enhanced stats
             stats: {
                 totalTickets,
                 scannedTickets,
@@ -56,14 +121,24 @@ export async function GET() {
                 totalParkingPasses: parkingResult._sum.parkingPasses || 0,
                 scanPercentage: totalTickets > 0
                     ? Math.round((scannedTickets / totalTickets) * 100)
-                    : 0
+                    : 0,
+                // Cash vs Online breakdown
+                onlineTickets,
+                cashTickets,
+                onlineRevenue: onlineRevenue._sum.totalPrice || 0,
+                cashRevenue: cashRevenue._sum.totalPrice || 0,
+                // Entry stats
+                successfulEntries,
+                blockedEntries,
+                todayEntries
             },
             hourlyData: {},
             recentScans: recentScans.map(scan => ({
                 ticketCode: scan.ticketCode,
                 customerName: scan.order.customerName,
                 tier: scan.order.ticketPrice?.ticketType,
-                scannedAt: scan.scannedAt?.toISOString()
+                scannedAt: scan.scannedAt?.toISOString(),
+                source: scan.order.ticketSource
             }))
         });
 
@@ -71,7 +146,10 @@ export async function GET() {
         console.error("Gate stats error:", error);
         return NextResponse.json({
             success: false,
-            error: "Failed to fetch gate statistics"
+            error: "Failed to fetch gate statistics",
+            scanned: 0,
+            total: 0,
+            parkingUsed: 0
         }, { status: 500 });
     }
 }

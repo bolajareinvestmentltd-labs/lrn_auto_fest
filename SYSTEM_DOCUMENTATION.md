@@ -1,6 +1,7 @@
 # 🎫 ILORIN CAR SHOW 3.0 - COMPLETE SYSTEM DOCUMENTATION
 
 ## 📋 Table of Contents
+
 1. [Ticket ID Generation & Security](#ticket-id-generation--security)
 2. [QR Code System](#qr-code-system)
 3. [Auto-Response Email System](#auto-response-email-system)
@@ -39,7 +40,7 @@ export function generateTicketCode(): string {
 
 **Example:** `ICS-M3K8P2X-A7B9C1D2-F3E1`
 
-### Security Features (IMPLEMENTED):
+### Security Features (IMPLEMENTED)
 
 | Feature | Implementation | Purpose |
 |---------|----------------|---------|
@@ -206,6 +207,7 @@ All emails include personalized greetings:
 **Subject:** `🎉 Your IAF 2026 Ticket Confirmed! - {TICKET_ID}`
 
 **Content includes:**
+
 - Personalized greeting with customer name
 - Ticket ID (prominently displayed)
 - Ticket tier and package type
@@ -221,6 +223,7 @@ All emails include personalized greetings:
 **Subject:** `✅ Vendor Application Approved - Ticket ID: {TICKET_ID}`
 
 **Content includes:**
+
 - Personalized greeting with contact person name
 - Business name confirmation
 - Vendor ID (prominently displayed)
@@ -235,6 +238,7 @@ All emails include personalized greetings:
 **Subject:** `🛍️ Your IAF 2026 Merchandise Order Confirmed - {ORDER_NUMBER}`
 
 **Content includes:**
+
 - Personalized greeting (Dear {FirstName})
 - Order number
 - Item name and quantity
@@ -468,6 +472,7 @@ Staff Scans QR Code
 ### Check-In Page: `/gate`
 
 Staff use this page to:
+
 1. Scan QR codes from attendee phones
 2. Or manually enter Ticket ID
 3. System validates and marks ticket as used
@@ -548,7 +553,7 @@ ADMIN_EMAIL="admin@ilorincarshow.com"
 ## 📞 Support Contacts
 
 - **WhatsApp:** +234 912 022 0480
-- **Email:** info@ilorincarshow.com
+- **Email:** <info@ilorincarshow.com>
 - **Instagram:** @ilorin_carshow
 - **Twitter:** @ilorin_carshow
 

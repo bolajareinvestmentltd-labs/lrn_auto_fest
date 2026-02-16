@@ -25,18 +25,18 @@ const TICKET_SECRET = process.env.TICKET_SECRET_KEY || 'ICS3-REBORN-2026-SECRET'
 export function generateTicketCode(): string {
     // Timestamp in base36 (compact representation)
     const timestamp = Date.now().toString(36).toUpperCase();
-    
+
     // Cryptographically secure random bytes (more secure than Math.random)
     const randomBytes = crypto.randomBytes(4).toString('hex').toUpperCase();
-    
+
     // Create base code
     const baseCode = `ICS-${timestamp}-${randomBytes}`;
-    
+
     // Generate HMAC checksum for tamper detection
     const hmac = crypto.createHmac('sha256', TICKET_SECRET);
     hmac.update(baseCode);
     const checksum = hmac.digest('hex').substring(0, 4).toUpperCase();
-    
+
     return `${baseCode}-${checksum}`;
 }
 
@@ -47,27 +47,27 @@ export function generateTicketCode(): string {
 export function validateTicketCodeFormat(ticketCode: string): { valid: boolean; error?: string } {
     // Expected format: ICS-{TIMESTAMP}-{RANDOM}-{CHECKSUM}
     const parts = ticketCode.split('-');
-    
+
     if (parts.length !== 4) {
         return { valid: false, error: 'Invalid ticket code format' };
     }
-    
+
     if (parts[0] !== 'ICS') {
         return { valid: false, error: 'Invalid ticket prefix' };
     }
-    
+
     // Reconstruct base code and verify checksum
     const baseCode = `${parts[0]}-${parts[1]}-${parts[2]}`;
     const providedChecksum = parts[3];
-    
+
     const hmac = crypto.createHmac('sha256', TICKET_SECRET);
     hmac.update(baseCode);
     const expectedChecksum = hmac.digest('hex').substring(0, 4).toUpperCase();
-    
+
     if (providedChecksum !== expectedChecksum) {
         return { valid: false, error: 'Ticket code checksum invalid - possible tampering detected' };
     }
-    
+
     return { valid: true };
 }
 
