@@ -8,7 +8,7 @@ export default function LoadingSpinner() {
         {/* Logo Spinner */}
         <div className="relative w-24 h-24">
           <Image
-            src="/iaf_logo.jpeg"
+            src="/images/logo.png"
             alt="Loading"
             width={96}
             height={96}

@@ -99,7 +99,7 @@ export default function Hero() {
           className="mb-4"
         >
           <Image
-            src="/iaf_logo.jpeg"
+            src="/images/logo.png"
             alt="Ilorin Car Show Logo"
             width={180}
             height={180}

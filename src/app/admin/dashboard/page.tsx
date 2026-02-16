@@ -186,7 +186,7 @@ export default function AdminDashboard() {
                 <div className="p-6">
                     <div className="flex items-center gap-3 mb-8">
                         <Image
-                            src="/iaf_logo.jpeg"
+                            src="/images/logo.png"
                             alt="IAF 2026"
                             width={50}
                             height={50}

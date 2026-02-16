@@ -14,7 +14,8 @@ export async function GET() {
 
         // Get manual sales config
         const manualConfigs = await prisma.manualSalesConfig.findMany();
-        const configMap = new Map(manualConfigs.map(c => [c.ticketType, c]));
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const configMap = new Map(manualConfigs.map((c: any) => [c.ticketType, c]));
 
         // Get current manual sales counts
         const manualSalesCounts = await prisma.order.groupBy({
@@ -24,17 +25,21 @@ export async function GET() {
             },
             _count: true
         });
-        const salesCountMap = new Map(manualSalesCounts.map(s => [s.ticketPriceId, s._count]));
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const salesCountMap = new Map(manualSalesCounts.map((s: any) => [s.ticketPriceId, s._count]));
 
         // Get current on-sale prices (after presale)
         const now = new Date();
 
-        const ticketTypes = ticketPrices.map(tp => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const ticketTypes = ticketPrices.map((tp: any) => {
             const isPresale = tp.presaleActive && new Date(tp.presaleEndDate) > now;
             const price = isPresale ? (tp.presaleSinglePrice || 0) : (tp.onsaleSinglePrice || 0);
-            const config = configMap.get(tp.ticketType);
-            const currentSales = salesCountMap.get(tp.id) || 0;
-            const maxSales = config?.maxManualSales || 100;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const config: any = configMap.get(tp.ticketType);
+            const currentSales = Number(salesCountMap.get(tp.id) || 0);
+            const maxSales = Number(config?.maxManualSales || 100);
             const isEnabled = config?.isEnabled !== false;
             const available = tp.totalUnits - tp.soldUnits;
 

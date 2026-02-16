@@ -24,7 +24,7 @@ export default function MerchandisePage() {
                     >
                         <Link href="/" className="inline-block mb-6">
                             <Image
-                                src="/iaf_logo.jpeg"
+                                src="/images/logo.png"
                                 alt="Ilorin Car Show Logo"
                                 width={80}
                                 height={80}

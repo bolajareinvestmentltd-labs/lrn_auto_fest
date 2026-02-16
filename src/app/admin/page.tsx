@@ -71,7 +71,7 @@ export default function AdminLogin() {
                 <div className="text-center mb-8">
                     <div className="inline-block p-4 bg-white/10 rounded-2xl mb-4">
                         <Image
-                            src="/iaf_logo.jpeg"
+                            src="/images/logo.png"
                             alt="IAF 2026"
                             width={80}
                             height={80}

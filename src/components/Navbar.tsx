@@ -11,7 +11,7 @@ const Navbar = () => {
         {/* Logo - Left Side */}
         <Link href="/" className="flex-shrink-0 flex items-center hover:opacity-80 transition-opacity" aria-label="IAF 2026 Home">
           <Image
-            src="/iaf_logo.jpeg"
+            src="/images/logo.png"
             alt="Ilorin Automotive Festival"
             width={60}
             height={60}

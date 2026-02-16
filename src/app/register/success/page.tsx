@@ -93,7 +93,7 @@ export default function RegistrationSuccessPage() {
                     transition={{ delay: 0.2 }}
                 >
                     <Image
-                        src="/iaf_logo.jpeg"
+                        src="/images/logo.png"
                         alt="Ilorin Car Show Logo"
                         width={80}
                         height={80}

@@ -111,7 +111,8 @@ export async function POST(request: NextRequest) {
         }
 
         // Create order with transaction
-        const result = await prisma.$transaction(async (tx) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const result = await prisma.$transaction(async (tx: any) => {
             // Create order
             const order = await tx.order.create({
                 data: {
@@ -189,7 +190,8 @@ export async function POST(request: NextRequest) {
                 userId: user.id,
                 changes: {
                     orderNumber,
-                    ticketCodes: result.tickets.map(t => t.ticketCode),
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    ticketCodes: result.tickets.map((t: any) => t.ticketCode),
                     adminId,
                     paymentMethod: "CASH",
                     totalPrice,
@@ -206,7 +208,8 @@ export async function POST(request: NextRequest) {
             message: "Manual ticket created successfully",
             orderNumber,
             ticketCode: primaryTicketCode,
-            allTicketCodes: result.tickets.map(t => t.ticketCode),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            allTicketCodes: result.tickets.map((t: any) => t.ticketCode),
             totalPrice,
             quantity
         });

@@ -113,7 +113,7 @@ export default function RegisterPage() {
                 >
                     <Link href="/">
                         <Image
-                            src="/iaf_logo.jpeg"
+                            src="/images/logo.png"
                             alt="Ilorin Car Show Logo"
                             width={100}
                             height={100}
