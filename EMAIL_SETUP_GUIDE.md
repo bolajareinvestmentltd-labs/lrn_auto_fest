@@ -30,7 +30,7 @@ The system uses **Resend** as the email service provider. Resend offers:
 
 **For Local Development:**
 
-Add to your `.env.local` file:
+Add to your `.env` file:
 ```env
 RESEND_API_KEY=re_your_actual_api_key_here
 ```
@@ -126,7 +126,7 @@ src/app/api/
 
 ### "RESEND_API_KEY not configured"
 
-- Check that `RESEND_API_KEY` is in your `.env.local` file
+- Check that `RESEND_API_KEY` is in your `.env` file
 - Restart the development server after adding environment variables
 - For Vercel: Ensure the variable is added and the app is redeployed
 
@@ -158,7 +158,7 @@ If hitting limits:
 
 ## Testing Checklist
 
-- [ ] API key added to `.env.local`
+- [ ] API key added to `.env`
 - [ ] Test endpoint returns `configured: true`
 - [ ] Test email sends successfully
 - [ ] (Production) Domain verified in Resend

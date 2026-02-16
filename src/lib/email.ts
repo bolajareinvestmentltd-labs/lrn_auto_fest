@@ -5,7 +5,7 @@
  * Setup Instructions:
  * 1. Sign up at https://resend.com
  * 2. Get your API key from https://resend.com/api-keys
- * 3. Add RESEND_API_KEY to your .env.local file
+ * 3. Add RESEND_API_KEY to your .env file
  * 4. For production: Add and verify your domain at https://resend.com/domains
  * 
  * Note: In development/testing, you can use Resend's test mode which sends
