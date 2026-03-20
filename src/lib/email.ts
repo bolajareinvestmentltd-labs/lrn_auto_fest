@@ -41,12 +41,12 @@ const RESEND_API_URL = 'https://api.resend.com/emails';
  */
 function getFromEmail(): string {
     const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL;
-    
+
     // If custom from email is set and domain is verified, use it
     if (RESEND_FROM_EMAIL) {
         return RESEND_FROM_EMAIL;
     }
-    
+
     // For testing without domain verification, use Resend's test address
     // This will only deliver to the email associated with your Resend account
     return 'IAF 2026 <onboarding@resend.dev>';
@@ -246,7 +246,7 @@ export async function testEmailConfiguration(): Promise<{
     error?: string;
 }> {
     const RESEND_API_KEY = process.env.RESEND_API_KEY;
-    
+
     if (!RESEND_API_KEY) {
         return {
             configured: false,

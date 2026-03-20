@@ -5,6 +5,7 @@ This guide walks you through setting up email notifications for the Ilorin Autom
 ## Overview
 
 The system uses **Resend** as the email service provider. Resend offers:
+
 - 3,000 free emails/month
 - Easy API integration
 - Domain verification for custom "from" addresses
@@ -31,6 +32,7 @@ The system uses **Resend** as the email service provider. Resend offers:
 **For Local Development:**
 
 Add to your `.env` file:
+
 ```env
 RESEND_API_KEY=re_your_actual_api_key_here
 ```
@@ -51,6 +53,7 @@ RESEND_API_KEY=re_your_actual_api_key_here
 1. Start your development server: `npm run dev`
 2. Visit: `http://localhost:3000/api/admin/test-email`
 3. You should see:
+
    ```json
    {
      "success": true,
@@ -63,6 +66,7 @@ RESEND_API_KEY=re_your_actual_api_key_here
    ```
 
 4. Send a test email via POST request:
+
    ```bash
    curl -X POST http://localhost:3000/api/admin/test-email \
      -H "Content-Type: application/json" \
@@ -80,11 +84,12 @@ By default, emails are sent from `onboarding@resend.dev`. This is Resend's test 
 ### Production Mode (Custom Domain)
 
 For production, you should verify your domain to:
+
 - Send from your own email address (e.g., `tickets@iaf2026.com`)
 - Ensure emails reach all recipients
 - Improve deliverability and trust
 
-#### Domain Verification Steps:
+#### Domain Verification Steps
 
 1. Go to [https://resend.com/domains](https://resend.com/domains)
 2. Click **"Add Domain"**
@@ -94,6 +99,7 @@ For production, you should verify your domain to:
    - DKIM record (usually 3 records)
 5. Wait for verification (usually within minutes)
 6. Once verified, update your environment:
+
    ```env
    RESEND_FROM_EMAIL=IAF 2026 <tickets@iaf2026.com>
    ```
@@ -133,10 +139,12 @@ src/app/api/
 ### Emails Not Being Delivered
 
 **In Development:**
+
 - With `onboarding@resend.dev`, emails only go to your Resend account email
 - Check your Resend dashboard → Emails for delivery status
 
 **In Production:**
+
 - Verify your domain is fully verified in Resend
 - Check `RESEND_FROM_EMAIL` is set correctly
 - Check Resend dashboard for delivery failures or bounces
@@ -144,6 +152,7 @@ src/app/api/
 ### "Domain not verified" Error
 
 If using a custom `RESEND_FROM_EMAIL`:
+
 1. Go to [https://resend.com/domains](https://resend.com/domains)
 2. Check verification status
 3. Ensure all DNS records are added correctly
@@ -153,6 +162,7 @@ If using a custom `RESEND_FROM_EMAIL`:
 
 Free tier: 3,000 emails/month, 100 emails/day
 If hitting limits:
+
 - Upgrade your Resend plan
 - Or queue emails for batch sending
 
@@ -186,6 +196,7 @@ curl -X POST http://localhost:3000/api/admin/test-email \
 ```
 
 **Environment Variables:**
+
 ```env
 # Required
 RESEND_API_KEY=re_xxxxxxxxxxxxx

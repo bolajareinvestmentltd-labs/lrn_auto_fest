@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
     try {
         const result = await testEmailConfiguration();
-        
+
         return NextResponse.json({
             success: true,
             email: result

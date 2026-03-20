@@ -335,7 +335,7 @@ export async function sendEmail(to: string, subject: string, html: string): Prom
     try {
         const fromEmail = getFromEmail();
         console.log(`[Email] Sending to ${to} from ${fromEmail}`);
-        
+
         const response = await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: {
