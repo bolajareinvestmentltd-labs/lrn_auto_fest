@@ -244,6 +244,7 @@ export default function TicketManagement() {
                                 <button
                                     onClick={() => setEditingTicket(null)}
                                     className="p-2 hover:bg-white/10 rounded-lg"
+                                    title="Close"
                                 >
                                     <X className="w-5 h-5 text-gray-400" />
                                 </button>
@@ -357,9 +358,11 @@ export default function TicketManagement() {
                                                         ? "border-white scale-110"
                                                         : "border-transparent"
                                                 }`}
-                                                style={{ backgroundColor: color.value }}
                                                 title={color.name}
-                                            />
+                                                aria-label={`Select ${color.name} color`}
+                                            >
+                                                <span className="block w-full h-full rounded-md" style={{ backgroundColor: color.value }} />
+                                            </button>
                                         ))}
                                     </div>
                                 </div>
@@ -389,6 +392,7 @@ export default function TicketManagement() {
                                                 <button
                                                     onClick={() => removeFeature(i)}
                                                     className="ml-1 hover:text-red-400"
+                                                    title="Remove feature"
                                                 >
                                                     <X className="w-3 h-3" />
                                                 </button>
@@ -406,6 +410,7 @@ export default function TicketManagement() {
                                         className={`w-12 h-6 rounded-full transition-colors ${
                                             editingTicket.isActive ? "bg-green-500" : "bg-gray-600"
                                         }`}
+                                        title={editingTicket.isActive ? "Deactivate ticket" : "Activate ticket"}
                                     >
                                         <div
                                             className={`w-5 h-5 bg-white rounded-full transition-transform ${
