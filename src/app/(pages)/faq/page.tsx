@@ -23,7 +23,7 @@ const FAQ_CATEGORIES: { title: string; items: FAQItem[] }[] = [
       },
       {
         question: "Where is the event located?",
-        answer: "The festival will be held at the Ilorin Metropolitan Square, Ilorin, Kwara State, Nigeria. The venue is easily accessible from major roads and has ample parking space.",
+        answer: 'The festival will be held at the <a href="https://www.google.com/maps/dir/?api=1&destination=8.4799,4.5418&travelmode=driving" target="_blank" rel="noopener noreferrer" class="text-brand-blue hover:underline">Ilorin Metropolitan Square, Ilorin, Kwara State, Nigeria ↗</a>. The venue is easily accessible from major roads and has ample parking space.',
         icon: <MapPin className="w-5 h-5" />
       },
       {
@@ -188,8 +188,7 @@ function FAQAccordion({ item }: { item: FAQItem }) {
         <ChevronDown className="w-5 h-5 text-neutral-400 group-open:rotate-180 transition-transform" />
       </summary>
       <div className="px-5 pb-5 pt-0">
-        <div className="pl-14 text-neutral-400 leading-relaxed">
-          {item.answer}
+        <div className="pl-14 text-neutral-400 leading-relaxed" dangerouslySetInnerHTML={{ __html: item.answer }}>
         </div>
       </div>
     </details>

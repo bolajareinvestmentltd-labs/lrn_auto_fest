@@ -111,7 +111,7 @@ export default function ContactPage() {
               <h3 className="text-lg font-semibold text-white mb-4">Event Details</h3>
               <div className="space-y-3 text-neutral-400">
                 <p><span className="text-white font-medium">Date:</span> May 30th, 2026</p>
-                <p><span className="text-white font-medium">Venue:</span> Ilorin Metropolitan Square</p>
+                <p><span className="text-white font-medium">Venue:</span> <a href="https://www.google.com/maps/dir/?api=1&destination=8.4799,4.5418&travelmode=driving" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline">Ilorin Metropolitan Square ↗</a></p>
                 <p><span className="text-white font-medium">Time:</span> 10:00 AM - 10:00 PM</p>
               </div>
             </div>

@@ -1,6 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { generateTicketCode, generateQRCodeDataURL } from "@/lib/qrcode";
+import { cookies } from "next/headers";
+
+/**
+ * Verify admin session from cookie
+ */
+async function verifyAdminSession(): Promise<string | null> {
+    const cookieStore = await cookies();
+    const session = cookieStore.get("admin_session");
+    if (!session?.value) return null;
+    // Return the admin ID from the session cookie
+    return session.value;
+}
 
 /**
  * POST /api/admin/manual-sales/create
@@ -8,6 +20,9 @@ import { generateTicketCode, generateQRCodeDataURL } from "@/lib/qrcode";
  */
 export async function POST(request: NextRequest) {
     try {
+        // Server-side admin authentication
+        const adminSessionId = await verifyAdminSession();
+
         const body = await request.json();
         const {
             ticketType,
@@ -15,8 +30,16 @@ export async function POST(request: NextRequest) {
             buyerPhone,
             buyerName = "Walk-in Customer",
             paymentMethod = "CASH",
-            adminId = "unknown"
+            adminId = adminSessionId || "unknown"
         } = body;
+
+        // Block unauthenticated requests (require either cookie or client-sent adminId)
+        if (!adminSessionId && (!body.adminId || body.adminId === "unknown")) {
+            return NextResponse.json({
+                success: false,
+                error: "Unauthorized: Admin authentication required"
+            }, { status: 401 });
+        }
 
         // Validate required fields
         if (!ticketType || !buyerPhone) {

@@ -125,10 +125,15 @@ function PaymentConfirmationContent() {
                                 <Calendar className="w-4 h-4 text-brand-orange" />
                                 <span className="font-semibold">May 30, 2026</span>
                             </div>
-                            <div className="flex items-center gap-2 text-gray-300 text-sm">
+                            <a
+                                href="https://www.google.com/maps/dir/?api=1&destination=8.4799,4.5418&travelmode=driving"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 text-gray-300 text-sm hover:text-brand-blue transition-colors"
+                            >
                                 <MapPin className="w-4 h-4 text-brand-orange" />
-                                <span>Metropolitan Square, Asadam Road, Ilorin</span>
-                            </div>
+                                <span>Metropolitan Square, Asadam Road, Ilorin ↗</span>
+                            </a>
                         </div>
 
                         {/* QR Code Preview */}

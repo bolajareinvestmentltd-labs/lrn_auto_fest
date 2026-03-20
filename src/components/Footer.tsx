@@ -91,13 +91,18 @@ export default function Footer() {
                                 <Mail className="w-4 h-4" />
                                 {process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'info@ilorinautofest.com'}
                             </a>
-                            <div className="flex items-start gap-2 text-white/60 text-sm">
-                                <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                            <a
+                                href="https://www.google.com/maps/dir/?api=1&destination=8.4799,4.5418&travelmode=driving"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-start gap-2 text-white/60 hover:text-brand-blue transition-colors text-sm group"
+                            >
+                                <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform" />
                                 <div>
                                     <p>Metropolitan Square</p>
                                     <p>Asadam Road, Ilorin</p>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                     </div>
                 </div>

@@ -422,7 +422,7 @@ export default function VendorPage() {
                         </div>
                         <div>
                             <h4 className="font-bold text-brand-orange mb-2">What&apos;s the event date?</h4>
-                            <p className="text-gray-400 text-sm">May 30, 2026 at Metropolitan Square, Asadam Road, Ilorin.</p>
+                            <p className="text-gray-400 text-sm">May 30, 2026 at <a href="https://www.google.com/maps/dir/?api=1&destination=8.4799,4.5418&travelmode=driving" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline">Metropolitan Square, Asadam Road, Ilorin ↗</a></p>
                         </div>
                         <div>
                             <h4 className="font-bold text-brand-orange mb-2">How many vendors are allowed?</h4>
