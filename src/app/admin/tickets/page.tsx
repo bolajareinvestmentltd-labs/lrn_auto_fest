@@ -218,11 +218,10 @@ export default function TicketManagement() {
                 {/* Message */}
                 {message && (
                     <div
-                        className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${
-                            message.type === "success"
-                                ? "bg-green-500/20 border border-green-500/30 text-green-400"
-                                : "bg-red-500/20 border border-red-500/30 text-red-400"
-                        }`}
+                        className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${message.type === "success"
+                            ? "bg-green-500/20 border border-green-500/30 text-green-400"
+                            : "bg-red-500/20 border border-red-500/30 text-red-400"
+                            }`}
                     >
                         {message.type === "success" ? (
                             <CheckCircle2 className="w-5 h-5" />
@@ -353,11 +352,10 @@ export default function TicketManagement() {
                                                 onClick={() =>
                                                     setEditingTicket({ ...editingTicket, color: color.value })
                                                 }
-                                                className={`w-10 h-10 rounded-lg border-2 transition-all ${
-                                                    editingTicket.color === color.value
-                                                        ? "border-white scale-110"
-                                                        : "border-transparent"
-                                                }`}
+                                                className={`w-10 h-10 rounded-lg border-2 transition-all ${editingTicket.color === color.value
+                                                    ? "border-white scale-110"
+                                                    : "border-transparent"
+                                                    }`}
                                                 title={color.name}
                                                 aria-label={`Select ${color.name} color`}
                                             >
@@ -407,15 +405,13 @@ export default function TicketManagement() {
                                         onClick={() =>
                                             setEditingTicket({ ...editingTicket, isActive: !editingTicket.isActive })
                                         }
-                                        className={`w-12 h-6 rounded-full transition-colors ${
-                                            editingTicket.isActive ? "bg-green-500" : "bg-gray-600"
-                                        }`}
+                                        className={`w-12 h-6 rounded-full transition-colors ${editingTicket.isActive ? "bg-green-500" : "bg-gray-600"
+                                            }`}
                                         title={editingTicket.isActive ? "Deactivate ticket" : "Activate ticket"}
                                     >
                                         <div
-                                            className={`w-5 h-5 bg-white rounded-full transition-transform ${
-                                                editingTicket.isActive ? "translate-x-6" : "translate-x-0.5"
-                                            }`}
+                                            className={`w-5 h-5 bg-white rounded-full transition-transform ${editingTicket.isActive ? "translate-x-6" : "translate-x-0.5"
+                                                }`}
                                         />
                                     </button>
                                     <Label className="text-white">Active (visible to customers)</Label>
@@ -465,11 +461,10 @@ export default function TicketManagement() {
                                         <p className="text-gray-400 text-sm mt-1">{ticket.description}</p>
                                     </div>
                                     <span
-                                        className={`px-2 py-1 rounded text-xs font-medium ${
-                                            ticket.isActive
-                                                ? "bg-green-500/20 text-green-400"
-                                                : "bg-red-500/20 text-red-400"
-                                        }`}
+                                        className={`px-2 py-1 rounded text-xs font-medium ${ticket.isActive
+                                            ? "bg-green-500/20 text-green-400"
+                                            : "bg-red-500/20 text-red-400"
+                                            }`}
                                     >
                                         {ticket.isActive ? "Active" : "Hidden"}
                                     </span>
