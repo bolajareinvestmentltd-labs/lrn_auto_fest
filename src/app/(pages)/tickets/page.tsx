@@ -449,10 +449,7 @@ export default function TicketsPage() {
       <CheckoutModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        tier={selectedTier ? {
-          ...selectedTier,
-          presaleSinglePrice: getPrice(selectedTier, selectedGroup) || 0
-        } : null}
+        tier={selectedTier}
         groupSize={selectedGroup}
       />
     </main>

@@ -17,6 +17,12 @@ interface TicketTier {
     ticketType: string;
     name: string;
     presaleSinglePrice: number;
+    presaleGroup2Price: number | null;
+    presaleGroup4Price: number | null;
+    onsaleSinglePrice: number | null;
+    onsaleGroup2Price: number | null;
+    onsaleGroup4Price: number | null;
+    presaleActive: boolean;
 }
 
 type GroupSize = "SINGLE" | "GROUP_2" | "GROUP_4";
@@ -96,10 +102,30 @@ export default function CheckoutModal({
 
     if (!tier) return null;
 
+    // Determine the correct unit price based on group size and sale period
+    const PRESALE_END_DATE = "2026-03-31T23:59:59Z";
+    const isPresale = tier.presaleActive && new Date() < new Date(PRESALE_END_DATE);
+
+    const getUnitPrice = (): number => {
+        if (isPresale) {
+            switch (groupSize) {
+                case "GROUP_2": return tier.presaleGroup2Price ?? tier.presaleSinglePrice * 2;
+                case "GROUP_4": return tier.presaleGroup4Price ?? tier.presaleSinglePrice * 4;
+                default: return tier.presaleSinglePrice;
+            }
+        }
+        switch (groupSize) {
+            case "GROUP_2": return tier.onsaleGroup2Price ?? (tier.onsaleSinglePrice ?? tier.presaleSinglePrice) * 2;
+            case "GROUP_4": return tier.onsaleGroup4Price ?? (tier.onsaleSinglePrice ?? tier.presaleSinglePrice) * 4;
+            default: return tier.onsaleSinglePrice ?? tier.presaleSinglePrice;
+        }
+    };
+
+    const unitPrice = getUnitPrice();
     // Calculate processing fee (covers Paystack charges)
     // Paystack charges: 1.5% + ₦100 for local cards (capped at ₦2,000)
     // We add a small buffer to cover all scenarios
-    const subtotal = tier.presaleSinglePrice * quantity;
+    const subtotal = unitPrice * quantity;
     const calculateProcessingFee = (amount: number): number => {
         // 2% + ₦150 covers Paystack fees with small buffer for company
         const fee = Math.round(amount * 0.02) + 150;
@@ -259,9 +285,9 @@ export default function CheckoutModal({
                                 <p className="text-lg font-bold text-white">{tier.name}</p>
                             </div>
                             <div className="text-right">
-                                <p className="text-xs text-gray-400 uppercase">Package Price</p>
+                                <p className="text-xs text-gray-400 uppercase">Package Price{isPresale ? " (Pre-sale)" : ""}</p>
                                 <p className="text-lg font-bold text-brand-orange">
-                                    ₦{tier.presaleSinglePrice.toLocaleString()}
+                                    ₦{unitPrice.toLocaleString()}
                                 </p>
                             </div>
                         </div>
