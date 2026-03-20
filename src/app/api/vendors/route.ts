@@ -5,6 +5,9 @@ import { generateVendorConfirmationEmail, generateAdminNotificationEmail, sendEm
 // Environment variables
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@ilorincarshow.com";
+const MAX_VENDORS = 20;
+const VENDOR_BOOKING_FEE = 100000;
+const ALLOWED_PRODUCT_TYPES = new Set(["food", "drink", "eatables"]);
 
 /**
  * POST /api/vendors
@@ -15,13 +18,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     const {
-      brandName,
-      contactName,
+      businessName,
+      contactPerson,
       phone,
       email,
-      boothType,
       productType,
-      additionalInfo,
       ticketId,
       paymentReference,
       amount,
@@ -29,10 +30,39 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validate required fields
-    if (!ticketId || !paymentReference || !email) {
+    if (!ticketId || !paymentReference || !email || !businessName || !contactPerson || !phone || !productType) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
+      );
+    }
+
+    if (!ALLOWED_PRODUCT_TYPES.has(productType)) {
+      return NextResponse.json(
+        { error: "Only food, drink, and eatables vendors are allowed" },
+        { status: 400 }
+      );
+    }
+
+    if (amount !== VENDOR_BOOKING_FEE) {
+      return NextResponse.json(
+        { error: `Vendor booking fee must be ₦${VENDOR_BOOKING_FEE.toLocaleString()}` },
+        { status: 400 }
+      );
+    }
+
+    const currentVendorCount = await prisma.vendor.count({
+      where: {
+        NOT: {
+          status: "CANCELLED"
+        }
+      }
+    });
+
+    if (currentVendorCount >= MAX_VENDORS) {
+      return NextResponse.json(
+        { error: "Vendor booking limit reached" },
+        { status: 409 }
       );
     }
 
@@ -49,14 +79,13 @@ export async function POST(request: NextRequest) {
     const vendor = await prisma.vendor.create({
       data: {
         ticketId,
-        businessName: brandName,
-        contactPerson: contactName,
+        businessName,
+        contactPerson,
         email,
         phone,
         productType,
-        productDescription: additionalInfo,
-        boothType,
-        bookingFee: amount,
+        boothType: "food_drink_eatables",
+        bookingFee: VENDOR_BOOKING_FEE,
         paymentRefId: paymentReference,
         status: "CONFIRMED", // Auto-approved
         paidAt: new Date(),
@@ -237,9 +266,7 @@ async function sendAdminNotificationEmailForVendor(vendor: any) {
  */
 function formatBoothType(type: string): string {
   const types: { [key: string]: string } = {
-    "food": "🍔 Food & Drinks - ₦50,000",
-    "merch": "🎁 Merchandise - ₦80,000",
-    "corporate": "🏆 Corporate Brand - ₦250,000"
+    "food_drink_eatables": "🍔 Food / Drink / Eatables Vendor Slot - ₦100,000"
   };
   return types[type] || type;
 }

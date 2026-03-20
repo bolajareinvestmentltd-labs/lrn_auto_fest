@@ -2,38 +2,33 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
-import { Loader2, CheckCircle } from "lucide-react";
+import { Loader2, CheckCircle, Store, AlertTriangle } from "lucide-react";
 
-interface BoothType {
-    id: string;
-    name: string;
-    emoji: string;
-    price: number;
-    description: string;
-}
-
-const BOOTH_TYPES: BoothType[] = [
-    { id: "food", name: "Food & Drinks", emoji: "🍔", price: 50000, description: "4x4m space, table & chairs, electricity" },
-    { id: "merch", name: "Merchandise", emoji: "🎁", price: 80000, description: "3x3m space, display rack, signage" },
-    { id: "corporate", name: "Corporate Brand", emoji: "🏆", price: 250000, description: "5x5m prime location, branding, VIP parking" }
-];
+const VENDOR_BOOKING_FEE = 100000;
+const MAX_VENDORS = 20;
+const PRODUCT_TYPES = [
+    { id: "food", label: "Food" },
+    { id: "drink", label: "Drink" },
+    { id: "eatables", label: "Eatables" },
+] as const;
 
 export default function VendorPage() {
     const [formData, setFormData] = useState({
-        brandName: "",
-        contactName: "",
+        businessName: "",
+        contactPerson: "",
         phone: "",
         email: "",
         productType: "",
-        message: ""
     });
-    const [selectedBooth, setSelectedBooth] = useState<BoothType | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [paystackLoaded, setPaystackLoaded] = useState(false);
     const [ticketId, setTicketId] = useState("");
+    const [confirmedVendors, setConfirmedVendors] = useState(0);
+    const [countLoading, setCountLoading] = useState(true);
+
+    const slotsLeft = Math.max(MAX_VENDORS - confirmedVendors, 0);
 
     // Load Paystack script
     useEffect(() => {
@@ -50,18 +45,27 @@ export default function VendorPage() {
         };
     }, []);
 
-    // Calculate processing fee for vendors
-    const calculateProcessingFee = (amount: number): number => {
-        // 2% + ₦150 covers Paystack fees with small buffer
-        const fee = Math.round(amount * 0.02) + 150;
-        // Cap at ₦2,500 to be fair
-        return Math.min(fee, 2500);
-    };
+    useEffect(() => {
+        const fetchVendorCount = async () => {
+            try {
+                const response = await fetch("/api/vendors");
+                if (!response.ok) {
+                    throw new Error("Failed to fetch vendor slots");
+                }
 
-    const processingFee = selectedBooth ? calculateProcessingFee(selectedBooth.price) : 0;
-    const totalAmount = selectedBooth ? selectedBooth.price + processingFee : 0;
+                const data = await response.json();
+                setConfirmedVendors(data.count || 0);
+            } catch (error) {
+                console.error("Failed to load vendor count:", error);
+            } finally {
+                setCountLoading(false);
+            }
+        };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        fetchVendorCount();
+    }, [submitted]);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
@@ -72,13 +76,18 @@ export default function VendorPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.brandName || !formData.contactName || !formData.phone || !formData.email || !selectedBooth) {
-            alert("Please fill in all required fields and select a booth type");
+        if (!formData.businessName || !formData.contactPerson || !formData.phone || !formData.email || !formData.productType) {
+            alert("Please fill in all required fields");
             return;
         }
 
         if (!formData.email.includes("@")) {
             alert("Please enter a valid email");
+            return;
+        }
+
+        if (slotsLeft <= 0) {
+            alert("Vendor booking is currently full.");
             return;
         }
 
@@ -108,7 +117,7 @@ export default function VendorPage() {
         const handler = ((window as unknown) as Record<string, any>).PaystackPop.setup({
             key: paystackKey,
             email: formData.email,
-            amount: totalAmount * 100, // Amount in kobo (includes processing fee)
+            amount: VENDOR_BOOKING_FEE * 100,
             ref: newTicketId,
             currency: "NGN",
             onClose: () => {
@@ -123,32 +132,28 @@ export default function VendorPage() {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
-                            brandName: formData.brandName,
-                            contactName: formData.contactName,
+                            businessName: formData.businessName,
+                            contactPerson: formData.contactPerson,
                             phone: formData.phone,
                             email: formData.email,
-                            boothType: selectedBooth.id,
                             productType: formData.productType,
-                            additionalInfo: formData.message,
                             ticketId: newTicketId,
                             paymentReference: transaction.reference,
-                            amount: selectedBooth.price,
-                            status: "approved" // Auto-approved
+                            amount: VENDOR_BOOKING_FEE,
                         })
                     });
 
                     if (response.ok) {
                         setTicketId(newTicketId);
                         setSubmitted(true);
+                        setConfirmedVendors((current) => current + 1);
                         setFormData({
-                            brandName: "",
-                            contactName: "",
+                            businessName: "",
+                            contactPerson: "",
                             phone: "",
                             email: "",
                             productType: "",
-                            message: ""
                         });
-                        setSelectedBooth(null);
                     } else {
                         throw new Error("Failed to save vendor application");
                     }
@@ -173,8 +178,8 @@ export default function VendorPage() {
                         Become a <span className="text-brand-blue">Vendor</span>
                     </h1>
                     <p className="text-gray-400 mt-6 text-lg">
-                        Showcase your brand to thousands of automotive enthusiasts.
-                        Limited spots available for food, merchandise, and car parts.
+                        Vendor booking is strictly for food, drink, and eatables only.
+                        There are only 20 slots available and each confirmed booking is ₦100,000.
                     </p>
                 </div>
 
@@ -182,31 +187,83 @@ export default function VendorPage() {
                 <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
                     {/* PRICING INFO */}
                     <div className="space-y-6">
-                        <h3 className="text-2xl font-heading uppercase text-brand-orange">Booth Prices</h3>
+                        <h3 className="text-2xl font-heading uppercase text-brand-orange">Vendor Booking Details</h3>
 
-                        {BOOTH_TYPES.map((booth) => (
-                            <Card
-                                key={booth.id}
-                                onClick={() => setSelectedBooth(booth)}
-                                className={`cursor-pointer border-2 transition ${selectedBooth?.id === booth.id
-                                    ? "border-brand-orange bg-brand-orange/10"
-                                    : "border-white/10 bg-white/5 hover:border-brand-orange/50"
-                                    }`}
-                            >
-                                <CardHeader>
-                                    <CardTitle className="text-white">
-                                        {booth.emoji} {booth.name}
-                                        {selectedBooth?.id === booth.id && (
-                                            <span className="ml-2 text-sm text-brand-orange">✓ Selected</span>
-                                        )}
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="text-gray-300 space-y-2">
-                                    <p className="text-2xl font-bold text-brand-orange">₦{booth.price.toLocaleString()}</p>
-                                    <p className="text-xs text-gray-400 mt-2">Includes: {booth.description}</p>
-                                </CardContent>
-                            </Card>
-                        ))}
+                        <Card className="border-2 border-brand-orange/40 bg-brand-orange/10">
+                            <CardHeader>
+                                <CardTitle className="text-white flex items-center gap-2">
+                                    <Store className="w-5 h-5 text-brand-orange" />
+                                    Standard Vendor Slot
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4 text-gray-300">
+                                <p className="text-3xl font-black text-brand-orange">₦{VENDOR_BOOKING_FEE.toLocaleString()}</p>
+                                <div className="rounded-xl border border-white/10 bg-black/20 p-4">
+                                    <p className="text-xs uppercase tracking-[0.25em] text-gray-500">Availability</p>
+                                    {countLoading ? (
+                                        <p className="mt-2 text-sm text-gray-400">Loading available slots...</p>
+                                    ) : (
+                                        <>
+                                            <p className={`mt-2 text-lg font-bold ${slotsLeft <= 5 ? "text-red-400" : "text-white"}`}>
+                                                {slotsLeft} of {MAX_VENDORS} slots remaining
+                                            </p>
+                                            <progress
+                                                className="mt-3 h-2 w-full overflow-hidden rounded-full [&::-webkit-progress-bar]:rounded-full [&::-webkit-progress-bar]:bg-white/10 [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:bg-brand-blue [&::-moz-progress-bar]:rounded-full [&::-moz-progress-bar]:bg-brand-blue"
+                                                max={MAX_VENDORS}
+                                                value={confirmedVendors}
+                                            />
+                                        </>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2 text-sm">
+                                    <p>• Booking limit: 20 vendors only</p>
+                                    <p>• Allowed products: food, drink, eatables only</p>
+                                    <p>• Confirmation email is sent automatically after successful payment</p>
+                                    <p>• Admin receives a notification as soon as your booking is confirmed</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="border-white/10 bg-white/5">
+                            <CardHeader>
+                                <CardTitle className="text-white">Accepted Product Types</CardTitle>
+                            </CardHeader>
+                            <CardContent className="grid gap-3 sm:grid-cols-3">
+                                {PRODUCT_TYPES.map((product) => {
+                                    const isSelected = formData.productType === product.id;
+
+                                    return (
+                                        <button
+                                            key={product.id}
+                                            type="button"
+                                            onClick={() => setFormData((prev) => ({ ...prev, productType: product.id }))}
+                                            className={`rounded-xl border px-4 py-4 text-left transition ${isSelected
+                                                ? "border-brand-orange bg-brand-orange/10 text-white"
+                                                : "border-white/10 bg-black/20 text-gray-400 hover:border-brand-orange/40"
+                                                }`}
+                                        >
+                                            <p className="font-semibold capitalize">{product.label}</p>
+                                            <p className="mt-1 text-xs text-gray-500">Approved for vendor booking</p>
+                                        </button>
+                                    );
+                                })}
+                            </CardContent>
+                        </Card>
+
+                        {slotsLeft <= 0 && !countLoading && (
+                            <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-red-200">
+                                <div className="flex items-start gap-3">
+                                    <AlertTriangle className="mt-0.5 h-5 w-5 text-red-400" />
+                                    <div>
+                                        <p className="font-semibold">Vendor booking is currently full.</p>
+                                        <p className="mt-1 text-sm text-red-200/80">
+                                            All 20 vendor slots have been reserved. The form is disabled until a slot becomes available.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* APPLICATION FORM */}
@@ -218,47 +275,47 @@ export default function VendorPage() {
                                 <div className="text-5xl animate-bounce"><CheckCircle className="w-16 h-16 text-green-400 mx-auto" /></div>
                                 <div>
                                     <p className="text-xl font-bold text-green-400 mb-2">✅ Application Approved!</p>
-                                    <p className="text-sm text-gray-300 mb-4">Your payment has been verified and your booth is confirmed.</p>
+                                    <p className="text-sm text-gray-300 mb-4">Your payment has been verified, your vendor slot is confirmed, and the admin team has been notified.</p>
                                 </div>
 
                                 <div className="bg-brand-orange/10 border border-brand-orange/50 p-4 rounded-lg">
                                     <p className="text-xs text-gray-500 uppercase mb-1">Your Confirmation Ticket ID</p>
                                     <p className="text-lg font-mono font-bold text-brand-orange break-all">{ticketId}</p>
-                                    <p className="text-xs text-gray-400 mt-3">📧 Confirmation email sent to your registered email address with full details and invoice.</p>
+                                    <p className="text-xs text-gray-400 mt-3">📧 Confirmation email sent to your registered email address with your vendor booking details.</p>
                                 </div>
 
                                 <div className="bg-blue-500/10 border border-brand-blue/30 p-3 rounded-lg text-left">
                                     <p className="text-xs text-gray-400">💡 <strong>Next Steps:</strong></p>
                                     <ul className="text-xs text-gray-400 mt-2 space-y-1">
-                                        <li>✓ Check email for receipt and booth details</li>
-                                        <li>✓ Your booth is auto-approved and confirmed</li>
-                                        <li>✓ Setup details will be sent 2 weeks before event</li>
-                                        <li>✓ Admin team will contact you if needed</li>
+                                        <li>✓ Check your email for your payment receipt and confirmation</li>
+                                        <li>✓ Your vendor slot is confirmed for food, drink, or eatables sales</li>
+                                        <li>✓ Event setup details will be shared before the festival</li>
+                                        <li>✓ Admin will reach out if additional coordination is needed</li>
                                     </ul>
                                 </div>
                             </div>
                         ) : (
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div>
-                                    <label className="text-xs uppercase text-gray-500 block mb-2">Brand Name *</label>
+                                    <label className="text-xs uppercase text-gray-500 block mb-2">Business Name *</label>
                                     <Input
-                                        name="brandName"
-                                        value={formData.brandName}
+                                        name="businessName"
+                                        value={formData.businessName}
                                         onChange={handleInputChange}
-                                        placeholder="Your Brand Name"
-                                        disabled={isSubmitting}
+                                        placeholder="Your Business Name"
+                                        disabled={isSubmitting || slotsLeft <= 0}
                                         className="bg-black/50 border-white/10 text-white"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="text-xs uppercase text-gray-500 block mb-2">Contact Name *</label>
+                                    <label className="text-xs uppercase text-gray-500 block mb-2">Contact Person *</label>
                                     <Input
-                                        name="contactName"
-                                        value={formData.contactName}
+                                        name="contactPerson"
+                                        value={formData.contactPerson}
                                         onChange={handleInputChange}
                                         placeholder="Your Name"
-                                        disabled={isSubmitting}
+                                        disabled={isSubmitting || slotsLeft <= 0}
                                         className="bg-black/50 border-white/10 text-white"
                                     />
                                 </div>
@@ -271,74 +328,66 @@ export default function VendorPage() {
                                         value={formData.email}
                                         onChange={handleInputChange}
                                         placeholder="your@email.com"
-                                        disabled={isSubmitting}
+                                        disabled={isSubmitting || slotsLeft <= 0}
                                         className="bg-black/50 border-white/10 text-white"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="text-xs uppercase text-gray-500 block mb-2">Phone Number *</label>
+                                    <label className="text-xs uppercase text-gray-500 block mb-2">Phone / WhatsApp *</label>
                                     <Input
                                         name="phone"
                                         value={formData.phone}
                                         onChange={handleInputChange}
                                         placeholder="08012345678"
                                         type="tel"
-                                        disabled={isSubmitting}
+                                        disabled={isSubmitting || slotsLeft <= 0}
                                         className="bg-black/50 border-white/10 text-white"
                                     />
                                 </div>
 
                                 <div>
                                     <label className="text-xs uppercase text-gray-500 block mb-2">Product Type *</label>
-                                    <Input
-                                        name="productType"
-                                        value={formData.productType}
-                                        onChange={handleInputChange}
-                                        placeholder="e.g., Shawarma, Car Accessories, Merchandise"
-                                        disabled={isSubmitting}
-                                        className="bg-black/50 border-white/10 text-white"
-                                    />
+                                    <div className="grid gap-3 sm:grid-cols-3">
+                                        {PRODUCT_TYPES.map((product) => {
+                                            const isSelected = formData.productType === product.id;
+
+                                            return (
+                                                <button
+                                                    key={product.id}
+                                                    type="button"
+                                                    onClick={() => setFormData((prev) => ({ ...prev, productType: product.id }))}
+                                                    disabled={isSubmitting || slotsLeft <= 0}
+                                                    className={`rounded-xl border px-4 py-3 text-left transition ${isSelected
+                                                        ? "border-brand-orange bg-brand-orange/10 text-white"
+                                                        : "border-white/10 bg-black/20 text-gray-400 hover:border-brand-orange/40"
+                                                        }`}
+                                                >
+                                                    <p className="font-semibold capitalize">{product.label}</p>
+                                                    <p className="mt-1 text-[11px] text-gray-500">Choose one</p>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
 
-                                <div>
-                                    <label className="text-xs uppercase text-gray-500 block mb-2">Additional Info</label>
-                                    <Textarea
-                                        name="message"
-                                        value={formData.message}
-                                        onChange={handleInputChange}
-                                        placeholder="Tell us about your brand or services (optional)"
-                                        disabled={isSubmitting}
-                                        className="bg-black/50 border-white/10 text-white h-20"
-                                    />
-                                </div>
-
-                                {selectedBooth && (
-                                    <div className="bg-brand-orange/10 border border-brand-orange/50 p-4 rounded-lg space-y-3">
-                                        <p className="text-xs text-gray-400">💰 Selected Booth</p>
-                                        <p className="text-lg font-bold text-brand-orange">{selectedBooth.emoji} {selectedBooth.name}</p>
-
-                                        {/* Price Breakdown */}
-                                        <div className="space-y-1 text-sm bg-black/30 p-3 rounded">
-                                            <div className="flex justify-between">
-                                                <span className="text-gray-400">Booth Price:</span>
-                                                <span className="text-white">₦{selectedBooth.price.toLocaleString()}</span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span className="text-gray-400">Processing Fee:</span>
-                                                <span className="text-gray-300">₦{processingFee.toLocaleString()}</span>
-                                            </div>
-                                            <div className="flex justify-between pt-2 border-t border-white/10">
-                                                <span className="font-semibold text-gray-300">Total:</span>
-                                                <span className="text-lg font-bold text-brand-orange">₦{totalAmount.toLocaleString()}</span>
-                                            </div>
+                                <div className="bg-brand-orange/10 border border-brand-orange/50 p-4 rounded-lg space-y-3">
+                                    <p className="text-xs text-gray-400">💰 Booking Summary</p>
+                                    <div className="space-y-1 text-sm bg-black/30 p-3 rounded">
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-400">Vendor Booking Fee:</span>
+                                            <span className="text-white">₦{VENDOR_BOOKING_FEE.toLocaleString()}</span>
+                                        </div>
+                                        <div className="flex justify-between pt-2 border-t border-white/10">
+                                            <span className="font-semibold text-gray-300">Total:</span>
+                                            <span className="text-lg font-bold text-brand-orange">₦{VENDOR_BOOKING_FEE.toLocaleString()}</span>
                                         </div>
                                     </div>
-                                )}
+                                </div>
 
                                 <Button
                                     type="submit"
-                                    disabled={isSubmitting || !selectedBooth}
+                                    disabled={isSubmitting || !formData.productType || slotsLeft <= 0}
                                     className="w-full bg-brand-orange hover:bg-orange-600 disabled:opacity-50 text-white font-bold uppercase h-11"
                                 >
                                     {isSubmitting ? (
@@ -347,12 +396,12 @@ export default function VendorPage() {
                                             Processing Payment...
                                         </>
                                     ) : (
-                                        `Pay ₦${selectedBooth ? totalAmount.toLocaleString() : "0"} & Submit`
+                                        `Pay ₦${VENDOR_BOOKING_FEE.toLocaleString()} & Submit`
                                     )}
                                 </Button>
 
                                 <p className="text-[10px] text-center text-gray-500 uppercase">
-                                    🔒 Secure payment powered by Paystack. Your booth will be auto-approved once payment is verified.
+                                    🔒 Secure payment powered by Paystack. Confirmation email and admin notification are sent automatically after payment verification.
                                 </p>
                             </form>
                         )}
@@ -364,20 +413,20 @@ export default function VendorPage() {
                     <h2 className="text-3xl font-heading uppercase mb-8 text-center">FAQs</h2>
                     <div className="grid md:grid-cols-2 gap-8">
                         <div>
-                            <h4 className="font-bold text-brand-orange mb-2">Do I need prior experience?</h4>
-                            <p className="text-gray-400 text-sm">No! We welcome new vendors. Just show passion for your product.</p>
+                            <h4 className="font-bold text-brand-orange mb-2">What can I sell?</h4>
+                            <p className="text-gray-400 text-sm">Only food, drink, and eatables are allowed for this booking round.</p>
+                        </div>
+                        <div>
+                            <h4 className="font-bold text-brand-orange mb-2">What&apos;s the booking fee?</h4>
+                            <p className="text-gray-400 text-sm">Each confirmed vendor slot costs ₦100,000.</p>
                         </div>
                         <div>
                             <h4 className="font-bold text-brand-orange mb-2">What&apos;s the event date?</h4>
                             <p className="text-gray-400 text-sm">May 30, 2026 at Metropolitan Square, Asadam Road, Ilorin.</p>
                         </div>
                         <div>
-                            <h4 className="font-bold text-brand-orange mb-2">Do you provide electricity?</h4>
-                            <p className="text-gray-400 text-sm">Yes! All premium booths include electricity. Basic booths on request.</p>
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-brand-orange mb-2">Can I cancel my booking?</h4>
-                            <p className="text-gray-400 text-sm">Cancellations accepted up to 2 weeks before the event with 50% refund.</p>
+                            <h4 className="font-bold text-brand-orange mb-2">How many vendors are allowed?</h4>
+                            <p className="text-gray-400 text-sm">Only 20 vendor bookings are available, and the page shows the remaining slot count live.</p>
                         </div>
                     </div>
                 </div>
