@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { Loader2, CheckCircle, Store, AlertTriangle } from "lucide-react";
 
 const VENDOR_BOOKING_FEE = 100000;
-const MAX_VENDORS = 20;
+const MAX_VENDORS = 10;
 const PRODUCT_TYPES = [
     { id: "food", label: "Food" },
     { id: "drink", label: "Drink" },
@@ -179,7 +179,7 @@ export default function VendorPage() {
                     </h1>
                     <p className="text-gray-400 mt-6 text-lg">
                         Vendor booking is strictly for food, drink, and eatables only.
-                        There are only 20 slots available and each confirmed booking is ₦100,000.
+                        There are only 10 slots available and each confirmed booking is ₦100,000.
                     </p>
                 </div>
 
@@ -217,7 +217,7 @@ export default function VendorPage() {
                                 </div>
 
                                 <div className="space-y-2 text-sm">
-                                    <p>• Booking limit: 20 vendors only</p>
+                                    <p>• Booking limit: 10 vendors only</p>
                                     <p>• Allowed products: food, drink, eatables only</p>
                                     <p>• Confirmation email is sent automatically after successful payment</p>
                                     <p>• Admin receives a notification as soon as your booking is confirmed</p>
@@ -258,7 +258,7 @@ export default function VendorPage() {
                                     <div>
                                         <p className="font-semibold">Vendor booking is currently full.</p>
                                         <p className="mt-1 text-sm text-red-200/80">
-                                            All 20 vendor slots have been reserved. The form is disabled until a slot becomes available.
+                                            All 10 vendor slots have been reserved. The form is disabled until a slot becomes available.
                                         </p>
                                     </div>
                                 </div>
@@ -426,7 +426,7 @@ export default function VendorPage() {
                         </div>
                         <div>
                             <h4 className="font-bold text-brand-orange mb-2">How many vendors are allowed?</h4>
-                            <p className="text-gray-400 text-sm">Only 20 vendor bookings are available, and the page shows the remaining slot count live.</p>
+                            <p className="text-gray-400 text-sm">Only 10 vendor bookings are available, and the page shows the remaining slot count live.</p>
                         </div>
                     </div>
                 </div>

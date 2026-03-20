@@ -4,8 +4,8 @@ import { generateVendorConfirmationEmail, generateAdminNotificationEmail, sendEm
 
 // Environment variables
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@ilorincarshow.com";
-const MAX_VENDORS = 20;
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || process.env.NEXT_PUBLIC_ADMIN_EMAIL || "admin@ilorincarshow.com";
+const MAX_VENDORS = 10;
 const VENDOR_BOOKING_FEE = 100000;
 const ALLOWED_PRODUCT_TYPES = new Set(["food", "drink", "eatables"]);
 
