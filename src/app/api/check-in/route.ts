@@ -15,17 +15,16 @@ export async function GET(request: NextRequest) {
         }
 
         // Search in orders (tickets)
-        let order = await prisma.order.findFirst({
+        const order = await prisma.order.findFirst({
             where: {
                 OR: [
                     { orderNumber: { equals: query, mode: "insensitive" } },
-                    { ticketCode: { equals: query, mode: "insensitive" } },
                     { customerEmail: { equals: query, mode: "insensitive" } },
                 ],
-                status: "PAID",
+                orderStatus: "COMPLETED",
             },
             include: {
-                ticketType: true,
+                ticketPrice: true,
             },
             orderBy: {
                 createdAt: "desc",
@@ -40,11 +39,11 @@ export async function GET(request: NextRequest) {
                     orderNumber: order.orderNumber,
                     customerName: order.customerName,
                     customerEmail: order.customerEmail,
-                    itemName: order.ticketType?.name || "Event Ticket",
+                    itemName: order.ticketPrice?.name || "Event Ticket",
                     quantity: order.quantity,
-                    status: order.status,
+                    status: order.orderStatus,
                     purchaseDate: order.createdAt.toISOString(),
-                    checkInTime: order.usedAt?.toISOString() || null,
+                    checkInTime: null,
                 },
             });
         }
@@ -57,7 +56,7 @@ export async function GET(request: NextRequest) {
                     { pickupCode: { equals: query, mode: "insensitive" } },
                     { customerEmail: { equals: query, mode: "insensitive" } },
                 ],
-                status: "PAID",
+                orderStatus: "PAID",
             },
             include: {
                 merchItem: true,
@@ -78,7 +77,7 @@ export async function GET(request: NextRequest) {
                     itemName: merchOrder.merchItem?.name || "Merchandise",
                     quantity: merchOrder.quantity,
                     size: merchOrder.size,
-                    status: merchOrder.status,
+                    status: merchOrder.orderStatus,
                     purchaseDate: merchOrder.createdAt.toISOString(),
                     checkInTime: merchOrder.pickedUpAt?.toISOString() || null,
                 },
@@ -122,8 +121,7 @@ export async function POST(request: NextRequest) {
             const order = await prisma.order.update({
                 where: { orderNumber },
                 data: {
-                    usedAt: now,
-                    isUsed: true,
+                    orderStatus: "COMPLETED",
                 },
             });
 
@@ -137,7 +135,7 @@ export async function POST(request: NextRequest) {
                 where: { orderNumber },
                 data: {
                     pickedUpAt: now,
-                    status: "PICKED_UP",
+                    orderStatus: "PICKED_UP",
                 },
             });
 

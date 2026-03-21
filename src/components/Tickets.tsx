@@ -11,16 +11,24 @@ interface TicketTier {
     id: string;
     ticketType: string;
     name: string;
-    description?: string;
+    description: string;
     presaleSinglePrice: number | null;
+    presaleGroup2Price: number | null;
+    presaleGroup4Price: number | null;
     onsaleSinglePrice: number | null;
+    onsaleGroup2Price: number | null;
+    onsaleGroup4Price: number | null;
     totalUnits: number;
     soldUnits: number;
-    vipSeating?: boolean;
-    eventPack?: boolean;
-    merchandise?: boolean;
-    presaleActive?: boolean;
-    presaleEndDate?: string;
+    presaleActive: boolean;
+    vipSeating: boolean;
+    eventPack: boolean;
+    merchandise: boolean;
+    premiumExperience: string | null;
+    priorityRide: boolean;
+    pradoPickup: boolean;
+    highlightVideo: number;
+    highlightPhotos: number;
 }
 
 export default function Tickets() {

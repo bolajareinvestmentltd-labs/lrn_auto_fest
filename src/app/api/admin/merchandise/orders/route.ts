@@ -22,8 +22,8 @@ export async function GET() {
                 itemName: o.merchItem?.name || "Unknown",
                 size: o.size,
                 quantity: o.quantity,
-                totalAmount: o.totalAmount,
-                status: o.status,
+                totalAmount: o.totalPrice,
+                status: o.orderStatus,
                 createdAt: o.createdAt.toISOString(),
             })),
         });

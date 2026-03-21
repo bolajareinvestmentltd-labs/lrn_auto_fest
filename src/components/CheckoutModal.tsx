@@ -16,7 +16,7 @@ interface TicketTier {
     id: string;
     ticketType: string;
     name: string;
-    presaleSinglePrice: number;
+    presaleSinglePrice: number | null;
     presaleGroup2Price: number | null;
     presaleGroup4Price: number | null;
     onsaleSinglePrice: number | null;
@@ -107,17 +107,18 @@ export default function CheckoutModal({
     const isPresale = tier.presaleActive && new Date() < new Date(PRESALE_END_DATE);
 
     const getUnitPrice = (): number => {
+        const fallback = tier.presaleSinglePrice ?? 0;
         if (isPresale) {
             switch (groupSize) {
-                case "GROUP_2": return tier.presaleGroup2Price ?? tier.presaleSinglePrice * 2;
-                case "GROUP_4": return tier.presaleGroup4Price ?? tier.presaleSinglePrice * 4;
-                default: return tier.presaleSinglePrice;
+                case "GROUP_2": return tier.presaleGroup2Price ?? (fallback * 2);
+                case "GROUP_4": return tier.presaleGroup4Price ?? (fallback * 4);
+                default: return fallback;
             }
         }
         switch (groupSize) {
-            case "GROUP_2": return tier.onsaleGroup2Price ?? (tier.onsaleSinglePrice ?? tier.presaleSinglePrice) * 2;
-            case "GROUP_4": return tier.onsaleGroup4Price ?? (tier.onsaleSinglePrice ?? tier.presaleSinglePrice) * 4;
-            default: return tier.onsaleSinglePrice ?? tier.presaleSinglePrice;
+            case "GROUP_2": return tier.onsaleGroup2Price ?? ((tier.onsaleSinglePrice ?? fallback) * 2);
+            case "GROUP_4": return tier.onsaleGroup4Price ?? ((tier.onsaleSinglePrice ?? fallback) * 4);
+            default: return tier.onsaleSinglePrice ?? fallback;
         }
     };
 

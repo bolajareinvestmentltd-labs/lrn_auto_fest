@@ -16,9 +16,10 @@ export async function GET() {
                 description: item.description || "",
                 price: item.price,
                 imageUrl: item.imageUrl || "/images/merch/placeholder.jpg",
-                stock: item.stock,
-                isActive: item.isActive,
-                type: item.type,
+                totalStock: item.totalStock,
+                soldCount: item.soldCount,
+                isAvailable: item.isAvailable,
+                merchType: item.merchType,
             })),
         });
     } catch (error) {
@@ -77,9 +78,10 @@ export async function POST(request: NextRequest) {
                 description: description || "",
                 price,
                 imageUrl: imageUrl || "/images/merch/placeholder.jpg",
-                stock: stock || 100,
-                isActive: isActive !== false,
-                type: type || "OTHER",
+                totalStock: stock || 100,
+                soldCount: 0,
+                isAvailable: isActive !== false,
+                merchType: type || "CAP",
             },
         });
 

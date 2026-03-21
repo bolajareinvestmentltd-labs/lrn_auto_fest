@@ -9,9 +9,8 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // eslint: with Next 16 this property is no longer part of NextConfig.
+  // Avoid TypeScript error by removing or using app-specific linting configuration.
 };
 
 export default nextConfig;

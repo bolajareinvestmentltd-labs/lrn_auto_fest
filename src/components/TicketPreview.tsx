@@ -11,7 +11,11 @@ interface TicketTier {
     ticketType: string
     name: string
     presaleSinglePrice: number
+    presaleGroup2Price: number | null
+    presaleGroup4Price: number | null
     onsaleSinglePrice: number
+    onsaleGroup2Price: number | null
+    onsaleGroup4Price: number | null
     totalUnits: number
     soldUnits: number
     vipSeating: boolean

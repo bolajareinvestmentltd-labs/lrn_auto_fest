@@ -6,7 +6,7 @@ export async function GET() {
     try {
         const orders = await prisma.order.findMany({
             include: {
-                ticketType: true,
+                ticketPrice: true,
             },
             orderBy: { createdAt: "desc" },
             take: 500,
@@ -20,14 +20,15 @@ export async function GET() {
                 customerName: o.customerName,
                 customerEmail: o.customerEmail,
                 customerPhone: o.customerPhone || "",
-                ticketType: o.ticketType?.name || "Unknown",
+                ticketType: o.ticketPrice?.name || "Unknown",
                 quantity: o.quantity,
-                totalAmount: o.totalAmount,
-                status: o.status,
-                paymentReference: o.paymentReference || "",
+                totalAmount: o.totalPrice,
+                status: o.orderStatus,
+                paymentStatus: o.paymentStatus,
+                paymentReference: o.paymentRefId || "",
                 createdAt: o.createdAt.toISOString(),
-                isUsed: o.isUsed,
-                usedAt: o.usedAt?.toISOString() || null,
+                isUsed: o.orderStatus === "COMPLETED",
+                usedAt: null,
             })),
         });
     } catch (error) {

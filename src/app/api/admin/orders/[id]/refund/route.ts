@@ -4,36 +4,40 @@ import { prisma } from "@/lib/prisma";
 // POST - Process refund
 export async function POST(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
+    const { params } = context;
+    const { id } = await params;
+
     try {
         const order = await prisma.order.findUnique({
-            where: { id: params.id },
-            include: { ticketType: true },
+            where: { id },
+            include: { ticketPrice: true },
         });
 
         if (!order) {
             return NextResponse.json({ success: false, error: "Order not found" }, { status: 404 });
         }
 
-        if (order.status !== "PAID") {
-            return NextResponse.json({ success: false, error: "Only paid orders can be refunded" }, { status: 400 });
+        if (order.orderStatus !== "COMPLETED") {
+            return NextResponse.json({ success: false, error: "Only completed orders can be refunded" }, { status: 400 });
         }
 
         // Update order status to REFUNDED
         await prisma.order.update({
-            where: { id: params.id },
+            where: { id },
             data: {
-                status: "REFUNDED",
+                orderStatus: "REFUNDED",
+                paymentStatus: "REFUNDED",
             },
         });
 
         // Restore ticket availability
-        if (order.ticketTypeId) {
-            await prisma.ticketType.update({
-                where: { id: order.ticketTypeId },
+        if (order.ticketPriceId) {
+            await prisma.ticketPrice.update({
+                where: { id: order.ticketPriceId },
                 data: {
-                    available: { increment: order.quantity },
+                    soldUnits: { decrement: order.quantity },
                 },
             });
         }

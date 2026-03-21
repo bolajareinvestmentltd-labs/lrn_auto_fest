@@ -10,8 +10,16 @@ export const env = {
 
   // Payment Gateways
   paystack: {
-    publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
-    secretKey: process.env.PAYSTACK_SECRET_KEY || '',
+    publicKey:
+      process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY ||
+      (process.env.NODE_ENV !== 'production'
+        ? 'pk_test_bb8e2d529f9c5854aad5762f67bd405c8ea7c673'
+        : ''),
+    secretKey:
+      process.env.PAYSTACK_SECRET_KEY ||
+      (process.env.NODE_ENV !== 'production'
+        ? 'sk_test_90be186ba4d40249ee8bb3a405c3cea33cb34c72'
+        : ''),
     webhookSecret: process.env.PAYSTACK_WEBHOOK_SECRET || '',
   },
 

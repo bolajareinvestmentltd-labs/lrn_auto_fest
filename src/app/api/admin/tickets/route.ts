@@ -4,23 +4,35 @@ import { prisma } from "@/lib/prisma";
 // GET - Fetch all ticket types
 export async function GET() {
     try {
-        const tickets = await prisma.ticketType.findMany({
-            orderBy: { price: "asc" },
+        const tickets = await prisma.ticketPrice.findMany({
+            orderBy: { presaleSinglePrice: "asc" },
         });
 
         return NextResponse.json({
             success: true,
             tickets: tickets.map((t) => ({
                 id: t.id,
+                ticketType: t.ticketType,
                 name: t.name,
                 description: t.description || "",
-                price: t.price,
-                originalPrice: t.originalPrice || t.price,
-                available: t.available,
-                totalQuantity: t.totalQuantity,
-                features: t.features || [],
-                color: t.color || "#FF6B00",
-                isActive: t.isActive,
+                presaleSinglePrice: t.presaleSinglePrice,
+                presaleGroup2Price: t.presaleGroup2Price,
+                presaleGroup4Price: t.presaleGroup4Price,
+                onsaleSinglePrice: t.onsaleSinglePrice,
+                onsaleGroup2Price: t.onsaleGroup2Price,
+                onsaleGroup4Price: t.onsaleGroup4Price,
+                totalUnits: t.totalUnits,
+                soldUnits: t.soldUnits,
+                presaleActive: t.presaleActive,
+                vipSeating: t.vipSeating,
+                eventPack: t.eventPack,
+                merchandise: t.merchandise,
+                premiumExperience: t.premiumExperience,
+                priorityRide: t.priorityRide,
+                pradoPickup: t.pradoPickup,
+                highlightVideo: t.highlightVideo,
+                highlightPhotos: t.highlightPhotos,
+                isAvailable: t.presaleActive,
             })),
         });
     } catch (error) {
@@ -86,23 +98,57 @@ export async function GET() {
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { name, description, price, originalPrice, available, totalQuantity, features, color, isActive } = body;
+        const {
+            ticketType,
+            name,
+            description,
+            totalUnits,
+            soldUnits,
+            presaleActive,
+            presaleEndDate,
+            presaleSinglePrice,
+            presaleGroup2Price,
+            presaleGroup4Price,
+            onsaleSinglePrice,
+            onsaleGroup2Price,
+            onsaleGroup4Price,
+            vipSeating,
+            eventPack,
+            merchandise,
+            premiumExperience,
+            priorityRide,
+            pradoPickup,
+            highlightVideo,
+            highlightPhotos,
+        } = body;
 
-        if (!name || !price) {
-            return NextResponse.json({ success: false, error: "Name and price are required" }, { status: 400 });
+        if (!name || !presaleSinglePrice) {
+            return NextResponse.json({ success: false, error: "Name and presaleSinglePrice are required" }, { status: 400 });
         }
 
-        const ticket = await prisma.ticketType.create({
+        const ticket = await prisma.ticketPrice.create({
             data: {
+                ticketType: ticketType || "REGULAR",
                 name,
                 description: description || "",
-                price,
-                originalPrice: originalPrice || price,
-                available: available || 100,
-                totalQuantity: totalQuantity || available || 100,
-                features: features || [],
-                color: color || "#FF6B00",
-                isActive: isActive !== false,
+                totalUnits: totalUnits || 100,
+                soldUnits: soldUnits || 0,
+                presaleActive: presaleActive !== false,
+                presaleEndDate: presaleEndDate ? new Date(presaleEndDate) : new Date("2026-03-31T23:59:59Z"),
+                presaleSinglePrice: presaleSinglePrice || 3000,
+                presaleGroup2Price: presaleGroup2Price || null,
+                presaleGroup4Price: presaleGroup4Price || null,
+                onsaleSinglePrice: onsaleSinglePrice || null,
+                onsaleGroup2Price: onsaleGroup2Price || null,
+                onsaleGroup4Price: onsaleGroup4Price || null,
+                vipSeating: vipSeating === true,
+                eventPack: eventPack === true,
+                merchandise: merchandise === true,
+                premiumExperience: premiumExperience || null,
+                priorityRide: priorityRide === true,
+                pradoPickup: pradoPickup === true,
+                highlightVideo: highlightVideo || 0,
+                highlightPhotos: highlightPhotos || 0,
             },
         });
 

@@ -4,25 +4,28 @@ import { prisma } from "@/lib/prisma";
 // POST - Mark order as picked up
 export async function POST(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
+    const { params } = context;
+    const { id } = await params;
+
     try {
         const order = await prisma.merchOrder.findUnique({
-            where: { id: params.id },
+            where: { id },
         });
 
         if (!order) {
             return NextResponse.json({ success: false, error: "Order not found" }, { status: 404 });
         }
 
-        if (order.status !== "PAID") {
+        if (order.orderStatus !== "PAID") {
             return NextResponse.json({ success: false, error: "Only paid orders can be marked as picked up" }, { status: 400 });
         }
 
         await prisma.merchOrder.update({
-            where: { id: params.id },
+            where: { id },
             data: {
-                status: "PICKED_UP",
+                orderStatus: "PICKED_UP",
                 pickedUpAt: new Date(),
             },
         });

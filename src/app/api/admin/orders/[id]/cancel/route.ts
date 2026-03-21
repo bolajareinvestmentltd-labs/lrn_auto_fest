@@ -4,34 +4,36 @@ import { prisma } from "@/lib/prisma";
 // POST - Cancel order
 export async function POST(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
+    const { params } = context;
+    const { id } = await params;
     try {
         const order = await prisma.order.findUnique({
-            where: { id: params.id },
+            where: { id },
         });
 
         if (!order) {
             return NextResponse.json({ success: false, error: "Order not found" }, { status: 404 });
         }
 
-        if (order.status !== "PENDING") {
+        if (order.orderStatus !== "PENDING") {
             return NextResponse.json({ success: false, error: "Only pending orders can be cancelled" }, { status: 400 });
         }
 
         await prisma.order.update({
-            where: { id: params.id },
+            where: { id },
             data: {
-                status: "CANCELLED",
+                orderStatus: "CANCELLED",
             },
         });
 
-        // Restore ticket availability
-        if (order.ticketTypeId) {
-            await prisma.ticketType.update({
-                where: { id: order.ticketTypeId },
+        // Restore ticket availability (best effort)
+        if (order.ticketPriceId) {
+            await prisma.ticketPrice.update({
+                where: { id: order.ticketPriceId },
                 data: {
-                    available: { increment: order.quantity },
+                    soldUnits: { decrement: order.quantity },
                 },
             });
         }

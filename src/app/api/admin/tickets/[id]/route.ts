@@ -4,11 +4,14 @@ import { prisma } from "@/lib/prisma";
 // GET - Fetch single ticket
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
+    const { params } = context;
+    const { id } = await params;
+
     try {
-        const ticket = await prisma.ticketType.findUnique({
-            where: { id: params.id },
+        const ticket = await prisma.ticketPrice.findUnique({
+            where: { id },
         });
 
         if (!ticket) {
@@ -24,24 +27,69 @@ export async function GET(
 // PUT - Update ticket
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
+    const { params } = context;
+    const { id } = await params;
+
     try {
         const body = await request.json();
-        const { name, description, price, originalPrice, available, totalQuantity, features, color, isActive } = body;
+        const {
+            ticketType,
+            name,
+            description,
+            totalUnits,
+            soldUnits,
+            presaleActive,
+            presaleEndDate,
+            presaleSinglePrice,
+            presaleGroup2Price,
+            presaleGroup4Price,
+            onsaleSinglePrice,
+            onsaleGroup2Price,
+            onsaleGroup4Price,
+            vipSeating,
+            eventPack,
+            merchandise,
+            premiumExperience,
+            priorityRide,
+            pradoPickup,
+            highlightVideo,
+            highlightPhotos,
+        } = body;
 
-        const ticket = await prisma.ticketType.update({
-            where: { id: params.id },
+        const existingTicket = await prisma.ticketPrice.findUnique({
+            where: { id },
+        });
+
+        if (!existingTicket) {
+            return NextResponse.json({ success: false, error: "Ticket not found" }, { status: 404 });
+        }
+
+        const ticket = await prisma.ticketPrice.update({
+            where: { id },
             data: {
+                ticketType: ticketType || existingTicket.ticketType,
                 name,
                 description,
-                price,
-                originalPrice,
-                available,
-                totalQuantity,
-                features,
-                color,
-                isActive,
+                totalUnits,
+                soldUnits,
+                presaleActive,
+                presaleEndDate: presaleEndDate ? new Date(presaleEndDate) : existingTicket.presaleEndDate,
+                presaleSinglePrice,
+                presaleGroup2Price,
+                presaleGroup4Price,
+                onsaleSinglePrice,
+                onsaleGroup2Price,
+                onsaleGroup4Price,
+                vipSeating,
+                eventPack,
+                merchandise,
+                premiumExperience,
+                priorityRide,
+                pradoPickup,
+                highlightVideo,
+                highlightPhotos,
             },
         });
 
@@ -55,12 +103,15 @@ export async function PUT(
 // DELETE - Delete ticket
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
+    const { params } = context;
+    const { id } = await params;
+
     try {
         // Check if there are any orders for this ticket
         const orderCount = await prisma.order.count({
-            where: { ticketTypeId: params.id },
+            where: { ticketPriceId: id },
         });
 
         if (orderCount > 0) {
@@ -70,8 +121,8 @@ export async function DELETE(
             );
         }
 
-        await prisma.ticketType.delete({
-            where: { id: params.id },
+        await prisma.ticketPrice.delete({
+            where: { id },
         });
 
         return NextResponse.json({ success: true });

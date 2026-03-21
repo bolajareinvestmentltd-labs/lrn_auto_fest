@@ -4,22 +4,26 @@ import { prisma } from "@/lib/prisma";
 // PUT - Update merchandise item
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
+    const { params } = context;
+    const { id } = await params;
+
     try {
         const body = await request.json();
-        const { name, description, price, imageUrl, stock, isActive, type } = body;
+        const { name, description, price, imageUrl, totalStock, soldCount, isAvailable, merchType } = body;
 
         const item = await prisma.merchItem.update({
-            where: { id: params.id },
+            where: { id },
             data: {
                 name,
                 description,
                 price,
                 imageUrl,
-                stock,
-                isActive,
-                type,
+                totalStock,
+                soldCount,
+                isAvailable,
+                merchType,
             },
         });
 
@@ -33,12 +37,15 @@ export async function PUT(
 // DELETE - Delete merchandise item
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
+    const { params } = context;
+    const { id } = await params;
+
     try {
         // Check if there are any orders for this item
         const orderCount = await prisma.merchOrder.count({
-            where: { merchItemId: params.id },
+            where: { merchItemId: id },
         });
 
         if (orderCount > 0) {
@@ -49,7 +56,7 @@ export async function DELETE(
         }
 
         await prisma.merchItem.delete({
-            where: { id: params.id },
+            where: { id },
         });
 
         return NextResponse.json({ success: true });

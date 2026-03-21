@@ -1,43 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { sendTicketConfirmationEmail } from "@/lib/email";
 
 // POST - Resend confirmation email
 export async function POST(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
+    const { params } = context;
+    const { id } = await params;
+
     try {
         const order = await prisma.order.findUnique({
-            where: { id: params.id },
-            include: { ticketType: true },
+            where: { id },
+            include: { ticketPrice: true },
         });
 
         if (!order) {
             return NextResponse.json({ success: false, error: "Order not found" }, { status: 404 });
         }
 
-        if (order.status !== "PAID") {
-            return NextResponse.json({ success: false, error: "Can only resend email for paid orders" }, { status: 400 });
+        if (order.orderStatus !== "COMPLETED") {
+            return NextResponse.json({ success: false, error: "Can only resend email for completed orders" }, { status: 400 });
         }
 
-        // Import and send email
-        const { sendEmail } = await import("@/lib/email-templates");
-        
-        await sendEmail({
-            to: order.customerEmail,
-            subject: `[Resent] Your IAF 2026 Ticket Confirmation - ${order.orderNumber}`,
-            templateType: "ticketPurchase",
-            data: {
-                customerName: order.customerName,
-                orderNumber: order.orderNumber,
-                ticketType: order.ticketType?.name || "Event Ticket",
-                quantity: order.quantity,
-                totalAmount: order.totalAmount,
-                ticketCode: order.ticketCode || "",
-                qrCode: order.qrCode || "",
-                eventDate: "May 30, 2026",
-                eventLocation: "Metropolitan Square, Ilorin",
-            },
+        await sendTicketConfirmationEmail({
+            customerName: order.customerName,
+            email: order.customerEmail,
+            ticketId: order.orderNumber,
+            tier: order.ticketPrice?.name || "Event Ticket",
+            groupSize: order.groupSize,
+            amount: order.totalPrice,
+            parkingPasses: order.parkingPasses,
+            qrCodeDataUrl: undefined,
         });
 
         return NextResponse.json({

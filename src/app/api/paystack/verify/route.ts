@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
                     ticketId: firstTicket?.ticketCode || order.orderNumber,
                     tier: order.ticketPrice.name,
                     groupSize: groupSizeLabel,
-                    amount: order.totalAmount,
+                    amount: order.totalPrice,
                     parkingPasses: order.parkingPasses || 0,
                     qrCodeDataUrl: firstTicket?.qrCodeUrl || undefined,
                     purchaseDate: new Date().toISOString(),
@@ -172,13 +172,13 @@ export async function POST(request: NextRequest) {
                     customerName: order.customerName,
                     email: order.customerEmail,
                     ticketId: firstTicket?.ticketCode || order.orderNumber,
-                    amount: order.totalAmount,
+                    amount: order.totalPrice,
                     tier: order.ticketPrice.name,
                 });
 
                 await sendEmail(
                     adminEmail,
-                    `🎫 New Ticket Purchase - ${order.customerName} - ₦${order.totalAmount.toLocaleString()}`,
+                    `🎫 New Ticket Purchase - ${order.customerName} - ₦${order.totalPrice.toLocaleString()}`,
                     adminHtml
                 );
             } catch (emailError) {
