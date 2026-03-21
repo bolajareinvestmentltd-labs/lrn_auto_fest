@@ -97,8 +97,8 @@ export default function TicketPreview() {
                             >
                                 <Card
                                     className={`relative h-full ${isPopular
-                                            ? 'bg-gradient-to-b from-[#FF4500] to-black border-[#FF4500]'
-                                            : 'bg-gradient-to-b from-gray-900 to-black border-gray-700'
+                                        ? 'bg-gradient-to-b from-[#FF4500] to-black border-[#FF4500]'
+                                        : 'bg-gradient-to-b from-gray-900 to-black border-gray-700'
                                         } border-2 hover:border-[#00F0FF] transition-colors`}
                                 >
                                     {isPopular && (
@@ -167,8 +167,8 @@ export default function TicketPreview() {
 
                                         <Button
                                             className={`w-full mb-3 ${isPopular
-                                                    ? 'bg-[#00F0FF] text-black hover:bg-[#00F0FF]/90'
-                                                    : 'bg-[#FF4500] text-white hover:bg-[#FF4500]/90'
+                                                ? 'bg-[#00F0FF] text-black hover:bg-[#00F0FF]/90'
+                                                : 'bg-[#FF4500] text-white hover:bg-[#FF4500]/90'
                                                 }`}
                                             onClick={() => {
                                                 console.log(`Buy ${ticket.name}`)

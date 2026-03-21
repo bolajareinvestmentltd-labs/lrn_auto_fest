@@ -122,9 +122,9 @@ export async function GET(request: NextRequest) {
 
         // Not found
         return NextResponse.json(
-            { 
+            {
                 valid: false,
-                error: "No valid ticket, vendor, or order found with this information" 
+                error: "No valid ticket, vendor, or order found with this information"
             },
             { status: 404 }
         );

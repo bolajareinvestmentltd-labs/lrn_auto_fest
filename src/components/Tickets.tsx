@@ -51,26 +51,26 @@ export default function Tickets() {
                     headers: { 'Content-Type': 'application/json' },
                     signal: controller.signal,
                 });
-                
+
                 clearTimeout(timeoutId);
-                
+
                 if (!res.ok) {
                     const errorText = await res.text();
                     console.error(`API error ${res.status}:`, errorText);
                     throw new Error(`Failed to fetch tickets (${res.status})`);
                 }
-                
+
                 const data = await res.json();
-                
+
                 if (!Array.isArray(data)) {
                     console.error('Invalid data format - expected array, got:', typeof data);
                     throw new Error('Invalid response format from API');
                 }
-                
+
                 if (data.length === 0) {
                     console.warn('No tickets returned from API');
                 }
-                
+
                 setTiers(data);
                 setError(null);
             } catch (error) {
