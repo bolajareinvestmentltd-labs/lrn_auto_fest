@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// GET - Search and verify ticket/merchandise
+// GET - Search and verify ticket/merchandise/vendor
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
@@ -9,9 +9,45 @@ export async function GET(request: NextRequest) {
 
         if (!query) {
             return NextResponse.json(
-                { error: "Please provide a ticket number or email" },
+                { error: "Please provide a ticket number, vendor ID, or email" },
                 { status: 400 }
             );
+        }
+
+        // Search in vendor table (by ticket ID, email, or business name)
+        const vendor = await prisma.vendor.findFirst({
+            where: {
+                OR: [
+                    { ticketId: { equals: query, mode: "insensitive" } },
+                    { email: { equals: query, mode: "insensitive" } },
+                    { businessName: { equals: query, mode: "insensitive" } },
+                ],
+                status: "CONFIRMED",
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+        });
+
+        if (vendor) {
+            return NextResponse.json({
+                valid: true,
+                type: "vendor",
+                data: {
+                    vendorId: vendor.ticketId,
+                    businessName: vendor.businessName,
+                    contactPerson: vendor.contactPerson,
+                    email: vendor.email,
+                    phone: vendor.phone,
+                    productType: vendor.productType,
+                    status: vendor.status,
+                    accessesUsed: vendor.usedAccessCount,
+                    maxAccesses: vendor.maxAccessCount,
+                    accessesRemaining: Math.max(0, vendor.maxAccessCount - vendor.usedAccessCount),
+                    bookingDate: vendor.bookedAt.toISOString(),
+                    checkInTime: null,
+                },
+            });
         }
 
         // Search in orders (tickets)
@@ -88,7 +124,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(
             { 
                 valid: false,
-                error: "No valid ticket or order found with this information" 
+                error: "No valid ticket, vendor, or order found with this information" 
             },
             { status: 404 }
         );
@@ -106,19 +142,84 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { orderNumber, type } = body;
+        const { orderNumber, type, vendorId } = body;
 
-        if (!orderNumber || !type) {
+        if (!type) {
             return NextResponse.json(
-                { error: "Order number and type are required" },
+                { error: "Type is required" },
                 { status: 400 }
             );
         }
 
         const now = new Date();
 
-        if (type === "ticket") {
-            const order = await prisma.order.update({
+        if (type === "vendor") {
+            if (!vendorId) {
+                return NextResponse.json(
+                    { error: "Vendor ID is required" },
+                    { status: 400 }
+                );
+            }
+
+            const vendor = await prisma.vendor.findFirst({
+                where: {
+                    ticketId: vendorId,
+                    status: "CONFIRMED",
+                },
+            });
+
+            if (!vendor) {
+                return NextResponse.json(
+                    { error: "Vendor not found or not confirmed" },
+                    { status: 404 }
+                );
+            }
+
+            if (vendor.usedAccessCount >= vendor.maxAccessCount) {
+                return NextResponse.json(
+                    {
+                        success: false,
+                        error: `Vendor has exceeded maximum access count (${vendor.maxAccessCount} entries)`,
+                        accessesRemaining: 0,
+                    },
+                    { status: 403 }
+                );
+            }
+
+            // Log the vendor access
+            await prisma.vendorAccessLog.create({
+                data: {
+                    vendorId: vendor.id,
+                    entryTime: now,
+                    accessType: "ENTRANCE",
+                    verified: true,
+                    notes: "Scanned at entrance",
+                },
+            });
+
+            // Increment access count
+            const updatedVendor = await prisma.vendor.update({
+                where: { id: vendor.id },
+                data: {
+                    usedAccessCount: vendor.usedAccessCount + 1,
+                },
+            });
+
+            return NextResponse.json({
+                success: true,
+                message: `Vendor ${vendor.businessName} checked in successfully`,
+                accessesRemaining: Math.max(0, updatedVendor.maxAccessCount - updatedVendor.usedAccessCount),
+                checkInTime: now.toISOString(),
+            });
+        } else if (type === "ticket") {
+            if (!orderNumber) {
+                return NextResponse.json(
+                    { error: "Order number is required" },
+                    { status: 400 }
+                );
+            }
+
+            await prisma.order.update({
                 where: { orderNumber },
                 data: {
                     orderStatus: "COMPLETED",
@@ -131,7 +232,14 @@ export async function POST(request: NextRequest) {
                 checkInTime: now.toISOString(),
             });
         } else if (type === "merch") {
-            const merchOrder = await prisma.merchOrder.update({
+            if (!orderNumber) {
+                return NextResponse.json(
+                    { error: "Order number is required" },
+                    { status: 400 }
+                );
+            }
+
+            await prisma.merchOrder.update({
                 where: { orderNumber },
                 data: {
                     pickedUpAt: now,

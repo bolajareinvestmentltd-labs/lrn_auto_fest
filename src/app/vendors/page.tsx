@@ -144,23 +144,14 @@ export default function VendorPage() {
                     });
 
                     if (response.ok) {
-                        setTicketId(newTicketId);
-                        setSubmitted(true);
-                        setConfirmedVendors((current) => current + 1);
-                        setFormData({
-                            businessName: "",
-                            contactPerson: "",
-                            phone: "",
-                            email: "",
-                            productType: "",
-                        });
+                        // Redirect to vendor payment confirmation page with ticket ID and reference
+                        window.location.href = `/vendor-payment-confirmation?reference=${transaction.reference}&ticketId=${newTicketId}`;
                     } else {
                         throw new Error("Failed to save vendor application");
                     }
                 } catch (error) {
                     console.error("Error:", error);
                     alert("Payment verified but failed to save application. Please contact support.");
-                } finally {
                     setIsSubmitting(false);
                 }
             }
