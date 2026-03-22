@@ -210,7 +210,6 @@ export default function VendorPage() {
                                 <div className="space-y-2 text-sm">
                                     <p>• Booking limit: 10 vendors only</p>
                                     <p>• Allowed products: food, drink, eatables only</p>
-                                </p>
                             </div>
                         </CardContent>
                     </Card>
