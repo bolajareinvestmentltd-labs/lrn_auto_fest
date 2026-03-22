@@ -1,11 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import { Loader2, Music, Car, Zap, CheckCircle2, XCircle, ExternalLink, Instagram, Twitter } from "lucide-react";
-import { getChampionsByCategory } from "@/data/champions";
+import { Loader2, Music, Car, Zap, CheckCircle2, XCircle, ExternalLink, Instagram, Twitter, X } from "lucide-react";
+import { getChampionsByCategory, type Champion } from "@/data/champions";
 
 interface CategorySlots {
     driftChampionship: { max: number; registered: number };
@@ -26,6 +26,7 @@ interface Category {
 
 export default function RegisterPage() {
     const [fetchingSlots, setFetchingSlots] = useState(true);
+    const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
     const [slots, setSlots] = useState<CategorySlots>({
         driftChampionship: { max: 10, registered: 0 },
         dragRace: { max: 10, registered: 0 },
@@ -100,9 +101,18 @@ export default function RegisterPage() {
     };
 
     const handleRegisterClick = (category: Category) => {
-        // Open Google Form in new tab
+        // Show champions modal
+        setSelectedCategoryId(category.id);
+    };
+
+    const handleProceedToForm = (category: Category) => {
+        // Close modal and open Google Form
+        setSelectedCategoryId(null);
         window.open(category.googleFormUrl, "_blank");
     };
+
+    const selectedCategory = categories.find(cat => cat.id === selectedCategoryId);
+    const selectedChampions = selectedCategory ? getChampionsByCategory(selectedCategory.id) : [];
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 py-12 px-4">
@@ -154,9 +164,10 @@ export default function RegisterPage() {
                                         transition={{ delay: 0.1 * index }}
                                         className="space-y-6"
                                     >
-                                        {/* Category Header */}
+                                        {/* Category Header - Clickable */}
                                         <div
-                                            className={`w-full p-6 rounded-xl border-2 transition-all duration-300 ${isFull
+                                            onClick={() => setSelectedCategoryId(category.id)}
+                                            className={`w-full p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer ${isFull
                                                 ? "bg-gray-800/50 border-gray-700 opacity-60"
                                                 : "bg-gray-800/50 border-gray-600 hover:border-gray-400 hover:bg-gray-800"
                                                 }`}
@@ -209,64 +220,10 @@ export default function RegisterPage() {
                                             </div>
                                         </div>
 
-                                        {/* Past Champions Section */}
+                                        {/* Past Champions Section - Hidden, shown in modal */}
                                         {champions.length > 0 && (
-                                            <div className="space-y-3">
-                                                <h4 className="text-lg font-bold text-white mb-4">Past Champions</h4>
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                                    {champions.map((champion) => (
-                                                        <motion.div
-                                                            key={champion.id}
-                                                            initial={{ opacity: 0, scale: 0.9 }}
-                                                            animate={{ opacity: 1, scale: 1 }}
-                                                            className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg overflow-hidden border border-gray-700 hover:border-gray-600 transition-all hover:shadow-lg hover:shadow-orange-500/20"
-                                                        >
-                                                            {/* Champion Image Placeholder */}
-                                                            <div className={`w-full h-40 bg-gradient-to-br ${category.color} flex items-center justify-center text-white text-sm font-semibold`}>
-                                                                {champion.name.split(' ')[0]}
-                                                            </div>
-                                                            
-                                                            {/* Champion Info */}
-                                                            <div className="p-4">
-                                                                <h5 className="font-bold text-white text-center mb-1">
-                                                                    {champion.name}
-                                                                </h5>
-                                                                <p className="text-xs text-brand-orange text-center font-semibold mb-2">
-                                                                    {champion.title}
-                                                                </p>
-                                                                <p className="text-xs text-gray-400 text-center mb-3 line-clamp-2">
-                                                                    {champion.bio}
-                                                                </p>
-                                                                
-                                                                {/* Social Links */}
-                                                                <div className="flex justify-center gap-2">
-                                                                    {champion.instagram && (
-                                                                        <a
-                                                                            href={`https://instagram.com/${champion.instagram.replace('@', '')}`}
-                                                                            target="_blank"
-                                                                            rel="noopener noreferrer"
-                                                                            className="text-gray-400 hover:text-pink-500 transition-colors"
-                                                                            title="Instagram"
-                                                                        >
-                                                                            <Instagram className="w-4 h-4" />
-                                                                        </a>
-                                                                    )}
-                                                                    {champion.twitter && (
-                                                                        <a
-                                                                            href={`https://twitter.com/${champion.twitter.replace('@', '')}`}
-                                                                            target="_blank"
-                                                                            rel="noopener noreferrer"
-                                                                            className="text-gray-400 hover:text-blue-400 transition-colors"
-                                                                            title="Twitter"
-                                                                        >
-                                                                            <Twitter className="w-4 h-4" />
-                                                                        </a>
-                                                                    )}
-                                                                </div>
-                                                            </div>
-                                                        </motion.div>
-                                                    ))}
-                                                </div>
+                                            <div className="text-center text-sm text-gray-400 mt-2">
+                                                Click to view {champions.length} past champions →
                                             </div>
                                         )}
                                     </motion.div>
@@ -290,6 +247,127 @@ export default function RegisterPage() {
                     </Link>
                 </motion.div>
             </div>
+
+            {/* Champions Modal */}
+            <AnimatePresence>
+                {selectedCategoryId && selectedCategory && (
+                    <>
+                        {/* Backdrop */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setSelectedCategoryId(null)}
+                            className="fixed inset-0 bg-black/80 z-40"
+                        />
+
+                        {/* Modal */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto"
+                        >
+                            <div className="bg-gradient-to-br from-gray-900 to-black rounded-2xl border border-gray-700 max-w-4xl w-full my-auto">
+                                {/* Modal Header */}
+                                <div className={`bg-gradient-to-r ${selectedCategory.color} p-6 rounded-t-2xl`}>
+                                    <div className="flex justify-between items-center">
+                                        <div>
+                                            <h2 className="text-3xl font-bold text-white mb-2">{selectedCategory.name}</h2>
+                                            <p className="text-white/90">{selectedCategory.description}</p>
+                                        </div>
+                                        <button
+                                            onClick={() => setSelectedCategoryId(null)}
+                                            className="text-white hover:bg-white/20 p-2 rounded-lg transition-colors"
+                                            aria-label="Close modal"
+                                        >
+                                            <X className="w-6 h-6" />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Modal Content */}
+                                <div className="p-8">
+                                    <h3 className="text-2xl font-bold text-white mb-6">Past Champions</h3>
+                                    
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                                        {selectedChampions.map((champion) => (
+                                            <motion.div
+                                                key={champion.id}
+                                                initial={{ opacity: 0, scale: 0.8 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                className="flex flex-col items-center"
+                                            >
+                                                {/* Champion Image Placeholder */}
+                                                <div className={`w-full h-48 bg-gradient-to-br ${selectedCategory.color} rounded-lg flex items-center justify-center text-white text-3xl font-bold mb-4`}>
+                                                    {champion.name.split(' ')[0].charAt(0)}{champion.name.split(' ')[1]?.charAt(0) || ''}
+                                                </div>
+                                                
+                                                {/* Champion Info */}
+                                                <div className="w-full text-center">
+                                                    <h4 className="font-bold text-white text-lg mb-1">
+                                                        {champion.name}
+                                                    </h4>
+                                                    <p className={`text-sm bg-gradient-to-r ${selectedCategory.color} bg-clip-text text-transparent font-semibold mb-3`}>
+                                                        {champion.title}
+                                                    </p>
+                                                    <p className="text-sm text-gray-300 mb-4">
+                                                        {champion.bio}
+                                                    </p>
+                                                    
+                                                    {/* Social Links */}
+                                                    <div className="flex justify-center gap-3">
+                                                        {champion.instagram && (
+                                                            <a
+                                                                href={`https://instagram.com/${champion.instagram.replace('@', '')}`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="text-gray-400 hover:text-pink-500 transition-colors bg-gray-800 p-2 rounded-lg hover:bg-gray-700"
+                                                                title="Instagram"
+                                                            >
+                                                                <Instagram className="w-5 h-5" />
+                                                            </a>
+                                                        )}
+                                                        {champion.twitter && (
+                                                            <a
+                                                                href={`https://twitter.com/${champion.twitter.replace('@', '')}`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="text-gray-400 hover:text-blue-400 transition-colors bg-gray-800 p-2 rounded-lg hover:bg-gray-700"
+                                                                title="Twitter"
+                                                            >
+                                                                <Twitter className="w-5 h-5" />
+                                                            </a>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+
+                                    {/* Action Buttons */}
+                                    <div className="flex gap-4 justify-center pt-6 border-t border-gray-700">
+                                        <Button
+                                            onClick={() => setSelectedCategoryId(null)}
+                                            variant="ghost"
+                                            className="text-gray-400 hover:text-white"
+                                        >
+                                            Cancel
+                                        </Button>
+                                        <Button
+                                            onClick={() => handleProceedToForm(selectedCategory)}
+                                            className={`bg-gradient-to-r ${selectedCategory.color} text-white font-bold px-8 py-3 rounded-lg`}
+                                        >
+                                            Proceed to Registration Form
+                                            <ExternalLink className="w-4 h-4 ml-2" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
