@@ -416,7 +416,7 @@ export default function VendorPage() {
                     </div>
                     <div>
                         <h4 className="font-bold text-brand-orange mb-2">How many vendors are allowed?</h4>
-                        <p className="text-gray-400 text-sm">Only 10 </p>
+                        <p className="text-gray-400 text-sm">Only 10 .</p>
                     </div>
                 </div>
             </div>

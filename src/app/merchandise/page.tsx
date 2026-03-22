@@ -42,7 +42,7 @@ export default function MerchandisePage() {
                         </h1>
 
                         <p className="text-gray-400 max-w-2xl mx-auto text-lg">
-                            Rep the Ilorin Car Show 3.0 in style! Limited edition gear available for pre-order.
+                            Limited edition gear available on pre-order.<br />
                             Pick up at the event on May 30, 2026.
                         </p>
                     </motion.div>

@@ -36,7 +36,7 @@ export default function RegisterPage() {
         {
             id: "performer",
             name: "Performer",
-            description: "Music artists, DJs, and live performers",
+            description: "Musical artists, DJs, and live performers",
             maxSlots: 15,
             icon: <Music className="w-8 h-8" />,
             color: "from-purple-500 to-pink-500",
