@@ -37,7 +37,7 @@ export default function ContactPage() {
   };
 
   const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "234XXXXXXXXXX";
-  const whatsappMessage = encodeURIComponent("Hi, I have a question about the Ilorin Automotive Festival 2026");
+  const whatsappLink = "https://wa.me/message/RW254YIQFNZ5N1";
 
   return (
     <div className="min-h-screen bg-dark-900 py-20">
@@ -57,7 +57,7 @@ export default function ContactPage() {
           <div className="space-y-8">
             {/* WhatsApp CTA - Primary */}
             <a
-              href={`https://wa.me/${whatsappNumber}?text=${whatsappMessage}`}
+              href={whatsappLink}
               target="_blank"
               rel="noopener noreferrer"
               className="block p-6 bg-green-600/20 border-2 border-green-500 rounded-2xl hover:bg-green-600/30 transition-all group"
