@@ -1,6 +1,6 @@
 "use client";
 
-import { Instagram, ExternalLink } from 'lucide-react';
+import { Instagram, ExternalLink, Play } from 'lucide-react';
 import Image from 'next/image';
 
 // Social media platforms with brand colors and links
@@ -92,6 +92,36 @@ export default function GalleryPage() {
           <p className="text-neutral-400 text-lg max-w-2xl mx-auto">
             Follow Ilorin Car Show 3.0 on all platforms. Stay updated with the latest on cars, drift, lifestyle & everything automotive.
           </p>
+        </div>
+
+        {/* Video Recap Section */}
+        <div className="mt-12 mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 text-center">Event Recaps</h2>
+          <a
+            href={process.env.NEXT_PUBLIC_YOUTUBE_URL || 'https://youtube.com/@ilorincarshow'}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative block mx-auto max-w-2xl"
+          >
+            <div className="relative w-full aspect-video bg-gradient-to-br from-red-600 to-red-900 rounded-2xl overflow-hidden border border-red-500/30 hover:border-red-500/70 transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-red-900/50">
+              {/* Play Button Overlay */}
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/50 transition-all duration-300">
+                <div className="flex items-center justify-center w-20 h-20 bg-red-600 rounded-full group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <Play className="w-8 h-8 text-white fill-white ml-1" />
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
+                <p className="text-white/90 text-sm uppercase tracking-widest mb-2">Full Event Recaps</p>
+                <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">Watch Ilorin Car Show Highlights</h3>
+                <p className="text-red-200 text-sm md:text-base">Drift clips, car reveals & complete event coverage</p>
+              </div>
+
+              {/* Hover Effect Background */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </div>
+          </a>
         </div>
 
         {/* Social Media Cards Grid */}
