@@ -10,7 +10,7 @@ import Image from "next/image";
 // Event configuration
 const EVENT_DATE = "2026-05-30T09:00:00";
 const PRESALE_END_DATE = "2026-03-31T23:59:59";
-const EVENT_VENUE = "Metropolitan Square, Asadam Road, Ilorin";
+const EVENT_VENUE = "Metropolitan Square, Asadam Road, Ilorin, Kwara State";
 const VENUE_COORDS = "8.4799,4.5418"; // Ilorin coordinates
 
 export default function Hero() {
@@ -201,7 +201,7 @@ export default function Hero() {
           className="mt-4 mx-auto max-w-xl"
         >
           <p className="text-gray-300 font-sans text-base sm:text-xl">
-            Cars • Bikes • Drift • Lifestyle
+            Drift Championship - Keke Race - Drag Race - Stunts and Lots More
           </p>
           <p className="text-gray-300 font-sans text-base sm:text-xl mt-2">
             The Biggest Auto Experience in Northern Nigeria
@@ -258,7 +258,7 @@ export default function Hero() {
         >
           <Link href="/register">
             <Button size="lg" className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-green-900/20">
-              🎤 Performer
+              🎤 PERFORM
             </Button>
           </Link>
           <Link href="/tickets">

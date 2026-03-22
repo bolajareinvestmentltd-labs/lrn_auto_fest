@@ -34,17 +34,27 @@ export default function RegisterPage() {
     // Google Form URLs for each category - Replace these with your actual Google Form URLs
     const categories: Category[] = [
         {
-            id: "performer",
-            name: "Performer",
-            description: "Musical artists, DJs, and live performers",
-            maxSlots: 15,
-            icon: <Music className="w-8 h-8" />,
-            color: "from-purple-500 to-pink-500",
-            googleFormUrl: "https://forms.gle/performerICS30", // Replace with actual form URL
-            email: "performers@ilorincarshow.com",
+            id: "driftChampionship",
+            name: "Drift Championship",
+            description: "STAND A CHANCE TO DRIFT AGAINST THE GUEST DRIFTERS",
+            maxSlots: 5,
+            icon: <Zap className="w-8 h-8" />,
+            color: "from-blue-500 to-cyan-500",
+            googleFormUrl: "https://forms.gle/driftICS30", // Replace with actual form URL
+            email: "drift@ilorincarshow.com",
         },
         {
             id: "dragRace",
+            name: "Keke Race",
+            description: "Compete in our high-speed Keke racing event",
+            maxSlots: 10,
+            icon: <Car className="w-8 h-8" />,
+            color: "from-orange-500 to-yellow-500",
+            googleFormUrl: "https://forms.gle/kekeICS30", // Replace with actual form URL
+            email: "kekerace@ilorincarshow.com",
+        },
+        {
+            id: "dragRace2",
             name: "Drag Race",
             description: "Compete in our high-speed drag racing event",
             maxSlots: 10,
@@ -54,14 +64,24 @@ export default function RegisterPage() {
             email: "dragrace@ilorincarshow.com",
         },
         {
-            id: "driftChampionship",
-            name: "Drift Championship",
-            description: "Show off your drifting skills in the championship",
-            maxSlots: 5,
+            id: "stunts",
+            name: "Stunts",
+            description: "Show off your best driving stunts",
+            maxSlots: 8,
             icon: <Zap className="w-8 h-8" />,
-            color: "from-blue-500 to-cyan-500",
-            googleFormUrl: "https://forms.gle/driftICS30", // Replace with actual form URL
-            email: "drift@ilorincarshow.com",
+            color: "from-purple-500 to-pink-500",
+            googleFormUrl: "https://forms.gle/stuntsICS30", // Replace with actual form URL
+            email: "stunts@ilorincarshow.com",
+        },
+        {
+            id: "performer",
+            name: "Performer",
+            description: "Musical artists, DJs, and live performers",
+            maxSlots: 15,
+            icon: <Music className="w-8 h-8" />,
+            color: "from-purple-500 to-pink-500",
+            googleFormUrl: "https://forms.gle/performerICS30", // Replace with actual form URL
+            email: "performers@ilorincarshow.com",
         },
     ];
 
