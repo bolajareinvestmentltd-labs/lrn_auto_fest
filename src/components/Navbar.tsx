@@ -25,7 +25,7 @@ const Navbar = () => {
           <NavigationMenu>
             <NavigationMenuList className="flex gap-6">
               <NavigationMenuItem>
-                <Link href="/register" className="text-white font-sans hover:text-brand-blue transition-colors px-3 py-2">Register</Link>
+                <Link href="/register" className="text-white font-sans hover:text-brand-blue transition-colors px-3 py-2">Performer</Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <Link href="/tickets" className="text-white font-sans hover:text-brand-blue transition-colors px-3 py-2">Tickets</Link>
@@ -82,7 +82,7 @@ const Navbar = () => {
             </SheetTrigger>
             <SheetContent className="bg-[#050505] text-white border-l border-white/10">
               <nav className="flex flex-col space-y-4 mt-8">
-                <Link href="/register" className="text-white font-sans hover:text-brand-blue transition-colors text-lg">Register</Link>
+                <Link href="/register" className="text-white font-sans hover:text-brand-blue transition-colors text-lg">Performer</Link>
                 <Link href="/tickets" className="text-white font-sans hover:text-brand-blue transition-colors text-lg">Tickets</Link>
                 <Link href="/vip" className="text-white font-sans hover:text-brand-blue transition-colors text-lg">VIP Packages</Link>
                 <Link href="/vendors" className="text-white font-sans hover:text-brand-blue transition-colors text-lg">Vendors</Link>

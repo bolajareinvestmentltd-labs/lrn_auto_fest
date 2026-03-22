@@ -96,27 +96,27 @@ export default function Hero() {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
-          className="mb-4"
+          className="mb-1"
         >
           <Image
             src="/images/logo.png"
-            alt="Ilorin Car Show Logo"
-            width={180}
-            height={180}
+            alt="Ilorin Car Show 3.0 Logo"
+            width={260}
+            height={260}
             priority
-            className="mx-auto h-36 w-36 sm:h-44 sm:w-44 md:h-52 md:w-52 object-contain"
+            className="mx-auto h-48 w-48 sm:h-56 sm:w-56 md:h-64 md:w-64 lg:h-72 lg:w-72 object-contain"
           />
         </motion.div>
 
-        {/* PRESENT text - cursive */}
+        {/* PRESENTS text - cursive */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-white/80 text-xl sm:text-2xl md:text-3xl mb-4 italic"
+          className="text-white/80 text-xl sm:text-2xl md:text-3xl mb-4 italic -mt-1"
           style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
         >
-          Present
+          Presents
         </motion.p>
 
         {/* Animated Title - ILORIN CAR SHOW 3.0 */}
@@ -258,17 +258,12 @@ export default function Hero() {
         >
           <Link href="/register">
             <Button size="lg" className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-green-900/20">
-              📝 Register
+              🎤 Performer
             </Button>
           </Link>
           <Link href="/tickets">
             <Button size="lg" className="bg-brand-orange hover:bg-orange-600 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-orange-900/20">
               🎟️ Get Tickets
-            </Button>
-          </Link>
-          <Link href="/vip">
-            <Button size="lg" className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg">
-              💎 VIP Packages
             </Button>
           </Link>
           <Link href="/vendors">
