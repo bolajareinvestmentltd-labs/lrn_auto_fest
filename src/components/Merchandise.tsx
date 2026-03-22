@@ -23,7 +23,7 @@ interface MerchItem {
 const MERCHANDISE: MerchItem[] = [
     {
         id: "cap",
-        name: "Event Cap",
+        name: "Cap",
         price: 5000,
         description: "Official Ilorin Automotive Festival cap made with premium materials for everyday wear. Clean design, comfortable fit, and built to last.",
         image: "/images/merch/cap.PNG",

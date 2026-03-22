@@ -5,6 +5,7 @@ import Experience from '@/components/Experience';
 import Tickets from '@/components/Tickets';
 import Sponsors from '@/components/Sponsors';
 import SocialProof from '@/components/SocialProof';
+import Merchandise from '@/components/Merchandise';
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <Hero />
       <Experience />
       <Tickets />
+      <Merchandise />
       <Sponsors />
       <SocialProof />
     </div>

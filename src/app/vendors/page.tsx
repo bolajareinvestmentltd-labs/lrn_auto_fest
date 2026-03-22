@@ -169,8 +169,8 @@ export default function VendorPage() {
                         Become a <span className="text-brand-blue">Vendor</span>
                     </h1>
                     <p className="text-gray-400 mt-6 text-lg">
-                        Vendor booking is strictly for food, drink, and eatables only.
-                        There are only 10 slots available and each confirmed booking is ₦100,000.
+                        Vendor Reservation is strictly for food, Drinks, and eatables only.
+
                     </p>
                 </div>
 
@@ -210,218 +210,217 @@ export default function VendorPage() {
                                 <div className="space-y-2 text-sm">
                                     <p>• Booking limit: 10 vendors only</p>
                                     <p>• Allowed products: food, drink, eatables only</p>
-                                    <p>• Confirmation email is sent automatically after successful payment</p>
-                                    <p>• Admin receives a notification as soon as your booking is confirmed</p>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card className="border-white/10 bg-white/5">
-                            <CardHeader>
-                                <CardTitle className="text-white">Accepted Product Types</CardTitle>
-                            </CardHeader>
-                            <CardContent className="grid gap-3 sm:grid-cols-3">
-                                {PRODUCT_TYPES.map((product) => {
-                                    const isSelected = formData.productType === product.id;
-
-                                    return (
-                                        <button
-                                            key={product.id}
-                                            type="button"
-                                            onClick={() => setFormData((prev) => ({ ...prev, productType: product.id }))}
-                                            className={`rounded-xl border px-4 py-4 text-left transition ${isSelected
-                                                ? "border-brand-orange bg-brand-orange/10 text-white"
-                                                : "border-white/10 bg-black/20 text-gray-400 hover:border-brand-orange/40"
-                                                }`}
-                                        >
-                                            <p className="font-semibold capitalize">{product.label}</p>
-                                            <p className="mt-1 text-xs text-gray-500">Approved for vendor booking</p>
-                                        </button>
-                                    );
-                                })}
-                            </CardContent>
-                        </Card>
-
-                        {slotsLeft <= 0 && !countLoading && (
-                            <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-red-200">
-                                <div className="flex items-start gap-3">
-                                    <AlertTriangle className="mt-0.5 h-5 w-5 text-red-400" />
-                                    <div>
-                                        <p className="font-semibold">Vendor booking is currently full.</p>
-                                        <p className="mt-1 text-sm text-red-200/80">
-                                            All 10 vendor slots have been reserved. The form is disabled until a slot becomes available.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* APPLICATION FORM */}
-                    <div className="bg-white/5 border border-white/10 p-8 rounded-xl">
-                        <h3 className="text-xl font-bold uppercase mb-6 text-brand-orange">Application Form</h3>
-
-                        {submitted ? (
-                            <div className="text-center space-y-6 py-8">
-                                <div className="text-5xl animate-bounce"><CheckCircle className="w-16 h-16 text-green-400 mx-auto" /></div>
-                                <div>
-                                    <p className="text-xl font-bold text-green-400 mb-2">✅ Application Approved!</p>
-                                    <p className="text-sm text-gray-300 mb-4">Your payment has been verified, your vendor slot is confirmed, and the admin team has been notified.</p>
-                                </div>
-
-                                <div className="bg-brand-orange/10 border border-brand-orange/50 p-4 rounded-lg">
-                                    <p className="text-xs text-gray-500 uppercase mb-1">Your Confirmation Ticket ID</p>
-                                    <p className="text-lg font-mono font-bold text-brand-orange break-all">{ticketId}</p>
-                                    <p className="text-xs text-gray-400 mt-3">📧 Confirmation email sent to your registered email address with your vendor booking details.</p>
-                                </div>
-
-                                <div className="bg-blue-500/10 border border-brand-blue/30 p-3 rounded-lg text-left">
-                                    <p className="text-xs text-gray-400">💡 <strong>Next Steps:</strong></p>
-                                    <ul className="text-xs text-gray-400 mt-2 space-y-1">
-                                        <li>✓ Check your email for your payment receipt and confirmation</li>
-                                        <li>✓ Your vendor slot is confirmed for food, drink, or eatables sales</li>
-                                        <li>✓ Event setup details will be shared before the festival</li>
-                                        <li>✓ Admin will reach out if additional coordination is needed</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        ) : (
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                <div>
-                                    <label className="text-xs uppercase text-gray-500 block mb-2">Business Name *</label>
-                                    <Input
-                                        name="businessName"
-                                        value={formData.businessName}
-                                        onChange={handleInputChange}
-                                        placeholder="Your Business Name"
-                                        disabled={isSubmitting || slotsLeft <= 0}
-                                        className="bg-black/50 border-white/10 text-white"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="text-xs uppercase text-gray-500 block mb-2">Contact Person *</label>
-                                    <Input
-                                        name="contactPerson"
-                                        value={formData.contactPerson}
-                                        onChange={handleInputChange}
-                                        placeholder="Your Name"
-                                        disabled={isSubmitting || slotsLeft <= 0}
-                                        className="bg-black/50 border-white/10 text-white"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="text-xs uppercase text-gray-500 block mb-2">Email Address *</label>
-                                    <Input
-                                        name="email"
-                                        type="email"
-                                        value={formData.email}
-                                        onChange={handleInputChange}
-                                        placeholder="your@email.com"
-                                        disabled={isSubmitting || slotsLeft <= 0}
-                                        className="bg-black/50 border-white/10 text-white"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="text-xs uppercase text-gray-500 block mb-2">Phone / WhatsApp *</label>
-                                    <Input
-                                        name="phone"
-                                        value={formData.phone}
-                                        onChange={handleInputChange}
-                                        placeholder="08012345678"
-                                        type="tel"
-                                        disabled={isSubmitting || slotsLeft <= 0}
-                                        className="bg-black/50 border-white/10 text-white"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="text-xs uppercase text-gray-500 block mb-2">Product Type *</label>
-                                    <div className="grid gap-3 sm:grid-cols-3">
-                                        {PRODUCT_TYPES.map((product) => {
-                                            const isSelected = formData.productType === product.id;
-
-                                            return (
-                                                <button
-                                                    key={product.id}
-                                                    type="button"
-                                                    onClick={() => setFormData((prev) => ({ ...prev, productType: product.id }))}
-                                                    disabled={isSubmitting || slotsLeft <= 0}
-                                                    className={`rounded-xl border px-4 py-3 text-left transition ${isSelected
-                                                        ? "border-brand-orange bg-brand-orange/10 text-white"
-                                                        : "border-white/10 bg-black/20 text-gray-400 hover:border-brand-orange/40"
-                                                        }`}
-                                                >
-                                                    <p className="font-semibold capitalize">{product.label}</p>
-                                                    <p className="mt-1 text-[11px] text-gray-500">Choose one</p>
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-
-                                <div className="bg-brand-orange/10 border border-brand-orange/50 p-4 rounded-lg space-y-3">
-                                    <p className="text-xs text-gray-400">💰 Booking Summary</p>
-                                    <div className="space-y-1 text-sm bg-black/30 p-3 rounded">
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-400">Vendor Booking Fee:</span>
-                                            <span className="text-white">₦{VENDOR_BOOKING_FEE.toLocaleString()}</span>
-                                        </div>
-                                        <div className="flex justify-between pt-2 border-t border-white/10">
-                                            <span className="font-semibold text-gray-300">Total:</span>
-                                            <span className="text-lg font-bold text-brand-orange">₦{VENDOR_BOOKING_FEE.toLocaleString()}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <Button
-                                    type="submit"
-                                    disabled={isSubmitting || !formData.productType || slotsLeft <= 0}
-                                    className="w-full bg-brand-orange hover:bg-orange-600 disabled:opacity-50 text-white font-bold uppercase h-11"
-                                >
-                                    {isSubmitting ? (
-                                        <>
-                                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                            Processing Payment...
-                                        </>
-                                    ) : (
-                                        `Pay ₦${VENDOR_BOOKING_FEE.toLocaleString()} & Submit`
-                                    )}
-                                </Button>
-
-                                <p className="text-[10px] text-center text-gray-500 uppercase">
-                                    🔒 Secure payment powered by Paystack. Confirmation email and admin notification are sent automatically after payment verification.
                                 </p>
-                            </form>
-                        )}
-                    </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-white/10 bg-white/5">
+                        <CardHeader>
+                            <CardTitle className="text-white">Items of choice.</CardTitle>
+                        </CardHeader>
+                        <CardContent className="grid gap-3 sm:grid-cols-3">
+                            {PRODUCT_TYPES.map((product) => {
+                                const isSelected = formData.productType === product.id;
+
+                                return (
+                                    <button
+                                        key={product.id}
+                                        type="button"
+                                        onClick={() => setFormData((prev) => ({ ...prev, productType: product.id }))}
+                                        className={`rounded-xl border px-4 py-4 text-left transition ${isSelected
+                                            ? "border-brand-orange bg-brand-orange/10 text-white"
+                                            : "border-white/10 bg-black/20 text-gray-400 hover:border-brand-orange/40"
+                                            }`}
+                                    >
+                                        <p className="font-semibold capitalize">{product.label}</p>
+                                        <p className="mt-1 text-xs text-gray-500">Approved for vendor booking</p>
+                                    </button>
+                                );
+                            })}
+                        </CardContent>
+                    </Card>
+
+                    {slotsLeft <= 0 && !countLoading && (
+                        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-red-200">
+                            <div className="flex items-start gap-3">
+                                <AlertTriangle className="mt-0.5 h-5 w-5 text-red-400" />
+                                <div>
+                                    <p className="font-semibold">Vendor booking is currently full.</p>
+                                    <p className="mt-1 text-sm text-red-200/80">
+                                        All 10 vendor slots have been reserved. The form is disabled until a slot becomes available.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
-                {/* FAQs */}
-                <div className="max-w-3xl mx-auto mt-20 pt-20 border-t border-white/10">
-                    <h2 className="text-3xl font-heading uppercase mb-8 text-center">FAQs</h2>
-                    <div className="grid md:grid-cols-2 gap-8">
-                        <div>
-                            <h4 className="font-bold text-brand-orange mb-2">What can I sell?</h4>
-                            <p className="text-gray-400 text-sm">Only food, drink, and eatables are allowed for this booking round.</p>
+                {/* APPLICATION FORM */}
+                <div className="bg-white/5 border border-white/10 p-8 rounded-xl">
+                    <h3 className="text-xl font-bold uppercase mb-6 text-brand-orange">Application Form</h3>
+
+                    {submitted ? (
+                        <div className="text-center space-y-6 py-8">
+                            <div className="text-5xl animate-bounce"><CheckCircle className="w-16 h-16 text-green-400 mx-auto" /></div>
+                            <div>
+                                <p className="text-xl font-bold text-green-400 mb-2">✅ Application Approved!</p>
+                                <p className="text-sm text-gray-300 mb-4">Your payment has been verified, your vendor slot is confirmed, and the admin team has been notified.</p>
+                            </div>
+
+                            <div className="bg-brand-orange/10 border border-brand-orange/50 p-4 rounded-lg">
+                                <p className="text-xs text-gray-500 uppercase mb-1">Your Confirmation Ticket ID</p>
+                                <p className="text-lg font-mono font-bold text-brand-orange break-all">{ticketId}</p>
+                                <p className="text-xs text-gray-400 mt-3">📧 Confirmation email sent to your registered email address with your vendor booking details.</p>
+                            </div>
+
+                            <div className="bg-blue-500/10 border border-brand-blue/30 p-3 rounded-lg text-left">
+                                <p className="text-xs text-gray-400">💡 <strong>Next Steps:</strong></p>
+                                <ul className="text-xs text-gray-400 mt-2 space-y-1">
+                                    <li>✓ Check your email for your payment receipt and confirmation</li>
+                                    <li>✓ Your vendor slot is confirmed for food, drink, or eatables sales</li>
+                                    <li>✓ Event setup details will be shared before the festival</li>
+                                    <li>✓ Admin will reach out if additional coordination is needed</li>
+                                </ul>
+                            </div>
                         </div>
-                        <div>
-                            <h4 className="font-bold text-brand-orange mb-2">What&apos;s the booking fee?</h4>
-                            <p className="text-gray-400 text-sm">Each confirmed vendor slot costs ₦100,000.</p>
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-brand-orange mb-2">What&apos;s the event date?</h4>
-                            <p className="text-gray-400 text-sm">May 30, 2026 at <a href="https://www.google.com/maps/dir/?api=1&destination=8.4799,4.5418&travelmode=driving" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline">Metropolitan Square, Asadam Road, Ilorin ↗</a></p>
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-brand-orange mb-2">How many vendors are allowed?</h4>
-                            <p className="text-gray-400 text-sm">Only 10 vendor bookings are available, and the page shows the remaining slot count live.</p>
-                        </div>
+                    ) : (
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <label className="text-xs uppercase text-gray-500 block mb-2">Business Name *</label>
+                                <Input
+                                    name="businessName"
+                                    value={formData.businessName}
+                                    onChange={handleInputChange}
+                                    placeholder="Your Business Name"
+                                    disabled={isSubmitting || slotsLeft <= 0}
+                                    className="bg-black/50 border-white/10 text-white"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="text-xs uppercase text-gray-500 block mb-2">Contact Person *</label>
+                                <Input
+                                    name="contactPerson"
+                                    value={formData.contactPerson}
+                                    onChange={handleInputChange}
+                                    placeholder="Your Name"
+                                    disabled={isSubmitting || slotsLeft <= 0}
+                                    className="bg-black/50 border-white/10 text-white"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="text-xs uppercase text-gray-500 block mb-2">Email Address *</label>
+                                <Input
+                                    name="email"
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={handleInputChange}
+                                    placeholder="your@email.com"
+                                    disabled={isSubmitting || slotsLeft <= 0}
+                                    className="bg-black/50 border-white/10 text-white"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="text-xs uppercase text-gray-500 block mb-2">Phone / WhatsApp *</label>
+                                <Input
+                                    name="phone"
+                                    value={formData.phone}
+                                    onChange={handleInputChange}
+                                    placeholder="08012345678"
+                                    type="tel"
+                                    disabled={isSubmitting || slotsLeft <= 0}
+                                    className="bg-black/50 border-white/10 text-white"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="text-xs uppercase text-gray-500 block mb-2">Product Type *</label>
+                                <div className="grid gap-3 sm:grid-cols-3">
+                                    {PRODUCT_TYPES.map((product) => {
+                                        const isSelected = formData.productType === product.id;
+
+                                        return (
+                                            <button
+                                                key={product.id}
+                                                type="button"
+                                                onClick={() => setFormData((prev) => ({ ...prev, productType: product.id }))}
+                                                disabled={isSubmitting || slotsLeft <= 0}
+                                                className={`rounded-xl border px-4 py-3 text-left transition ${isSelected
+                                                    ? "border-brand-orange bg-brand-orange/10 text-white"
+                                                    : "border-white/10 bg-black/20 text-gray-400 hover:border-brand-orange/40"
+                                                    }`}
+                                            >
+                                                <p className="font-semibold capitalize">{product.label}</p>
+                                                <p className="mt-1 text-[11px] text-gray-500">Choose one</p>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            <div className="bg-brand-orange/10 border border-brand-orange/50 p-4 rounded-lg space-y-3">
+                                <p className="text-xs text-gray-400">💰 Booking Summary</p>
+                                <div className="space-y-1 text-sm bg-black/30 p-3 rounded">
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-400">Vendor Booking Fee:</span>
+                                        <span className="text-white">₦{VENDOR_BOOKING_FEE.toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex justify-between pt-2 border-t border-white/10">
+                                        <span className="font-semibold text-gray-300">Total:</span>
+                                        <span className="text-lg font-bold text-brand-orange">₦{VENDOR_BOOKING_FEE.toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <Button
+                                type="submit"
+                                disabled={isSubmitting || !formData.productType || slotsLeft <= 0}
+                                className="w-full bg-brand-orange hover:bg-orange-600 disabled:opacity-50 text-white font-bold uppercase h-11"
+                            >
+                                {isSubmitting ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                        Processing Payment...
+                                    </>
+                                ) : (
+                                    `Pay ₦${VENDOR_BOOKING_FEE.toLocaleString()} & Submit`
+                                )}
+                            </Button>
+
+                            <p className="text-[10px] text-center text-gray-500 uppercase">
+                                🔒 Secure payment powered by Paystack.
+                            </p>
+                        </form>
+                    )}
+                </div>
+            </div>
+
+            {/* FAQs */}
+            <div className="max-w-3xl mx-auto mt-20 pt-20 border-t border-white/10">
+                <h2 className="text-3xl font-heading uppercase mb-8 text-center">FAQs</h2>
+                <div className="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 className="font-bold text-brand-orange mb-2">What can I sell?</h4>
+                        <p className="text-gray-400 text-sm">Only foods, drinks, and eatables.</p>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-brand-orange mb-2">What&apos;s the booking fee?</h4>
+                        <p className="text-gray-400 text-sm">Each confirmed vendor slot costs ₦100,000.</p>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-brand-orange mb-2">What&apos;s the event date?</h4>
+                        <p className="text-gray-400 text-sm">May 30, 2026 at <a href="https://www.google.com/maps/dir/?api=1&destination=8.4799,4.5418&travelmode=driving" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline">Metropolitan Square, Asadam Road, Ilorin ↗</a></p>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-brand-orange mb-2">How many vendors are allowed?</h4>
+                        <p className="text-gray-400 text-sm">Only 10 </p>
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
+        </main >
     );
 }
