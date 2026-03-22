@@ -4,12 +4,13 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import { Loader2, Music, Car, Zap, CheckCircle2, XCircle, ExternalLink } from "lucide-react";
+import { Loader2, Music, Car, Zap, CheckCircle2, XCircle, ExternalLink, Instagram, Twitter } from "lucide-react";
+import { getChampionsByCategory } from "@/data/champions";
 
 interface CategorySlots {
-    performer: { max: number; registered: number };
-    dragRace: { max: number; registered: number };
     driftChampionship: { max: number; registered: number };
+    dragRace: { max: number; registered: number };
+    bestBuild: { max: number; registered: number };
 }
 
 interface Category {
@@ -26,9 +27,9 @@ interface Category {
 export default function RegisterPage() {
     const [fetchingSlots, setFetchingSlots] = useState(true);
     const [slots, setSlots] = useState<CategorySlots>({
-        performer: { max: 15, registered: 0 },
+        driftChampionship: { max: 10, registered: 0 },
         dragRace: { max: 10, registered: 0 },
-        driftChampionship: { max: 5, registered: 0 },
+        bestBuild: { max: 10, registered: 0 },
     });
 
     // Google Form URLs for each category - Replace these with your actual Google Form URLs
@@ -37,7 +38,7 @@ export default function RegisterPage() {
             id: "driftChampionship",
             name: "Drift Championship",
             description: "STAND A CHANCE TO DRIFT AGAINST THE GUEST DRIFTERS",
-            maxSlots: 5,
+            maxSlots: 10,
             icon: <Zap className="w-8 h-8" />,
             color: "from-blue-500 to-cyan-500",
             googleFormUrl: "https://forms.gle/driftICS30", // Replace with actual form URL
@@ -45,16 +46,6 @@ export default function RegisterPage() {
         },
         {
             id: "dragRace",
-            name: "Keke Race",
-            description: "Compete in our high-speed Keke racing event",
-            maxSlots: 10,
-            icon: <Car className="w-8 h-8" />,
-            color: "from-orange-500 to-yellow-500",
-            googleFormUrl: "https://forms.gle/kekeICS30", // Replace with actual form URL
-            email: "kekerace@ilorincarshow.com",
-        },
-        {
-            id: "dragRace2",
             name: "Drag Race",
             description: "Compete in our high-speed drag racing event",
             maxSlots: 10,
@@ -64,24 +55,14 @@ export default function RegisterPage() {
             email: "dragrace@ilorincarshow.com",
         },
         {
-            id: "stunts",
-            name: "Stunts",
-            description: "Show off your best driving stunts",
-            maxSlots: 8,
-            icon: <Zap className="w-8 h-8" />,
+            id: "bestBuild",
+            name: "Best Build",
+            description: "Show off your custom car build and design expertise",
+            maxSlots: 10,
+            icon: <Car className="w-8 h-8" />,
             color: "from-purple-500 to-pink-500",
-            googleFormUrl: "https://forms.gle/stuntsICS30", // Replace with actual form URL
-            email: "stunts@ilorincarshow.com",
-        },
-        {
-            id: "performer",
-            name: "Performer",
-            description: "Musical artists, DJs, and live performers",
-            maxSlots: 15,
-            icon: <Music className="w-8 h-8" />,
-            color: "from-purple-500 to-pink-500",
-            googleFormUrl: "https://forms.gle/performerICS30", // Replace with actual form URL
-            email: "performers@ilorincarshow.com",
+            googleFormUrl: "https://forms.gle/bestbuildICS30", // Replace with actual form URL
+            email: "bestbuild@ilorincarshow.com",
         },
     ];
 
@@ -158,18 +139,21 @@ export default function RegisterPage() {
                             <Loader2 className="w-8 h-8 animate-spin text-brand-orange" />
                         </div>
                     ) : (
-                        <div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-8">
                             {categories.map((category, index) => {
                                 const isFull = isCategoryFull(category.id);
                                 const availableSlots = getAvailableSlots(category.id);
+                                const champions = getChampionsByCategory(category.id);
 
                                 return (
                                     <motion.div
                                         key={category.id}
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.1 * index }}
+                                        className="space-y-6"
                                     >
+                                        {/* Category Header */}
                                         <div
                                             className={`w-full p-6 rounded-xl border-2 transition-all duration-300 ${isFull
                                                 ? "bg-gray-800/50 border-gray-700 opacity-60"
@@ -223,6 +207,67 @@ export default function RegisterPage() {
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {/* Past Champions Section */}
+                                        {champions.length > 0 && (
+                                            <div className="space-y-3">
+                                                <h4 className="text-lg font-bold text-white mb-4">Past Champions</h4>
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                                    {champions.map((champion) => (
+                                                        <motion.div
+                                                            key={champion.id}
+                                                            initial={{ opacity: 0, scale: 0.9 }}
+                                                            animate={{ opacity: 1, scale: 1 }}
+                                                            className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg overflow-hidden border border-gray-700 hover:border-gray-600 transition-all hover:shadow-lg hover:shadow-orange-500/20"
+                                                        >
+                                                            {/* Champion Image Placeholder */}
+                                                            <div className={`w-full h-40 bg-gradient-to-br ${category.color} flex items-center justify-center text-white text-sm font-semibold`}>
+                                                                {champion.name.split(' ')[0]}
+                                                            </div>
+                                                            
+                                                            {/* Champion Info */}
+                                                            <div className="p-4">
+                                                                <h5 className="font-bold text-white text-center mb-1">
+                                                                    {champion.name}
+                                                                </h5>
+                                                                <p className="text-xs text-brand-orange text-center font-semibold mb-2">
+                                                                    {champion.title}
+                                                                </p>
+                                                                <p className="text-xs text-gray-400 text-center mb-3 line-clamp-2">
+                                                                    {champion.bio}
+                                                                </p>
+                                                                
+                                                                {/* Social Links */}
+                                                                <div className="flex justify-center gap-2">
+                                                                    {champion.instagram && (
+                                                                        <a
+                                                                            href={`https://instagram.com/${champion.instagram.replace('@', '')}`}
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                            className="text-gray-400 hover:text-pink-500 transition-colors"
+                                                                            title="Instagram"
+                                                                        >
+                                                                            <Instagram className="w-4 h-4" />
+                                                                        </a>
+                                                                    )}
+                                                                    {champion.twitter && (
+                                                                        <a
+                                                                            href={`https://twitter.com/${champion.twitter.replace('@', '')}`}
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                            className="text-gray-400 hover:text-blue-400 transition-colors"
+                                                                            title="Twitter"
+                                                                        >
+                                                                            <Twitter className="w-4 h-4" />
+                                                                        </a>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        </motion.div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
                                     </motion.div>
                                 );
                             })}

@@ -201,7 +201,7 @@ export default function Hero() {
           className="mt-4 mx-auto max-w-xl"
         >
           <p className="text-gray-300 font-sans text-base sm:text-xl">
-            Drift Championship - Keke Race - Drag Race - Stunts and Lots More
+            Drift Championship • Keke Race • Drag Race • Stunts and Lots More
           </p>
           <p className="text-gray-300 font-sans text-base sm:text-xl mt-2">
             The Biggest Auto Experience in Northern Nigeria
