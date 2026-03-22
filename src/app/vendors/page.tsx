@@ -6,6 +6,8 @@ import { useState, useEffect } from "react";
 import { Loader2, CheckCircle, Store, AlertTriangle } from "lucide-react";
 
 const VENDOR_BOOKING_FEE = 100000;
+const PROCESSING_CHARGE = 100;
+const VAT_PERCENTAGE = 10; // 10%
 const MAX_VENDORS = 10;
 const PRODUCT_TYPES = [
     { id: "food", label: "Food" },
@@ -29,6 +31,17 @@ export default function VendorPage() {
     const [countLoading, setCountLoading] = useState(true);
 
     const slotsLeft = Math.max(MAX_VENDORS - confirmedVendors, 0);
+
+    // Calculate total amount with charges and VAT
+    const calculateTotal = () => {
+        const subtotal = VENDOR_BOOKING_FEE + PROCESSING_CHARGE;
+        const vat = subtotal * (VAT_PERCENTAGE / 100);
+        return {
+            subtotal,
+            vat,
+            total: subtotal + vat
+        };
+    };
 
     // Load Paystack script
     useEffect(() => {
@@ -103,6 +116,7 @@ export default function VendorPage() {
         };
 
         const newTicketId = generateTicketId();
+        const totalAmount = calculateTotal().total;
 
         // Use environment variable for Paystack key
         const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
@@ -117,7 +131,7 @@ export default function VendorPage() {
         const handler = ((window as unknown) as Record<string, any>).PaystackPop.setup({
             key: paystackKey,
             email: formData.email,
-            amount: VENDOR_BOOKING_FEE * 100,
+            amount: totalAmount * 100, // Paystack uses kobo (multiply by 100)
             ref: newTicketId,
             currency: "NGN",
             onClose: () => {
@@ -140,6 +154,9 @@ export default function VendorPage() {
                             ticketId: newTicketId,
                             paymentReference: transaction.reference,
                             amount: VENDOR_BOOKING_FEE,
+                            processingCharge: PROCESSING_CHARGE,
+                            vat: calculateTotal().vat,
+                            totalAmount: totalAmount,
                         })
                     });
 
@@ -367,9 +384,17 @@ export default function VendorPage() {
                                         <span className="text-gray-400">Vendor Booking Fee:</span>
                                         <span className="text-white">₦{VENDOR_BOOKING_FEE.toLocaleString()}</span>
                                     </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-400">Processing Charge:</span>
+                                        <span className="text-white">₦{PROCESSING_CHARGE.toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-400">VAT ({VAT_PERCENTAGE}%):</span>
+                                        <span className="text-white">₦{calculateTotal().vat.toLocaleString()}</span>
+                                    </div>
                                     <div className="flex justify-between pt-2 border-t border-white/10">
-                                        <span className="font-semibold text-gray-300">Total:</span>
-                                        <span className="text-lg font-bold text-brand-orange">₦{VENDOR_BOOKING_FEE.toLocaleString()}</span>
+                                        <span className="font-semibold text-gray-300">Total Amount:</span>
+                                        <span className="text-lg font-bold text-brand-orange">₦{calculateTotal().total.toLocaleString()}</span>
                                     </div>
                                 </div>
                             </div>
@@ -385,7 +410,7 @@ export default function VendorPage() {
                                         Processing Payment...
                                     </>
                                 ) : (
-                                    `Pay ₦${VENDOR_BOOKING_FEE.toLocaleString()} & Submit`
+                                    `Pay ₦${calculateTotal().total.toLocaleString()} via Paystack`
                                 )}
                             </Button>
 
