@@ -7,7 +7,7 @@ import { Loader2, CheckCircle, Store, AlertTriangle } from "lucide-react";
 
 const VENDOR_BOOKING_FEE = 100000;
 const PROCESSING_CHARGE = 100;
-const VAT_PERCENTAGE = 10; // 10%
+const VAT_PERCENTAGE = 5; // 5% - Industry standard
 const MAX_VENDORS = 10;
 const PRODUCT_TYPES = [
     { id: "food", label: "Food" },

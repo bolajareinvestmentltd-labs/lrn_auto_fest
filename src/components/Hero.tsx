@@ -18,6 +18,17 @@ export default function Hero() {
   const isPresaleActive = new Date() < new Date(PRESALE_END_DATE);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [titleIndex, setTitleIndex] = useState(0);
+  const [selectedVideo, setSelectedVideo] = useState<string>("");
+
+  // Randomly select between two hero videos - professional approach
+  useEffect(() => {
+    const videos = [
+      "/videos/hero-video-primary.mp4",
+      "/videos/hero-video-secondary.mp4"
+    ];
+    const randomVideo = videos[Math.floor(Math.random() * videos.length)];
+    setSelectedVideo(randomVideo);
+  }, []);
 
   // Cycle through title animation - sequential reveal
   useEffect(() => {
@@ -65,13 +76,14 @@ export default function Hero() {
       {/* 1. VIDEO BACKGROUND with fallback */}
       <div className="absolute inset-0 bg-[url('/images/hero-fallback.svg')] bg-cover bg-center z-0" />
       <video
+        key={selectedVideo}
         ref={videoRef}
         autoPlay
         loop
         playsInline
         className="absolute top-0 left-0 w-full h-full object-cover z-[1] opacity-60"
       >
-        <source src="/hero-drift.mp4" type="video/mp4" />
+        <source src={selectedVideo} type="video/mp4" />
       </video>
 
       <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-black/50 to-black/30 z-10" />
