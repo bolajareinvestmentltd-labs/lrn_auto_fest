@@ -123,18 +123,26 @@ export default function CheckoutModal({
     };
 
     const unitPrice = getUnitPrice();
-    // Calculate processing fee (covers Paystack charges)
-    // Paystack charges: 1.5% + ₦100 for local cards (capped at ₦2,000)
-    // We add a small buffer to cover all scenarios
-    const subtotal = unitPrice * quantity;
+    // Pricing breakdown
+    const SERVICE_CHARGE = 30;
+    const VAT_PERCENTAGE = 5;
+    
+    // Calculate subtotal: (unit price × quantity) + service charge
+    const ticketAmount = unitPrice * quantity;
+    const subtotalWithService = ticketAmount + SERVICE_CHARGE;
+    
+    // Calculate VAT on subtotal with service charge
+    const vat = Math.round(subtotalWithService * (VAT_PERCENTAGE / 100));
+    
+    // Calculate processing fee (covers Paystack charges) - applied to total before vat
     const calculateProcessingFee = (amount: number): number => {
         // 2% + ₦150 covers Paystack fees with small buffer for company
         const fee = Math.round(amount * 0.02) + 150;
         // Cap at ₦2,500 to be fair to high-value purchases
         return Math.min(fee, 2500);
     };
-    const processingFee = paymentMethod === "paystack" ? calculateProcessingFee(subtotal) : 0;
-    const total = subtotal + processingFee;
+    const processingFee = paymentMethod === "paystack" ? calculateProcessingFee(subtotalWithService + vat) : 0;
+    const total = subtotalWithService + vat + processingFee;
     const referenceCode = `IAF-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
 
     const handleBankTransferSubmit = async (e: React.FormEvent) => {
@@ -388,8 +396,16 @@ export default function CheckoutModal({
                         <div className="w-2/3 bg-white/5 border border-white/10 rounded-md flex flex-col justify-center items-center p-3">
                             <div className="w-full space-y-1">
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-gray-400">Subtotal</span>
-                                    <span className="text-white">₦{subtotal.toLocaleString()}</span>
+                                    <span className="text-gray-400">Ticket Amount</span>
+                                    <span className="text-white">₦{ticketAmount.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-gray-400">Service Charge</span>
+                                    <span className="text-white">₦{SERVICE_CHARGE.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-gray-400">VAT (5)</span>
+                                    <span className="text-white">₦{vat.toLocaleString()}</span>
                                 </div>
                                 {paymentMethod === "paystack" && (
                                     <div className="flex justify-between text-sm">

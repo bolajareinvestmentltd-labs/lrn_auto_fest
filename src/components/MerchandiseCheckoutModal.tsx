@@ -63,7 +63,14 @@ export default function MerchandiseCheckoutModal({
         }).format(price);
     };
 
-    const totalPrice = (item?.price || 0) * quantity;
+    // Pricing breakdown
+    const SERVICE_CHARGE = 30;
+    const VAT_PERCENTAGE = 5;
+    
+    const itemAmount = (item?.price || 0) * quantity;
+    const subtotalWithService = itemAmount + SERVICE_CHARGE;
+    const vat = Math.round(subtotalWithService * (VAT_PERCENTAGE / 100));
+    const totalPrice = subtotalWithService + vat;
 
     const validateForm = () => {
         if (!fullName.trim()) {
@@ -237,10 +244,22 @@ export default function MerchandiseCheckoutModal({
                     </div>
 
                     {/* Total */}
-                    <div className="bg-gradient-to-r from-brand-orange/20 to-brand-blue/20 rounded-xl p-4 border border-brand-orange/30">
-                        <div className="flex justify-between items-center">
+                    <div className="bg-gradient-to-r from-brand-orange/20 to-brand-blue/20 rounded-xl p-4 border border-brand-orange/30 space-y-2">
+                        <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">Item Amount</span>
+                            <span className="text-white">{formatPrice(itemAmount)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">Service Charge</span>
+                            <span className="text-white">{formatPrice(SERVICE_CHARGE)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">VAT (5)</span>
+                            <span className="text-white">{formatPrice(vat)}</span>
+                        </div>
+                        <div className="flex justify-between items-center pt-2 border-t border-white/20">
                             <span className="text-gray-300 font-medium">Total Amount:</span>
-                            <span className="text-3xl font-black text-white">
+                            <span className="text-3xl font-black text-brand-orange">
                                 {formatPrice(totalPrice)}
                             </span>
                         </div>
