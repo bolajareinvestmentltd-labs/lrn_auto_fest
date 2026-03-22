@@ -2,10 +2,9 @@ import { NextResponse } from "next/server";
 
 // Category slot limits
 const CATEGORY_LIMITS = {
-    PERFORMER: 15,
+    DRIFT_CHAMPIONSHIP: 10,
     DRAG_RACE: 10,
-    DRIFT_CHAMPIONSHIP: 5,
-    GUEST: 6,
+    BEST_BUILD: 10,
 };
 
 // Note: Registration is now handled via Google Forms
@@ -15,20 +14,16 @@ export async function GET() {
         // Return slot information
         // Note: Actual registration tracking is via Google Forms
         return NextResponse.json({
-            performer: {
-                max: CATEGORY_LIMITS.PERFORMER,
+            driftChampionship: {
+                max: CATEGORY_LIMITS.DRIFT_CHAMPIONSHIP,
                 registered: 0, // Update manually or integrate with Google Sheets
             },
             dragRace: {
                 max: CATEGORY_LIMITS.DRAG_RACE,
                 registered: 0,
             },
-            driftChampionship: {
-                max: CATEGORY_LIMITS.DRIFT_CHAMPIONSHIP,
-                registered: 0,
-            },
-            guest: {
-                max: CATEGORY_LIMITS.GUEST,
+            bestBuild: {
+                max: CATEGORY_LIMITS.BEST_BUILD,
                 registered: 0,
             },
         });

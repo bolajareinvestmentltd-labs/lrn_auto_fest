@@ -85,7 +85,8 @@ export default function RegisterPage() {
     }, []);
 
     const getCategorySlots = (categoryId: string) => {
-        return slots[categoryId as keyof CategorySlots];
+        const categorySlots = slots[categoryId as keyof CategorySlots];
+        return categorySlots || { max: 10, registered: 0 }; // Return default if not found
     };
 
     const isCategoryFull = (categoryId: string) => {
