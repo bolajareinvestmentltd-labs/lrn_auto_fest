@@ -13,7 +13,7 @@
 |--------|--------|-------|
 | Landing Page | ✅ Live | Random video, updated tagline, PERFORM button |
 | Event Registration | ✅ Live | 3 categories (Drift, Drag Race, Best Build) with champions modal |
-| Google Forms | ✅ Integrated | Performer registration form linked (https://forms.gle/v8S8esJF5Pv2Q1cU8) |
+| Google Forms | ✅ Integrated | Performer registration form linked (<https://forms.gle/v8S8esJF5Pv2Q1cU8>) |
 | Ticket Checkout | ✅ Live | Paystack + Bank Transfer, ₦30 service charge + 5% VAT |
 | Merchandise Store | ✅ Live | Service charge + VAT included |
 | Vendor Booking | ✅ Live | ₦100,000 + ₦100 charge + 5% VAT |
@@ -28,6 +28,7 @@
 ## 🎯 WHAT'S FULLY WORKING RIGHT NOW
 
 ### **1. ✅ TICKET PURCHASE FLOW**
+
 **Path**: Landing Page → GET TICKETS → Checkout Modal
 
 ```
@@ -48,6 +49,7 @@ User Flow:
 ```
 
 **Pricing (Example - Single Ticket)**:
+
 ```
 Ticket Amount:        ₦5,000
 Service Charge:       ₦30
@@ -62,9 +64,11 @@ Total:               ₦5,532
 ### **2. ✅ QR/BARCODE SCANNING SYSTEM - NOW LIVE**
 
 #### **PUBLIC ACCESS (Online Verification)**
+
 **Path**: `/access` OR scan fixed QR code
 
 **Features**:
+
 - ✅ Mobile-friendly form to enter Ticket ID
 - ✅ Real-time validation
 - ✅ Displays customer name, ticket type, access type
@@ -74,6 +78,7 @@ Total:               ₦5,532
 - ✅ Instruction: "Proceed to wristband issuance"
 
 **How to Test**:
+
 ```
 1. Go to: https://ilorincarshow.com/access (or local dev)
 2. Enter a ticket ID (e.g., "REG-XXXXX-YYYY" or "VIP-XXXXX-YYYY")
@@ -85,9 +90,11 @@ Total:               ₦5,532
 ---
 
 #### **GATE CHECK-IN (Barcode Scanner)**
+
 **Path**: `/gate` (Staff portal)
 
 **Features**:
+
 - ✅ Barcode scanner input (hardware support)
 - ✅ Manual code entry fallback
 - ✅ Live statistics dashboard
@@ -102,6 +109,7 @@ Total:               ₦5,532
   - Parking passes allocated
 
 **How to Test**:
+
 ```
 1. Go to: https://ilorincarshow.com/gate
 2. Connect USB barcode scanner to staff laptop
@@ -116,6 +124,7 @@ Total:               ₦5,532
 ### **3. ✅ TICKET ID VERIFICATION - TWO ENTRY POINTS**
 
 #### **ONLINE ENTRY (Public Access)**
+
 ```
 Entry Point: /access
 Purpose: Allow attendees to verify themselves online
@@ -130,6 +139,7 @@ User Experience:
 ```
 
 #### **GATE ENTRANCE (Physical Verification)**
+
 ```
 Entry Point: /gate
 Purpose: Staff verification system at physical gates
@@ -150,6 +160,7 @@ User Experience:
 ### **TEST SCENARIO 1: Purchase Ticket Online**
 
 **Steps**:
+
 ```
 1. Go to: https://ilorincarshow.com
 2. Scroll to Hero section
@@ -177,6 +188,7 @@ User Experience:
 ```
 
 **What You Should See**:
+
 ```
 ✅ Price breakdown shows:
    - Ticket Amount
@@ -199,6 +211,7 @@ User Experience:
 ### **TEST SCENARIO 2: Verify Ticket Online**
 
 **Steps**:
+
 ```
 1. After successful payment, note the Order Reference
    (e.g., "IAF-M3K8P2X-A7B9C1")
@@ -215,6 +228,7 @@ User Experience:
 ```
 
 **Expected Response**:
+
 ```json
 {
   "success": true,
@@ -235,6 +249,7 @@ User Experience:
 ### **TEST SCENARIO 3: Test Duplicate Prevention**
 
 **Steps**:
+
 ```
 1. Verify same ticket ID twice using /access page
 2. First verification: ✅ SUCCESS (green screen)
@@ -243,6 +258,7 @@ User Experience:
 ```
 
 **Expected Behavior**:
+
 ```
 First Scan: ✅ "Valid ticket - Entry allowed"
 Second Scan: ❌ "This ticket has already been used"
@@ -254,10 +270,12 @@ Purpose: Prevents fraud/multiple entries with same ticket
 ### **TEST SCENARIO 4: Gate Barcode Scanner Test**
 
 **Prerequisites**:
+
 - USB barcode scanner connected to staff laptop
 - Staff user logged in with admin access
 
 **Steps**:
+
 ```
 1. Go to: https://ilorincarshow.com/gate
 2. Position barcode scanner over printed/phone barcode
@@ -276,6 +294,7 @@ Purpose: Prevents fraud/multiple entries with same ticket
 ```
 
 **Success Indicators**:
+
 ```
 ✅ Sound alert plays (if enabled)
 ✅ Green box appears with customer info
@@ -289,6 +308,7 @@ Purpose: Prevents fraud/multiple entries with same ticket
 ### **TEST SCENARIO 5: Invalid Ticket Test**
 
 **Steps**:
+
 ```
 1. Go to: https://ilorincarshow.com/gate
 2. Enter invalid ticket code: "INVALID-123-456"
@@ -302,6 +322,7 @@ Purpose: Prevents fraud/multiple entries with same ticket
 ```
 
 **Expected Errors Handled**:
+
 ```
 ❌ "Ticket not found. Invalid code."
 ❌ "This ticket has already been used"
@@ -314,6 +335,7 @@ Purpose: Prevents fraud/multiple entries with same ticket
 ## 📋 API ENDPOINTS FOR TESTING
 
 ### **1. Verify Ticket (Gate Scanner)**
+
 ```
 POST /api/admin/verify-ticket
 Headers: Content-Type: application/json
@@ -342,6 +364,7 @@ Response (Error):
 ```
 
 ### **2. Public Access Verify**
+
 ```
 POST /api/access/verify
 Headers: Content-Type: application/json
@@ -362,6 +385,7 @@ Response (Success):
 ```
 
 ### **3. Get Gate Statistics**
+
 ```
 GET /api/admin/gate-stats
 
@@ -374,6 +398,7 @@ Response:
 ```
 
 ### **4. Download Ticket PDF**
+
 ```
 POST /api/download-ticket
 Headers: Content-Type: application/json
@@ -395,6 +420,7 @@ Response: PDF file attachment
    - Status: Resend API configured
    - Action: Test `/api/emails/send-receipt` with sample data
    - Test Command:
+
      ```
      curl -X POST http://localhost:3000/api/emails/send-receipt \
        -H "Content-Type: application/json" \
@@ -422,17 +448,17 @@ Response: PDF file attachment
 
 ### **Priority: MEDIUM**
 
-4. **Vendor Access Logging** ⏳
+1. **Vendor Access Logging** ⏳
    - Status: Vendor verification implemented
    - Action: Test vendor QR scanning (limit: 5 entries max)
 
-5. **Mobile Responsiveness** ⏳
+2. **Mobile Responsiveness** ⏳
    - Status: Gate page works on mobile
    - Action: Test on iPhone/Android with barcode scanner app
 
 ### **Priority: LOW**
 
-6. **Offline Mode** ⏳
+1. **Offline Mode** ⏳
    - Status: Mentioned but not critical for launch
    - Action: Add service workers for offline caching (future)
 
@@ -440,7 +466,8 @@ Response: PDF file attachment
 
 ## 🚀 HOW TO DEPLOY & TEST LIVE
 
-### **Current Setup**:
+### **Current Setup**
+
 ```
 Repository: bolajareinvestmentltd-labs/lrn_auto_fest
 Branch: main
@@ -448,7 +475,8 @@ Auto-Deploy: Vercel (triggered on git push)
 URL: https://ilorincarshow.com (or your Vercel domain)
 ```
 
-### **To Test Live**:
+### **To Test Live**
+
 ```
 1. Make changes locally
 2. Run: git add -A && git commit -m "message"
@@ -462,6 +490,7 @@ URL: https://ilorincarshow.com (or your Vercel domain)
 ## 🧪 TESTING CHECKLIST
 
 ### **Before Event**
+
 - [ ] Test ticket purchase end-to-end
 - [ ] Test online verification (/access page)
 - [ ] Test barcode scanner at gate (/gate page)
@@ -475,6 +504,7 @@ URL: https://ilorincarshow.com (or your Vercel domain)
 - [ ] Verify VIP seating assignments
 
 ### **Day Before Event**
+
 - [ ] Set up barcode scanners at gates
 - [ ] Print sample QR codes
 - [ ] Train staff on gate system
@@ -485,6 +515,7 @@ URL: https://ilorincarshow.com (or your Vercel domain)
 - [ ] Load test (simulate 100+ concurrent scans)
 
 ### **Event Day**
+
 - [ ] Scan first attendee to verify system works
 - [ ] Monitor gate statistics in real-time
 - [ ] Check for any duplicate attempts
@@ -496,7 +527,8 @@ URL: https://ilorincarshow.com (or your Vercel domain)
 
 ## 📱 MOBILE TEST
 
-### **Test on Phone**:
+### **Test on Phone**
+
 ```
 1. Open: https://ilorincarshow.com/access on phone
 2. Enter test ticket ID
@@ -518,6 +550,7 @@ OR
 ## ✅ SUMMARY
 
 ### **🎯 What's Working:**
+
 ✅ Complete ticket purchase system  
 ✅ QR/Barcode scanning (both online & gate)  
 ✅ Ticket ID verification (duplicate prevention)  
@@ -527,6 +560,7 @@ OR
 ✅ Service charges + VAT calculations  
 
 ### **⏳ What Needs Completion:**
+
 ⏳ Test email sending in production  
 ⏳ Test PDF download functionality  
 ⏳ Add sound files for gate alerts  
@@ -534,6 +568,7 @@ OR
 ⏳ Staff training documentation  
 
 ### **🚀 Ready to Deploy:**
+
 ✅ Code is production-ready  
 ✅ All endpoints tested  
 ✅ Vercel auto-deployment working  
@@ -545,6 +580,7 @@ OR
 ## 📞 SUPPORT
 
 For issues during testing:
+
 1. Check `/gate` page for real-time stats
 2. Review `/access` page for manual verification
 3. Check `/payment-success` for order confirmation
