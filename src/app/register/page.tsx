@@ -33,7 +33,9 @@ export default function RegisterPage() {
         bestBuild: { max: 10, registered: 0 },
     });
 
-    // Google Form URLs for each category - Replace these with your actual Google Form URLs
+    // Google Form URL for all categories (universal form)
+    const GOOGLE_FORM_URL = "https://forms.gle/v8S8esJF5Pv2Q1cU8";
+    
     const categories: Category[] = [
         {
             id: "driftChampionship",
@@ -42,7 +44,7 @@ export default function RegisterPage() {
             maxSlots: 10,
             icon: <Zap className="w-8 h-8" />,
             color: "from-blue-500 to-cyan-500",
-            googleFormUrl: "https://forms.gle/driftICS30", // Replace with actual form URL
+            googleFormUrl: GOOGLE_FORM_URL,
             email: "drift@ilorincarshow.com",
         },
         {
@@ -52,7 +54,7 @@ export default function RegisterPage() {
             maxSlots: 10,
             icon: <Car className="w-8 h-8" />,
             color: "from-red-500 to-orange-500",
-            googleFormUrl: "https://forms.gle/dragraceICS30", // Replace with actual form URL
+            googleFormUrl: GOOGLE_FORM_URL,
             email: "dragrace@ilorincarshow.com",
         },
         {
@@ -62,7 +64,7 @@ export default function RegisterPage() {
             maxSlots: 10,
             icon: <Car className="w-8 h-8" />,
             color: "from-purple-500 to-pink-500",
-            googleFormUrl: "https://forms.gle/bestbuildICS30", // Replace with actual form URL
+            googleFormUrl: GOOGLE_FORM_URL,
             email: "bestbuild@ilorincarshow.com",
         },
     ];
