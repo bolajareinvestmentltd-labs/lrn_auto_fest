@@ -4,28 +4,28 @@ import { Resend } from "resend";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const {
-      email,
-      customerName,
-      reference,
-      ticketType,
-      quantity,
-      amount,
-      parkingSlots,
-      vipSeats,
-    } = body;
+    try {
+        const body = await request.json();
+        const {
+            email,
+            customerName,
+            reference,
+            ticketType,
+            quantity,
+            amount,
+            parkingSlots,
+            vipSeats,
+        } = body;
 
-    if (!email || !reference) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
-    }
+        if (!email || !reference) {
+            return NextResponse.json(
+                { error: "Missing required fields" },
+                { status: 400 }
+            );
+        }
 
-    // Create email HTML template
-    const emailHTML = `
+        // Create email HTML template
+        const emailHTML = `
       <!DOCTYPE html>
       <html>
       <head>
@@ -116,31 +116,31 @@ export async function POST(request: NextRequest) {
       </html>
     `;
 
-    // Send email using Resend
-    const result = await resend.emails.send({
-      from: "Ilorin Car Show <noreply@ilorincarshow.com>",
-      to: email,
-      subject: `Your Ilorin Car Show 3.0 Ticket - Reference: ${reference}`,
-      html: emailHTML,
-    });
+        // Send email using Resend
+        const result = await resend.emails.send({
+            from: "Ilorin Car Show <noreply@ilorincarshow.com>",
+            to: email,
+            subject: `Your Ilorin Car Show 3.0 Ticket - Reference: ${reference}`,
+            html: emailHTML,
+        });
 
-    if (result.error) {
-      console.error("Email send error:", result.error);
-      return NextResponse.json(
-        { error: "Failed to send email" },
-        { status: 500 }
-      );
+        if (result.error) {
+            console.error("Email send error:", result.error);
+            return NextResponse.json(
+                { error: "Failed to send email" },
+                { status: 500 }
+            );
+        }
+
+        return NextResponse.json({
+            success: true,
+            messageId: result.data?.id,
+        });
+    } catch (error) {
+        console.error("Error sending email:", error);
+        return NextResponse.json(
+            { error: "Failed to process email" },
+            { status: 500 }
+        );
     }
-
-    return NextResponse.json({
-      success: true,
-      messageId: result.data?.id,
-    });
-  } catch (error) {
-    console.error("Error sending email:", error);
-    return NextResponse.json(
-      { error: "Failed to process email" },
-      { status: 500 }
-    );
-  }
 }

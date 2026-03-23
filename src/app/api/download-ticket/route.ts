@@ -5,19 +5,19 @@ import { NextRequest, NextResponse } from "next/server";
 // For now, creating a simple PDF generation endpoint
 
 export async function POST(request: NextRequest) {
-  try {
-    const { reference, ticketType } = await request.json();
+    try {
+        const { reference, ticketType } = await request.json();
 
-    if (!reference) {
-      return NextResponse.json(
-        { error: "Reference is required" },
-        { status: 400 }
-      );
-    }
+        if (!reference) {
+            return NextResponse.json(
+                { error: "Reference is required" },
+                { status: 400 }
+            );
+        }
 
-    // Create a simple HTML-based PDF content
-    // In production, use jsPDF or similar library
-    const htmlContent = `
+        // Create a simple HTML-based PDF content
+        // In production, use jsPDF or similar library
+        const htmlContent = `
       <!DOCTYPE html>
       <html>
       <head>
@@ -64,19 +64,19 @@ export async function POST(request: NextRequest) {
       </html>
     `;
 
-    // For now, return as text/html
-    // In production, convert to PDF using jsPDF or puppeteer
-    return new NextResponse(htmlContent, {
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="ticket-${reference}.pdf"`,
-      },
-    });
-  } catch (error) {
-    console.error("Error generating ticket PDF:", error);
-    return NextResponse.json(
-      { error: "Failed to generate PDF" },
-      { status: 500 }
-    );
-  }
+        // For now, return as text/html
+        // In production, convert to PDF using jsPDF or puppeteer
+        return new NextResponse(htmlContent, {
+            headers: {
+                "Content-Type": "application/pdf",
+                "Content-Disposition": `attachment; filename="ticket-${reference}.pdf"`,
+            },
+        });
+    } catch (error) {
+        console.error("Error generating ticket PDF:", error);
+        return NextResponse.json(
+            { error: "Failed to generate PDF" },
+            { status: 500 }
+        );
+    }
 }

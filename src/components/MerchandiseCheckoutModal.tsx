@@ -66,7 +66,7 @@ export default function MerchandiseCheckoutModal({
     // Pricing breakdown
     const SERVICE_CHARGE = 30;
     const VAT_PERCENTAGE = 5;
-    
+
     const itemAmount = (item?.price || 0) * quantity;
     const subtotalWithService = itemAmount + SERVICE_CHARGE;
     const vat = Math.round(subtotalWithService * (VAT_PERCENTAGE / 100));
@@ -150,7 +150,7 @@ export default function MerchandiseCheckoutModal({
                     <div className="bg-white/5 rounded-xl p-4 border border-white/10">
                         <h3 className="text-lg font-semibold text-white mb-2">{item.name}</h3>
                         <p className="text-gray-400 text-sm mb-4">{item.description}</p>
-                        
+
                         <div className="flex justify-between items-center">
                             <span className="text-gray-400">Unit Price:</span>
                             <span className="text-xl font-bold text-brand-orange">
@@ -168,11 +168,10 @@ export default function MerchandiseCheckoutModal({
                                     <button
                                         key={s}
                                         onClick={() => setSize(s)}
-                                        className={`py-3 rounded-lg font-semibold transition-all ${
-                                            size === s
+                                        className={`py-3 rounded-lg font-semibold transition-all ${size === s
                                                 ? "bg-brand-orange text-white"
                                                 : "bg-white/10 text-white hover:bg-white/20"
-                                        }`}
+                                            }`}
                                     >
                                         {s}
                                     </button>
@@ -206,7 +205,7 @@ export default function MerchandiseCheckoutModal({
                     {/* Customer Info */}
                     <div className="space-y-4 pt-4 border-t border-white/10">
                         <h4 className="text-white font-semibold">Your Information</h4>
-                        
+
                         <div className="space-y-2">
                             <Label htmlFor="fullName" className="text-gray-300">Full Name *</Label>
                             <Input

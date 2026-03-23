@@ -35,7 +35,7 @@ export default function RegisterPage() {
 
     // Google Form URL for all categories (universal form)
     const GOOGLE_FORM_URL = "https://forms.gle/v8S8esJF5Pv2Q1cU8";
-    
+
     const categories: Category[] = [
         {
             id: "driftChampionship",
@@ -291,7 +291,7 @@ export default function RegisterPage() {
                                 {/* Modal Content */}
                                 <div className="p-8">
                                     <h3 className="text-2xl font-bold text-white mb-6">Past Champions</h3>
-                                    
+
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                                         {selectedChampions.map((champion) => (
                                             <motion.div
@@ -304,7 +304,7 @@ export default function RegisterPage() {
                                                 <div className={`w-full h-48 bg-gradient-to-br ${selectedCategory.color} rounded-lg flex items-center justify-center text-white text-3xl font-bold mb-4`}>
                                                     {champion.name.split(' ')[0].charAt(0)}{champion.name.split(' ')[1]?.charAt(0) || ''}
                                                 </div>
-                                                
+
                                                 {/* Champion Info */}
                                                 <div className="w-full text-center">
                                                     <h4 className="font-bold text-white text-lg mb-1">
@@ -316,7 +316,7 @@ export default function RegisterPage() {
                                                     <p className="text-sm text-gray-300 mb-4">
                                                         {champion.bio}
                                                     </p>
-                                                    
+
                                                     {/* Social Links */}
                                                     <div className="flex justify-center gap-3">
                                                         {champion.instagram && (

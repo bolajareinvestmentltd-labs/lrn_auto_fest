@@ -126,14 +126,14 @@ export default function CheckoutModal({
     // Pricing breakdown
     const SERVICE_CHARGE = 30;
     const VAT_PERCENTAGE = 5;
-    
+
     // Calculate subtotal: (unit price × quantity) + service charge
     const ticketAmount = unitPrice * quantity;
     const subtotalWithService = ticketAmount + SERVICE_CHARGE;
-    
+
     // Calculate VAT on subtotal with service charge
     const vat = Math.round(subtotalWithService * (VAT_PERCENTAGE / 100));
-    
+
     // Calculate processing fee (covers Paystack charges) - applied to total before vat
     const calculateProcessingFee = (amount: number): number => {
         // 2% + ₦150 covers Paystack fees with small buffer for company
