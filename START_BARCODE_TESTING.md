@@ -7,6 +7,7 @@
 ## ⏱️ 5 MINUTE SETUP
 
 ### **Step 1: Open PowerShell (1 minute)**
+
 ```powershell
 # Navigate to project folder
 cd c:\Users\HP-PC\Desktop\lrn_auto_festival
@@ -16,7 +17,9 @@ cd c:\Users\HP-PC\Desktop\lrn_auto_festival
 ```
 
 ### **Step 2: Generate Test Tickets (2 minutes)**
+
 When the menu appears:
+
 ```
 Select: 4 (Generate Test Bundle)
 ```
@@ -24,18 +27,22 @@ Select: 4 (Generate Test Bundle)
 You'll get 4 test tickets automatically!
 
 ### **Step 3: Connect Barcode Scanner (1 minute)**
+
 ```
 1. Plug USB barcode scanner into laptop
 2. Done! Ready to test
 ```
 
 ### **Step 4: Open Gate Page (1 minute)**
+
 When the menu appears again:
+
 ```
 Select: 6 (Open Gate Testing Page)
 ```
 
 Or manually open:
+
 ```
 http://localhost:3000/gate
 ```
@@ -60,6 +67,7 @@ http://localhost:3000/gate
 ## 📋 WHAT YOU'LL SEE
 
 ### **On Success (GREEN):**
+
 ```
 ✅ GREEN screen
 ✅ Customer name displayed
@@ -69,6 +77,7 @@ http://localhost:3000/gate
 ```
 
 ### **On Failure (RED):**
+
 ```
 ❌ RED screen
 ❌ Error message displayed
@@ -77,6 +86,7 @@ http://localhost:3000/gate
 ```
 
 ### **Live Dashboard:**
+
 ```
 Scanned: 3 / 10
 Parking Used: 5 / 50
@@ -85,9 +95,10 @@ Recent Scans: (shows last 10)
 
 ---
 
-## 🎯 THATS IT!
+## 🎯 THATS IT
 
 **When all 6 tests PASS:**
+
 - ✅ System works perfectly
 - ✅ Ready for Phase 2 (Email testing)
 - ✅ Ready for Phase 3 (PDF testing)

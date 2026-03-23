@@ -24,12 +24,12 @@ function Generate-TestTicket {
     Write-Host "Generating test ticket: $customerName ($ticketType)" -ForegroundColor Yellow
     
     $body = @{
-        customerName = $customerName
+        customerName  = $customerName
         customerEmail = $customerEmail
         customerPhone = $customerPhone
-        ticketType = $ticketType
-        groupSize = $groupSize
-        quantity = $quantity
+        ticketType    = $ticketType
+        groupSize     = $groupSize
+        quantity      = $quantity
     } | ConvertTo-Json
     
     try {
@@ -73,7 +73,8 @@ function Get-TestTickets {
             $result | ForEach-Object {
                 Write-Host "   • $($_.ticketCode) - $($_.customerName)" -ForegroundColor Green
             }
-        } else {
+        }
+        else {
             Write-Host "No test tickets found" -ForegroundColor Yellow
         }
         Write-Host ""

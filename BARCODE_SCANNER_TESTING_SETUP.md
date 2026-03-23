@@ -135,11 +135,13 @@ BEFORE STARTING TESTS:
 ### **TEST 1: Successful Ticket Scan**
 
 **Setup:**
+
 - Ticket Code: `REG-M3K8P2X-A7B9C1` (or your test code)
 - Status: PENDING (first scan)
 - Expected Result: GREEN ✅
 
 **Steps:**
+
 ```
 1. Go to: https://ilorincarshow.com/gate
 2. Focus on input field (cursor blinking)
@@ -167,6 +169,7 @@ RESULT: [ ] PASS [ ] FAIL
 ```
 
 **Screenshot Points:**
+
 - Document the GREEN success screen
 - Note the customer name displayed
 - Record the parking passes shown
@@ -177,11 +180,13 @@ RESULT: [ ] PASS [ ] FAIL
 ### **TEST 2: Duplicate Scan Prevention**
 
 **Setup:**
+
 - Same Ticket Code: `REG-M3K8P2X-A7B9C1`
 - Status: SCANNED (already used from TEST 1)
 - Expected Result: RED ❌
 
 **Steps:**
+
 ```
 1. Immediately scan SAME ticket again
    (without clearing previous result)
@@ -205,6 +210,7 @@ RESULT: [ ] PASS [ ] FAIL
 ```
 
 **Security Validation:**
+
 - Confirm duplicate is rejected
 - Verify error message specific ("already scanned")
 - Check audit log has both attempts
@@ -215,10 +221,12 @@ RESULT: [ ] PASS [ ] FAIL
 ### **TEST 3: Invalid Ticket Code**
 
 **Setup:**
+
 - Ticket Code: `INVALID-123-456` (fake code)
 - Expected Result: RED ❌
 
 **Steps:**
+
 ```
 1. Scan or type invalid code: INVALID-123-456
 2. Press Enter if not auto-submitted
@@ -245,11 +253,13 @@ RESULT: [ ] PASS [ ] FAIL
 ### **TEST 4: Hardware Scanner Performance**
 
 **Setup:**
+
 - Use actual barcode scanner (not manual typing)
 - Multiple consecutive scans
 - Expected Result: Real-time validation
 
 **Steps:**
+
 ```
 1. Have 3 different test tickets ready:
    - REG-AAAAA-AAAA (1st scan - should pass)
@@ -282,11 +292,13 @@ RESULT: [ ] PASS [ ] FAIL
 ### **TEST 5: Live Dashboard Functionality**
 
 **Setup:**
+
 - Multiple scans completed
 - Dashboard visible on page
 - Expected: Live stats updating
 
 **Steps:**
+
 ```
 1. After several scans, verify dashboard shows:
    ├─ Total Scanned: X (correct count)
@@ -317,11 +329,13 @@ RESULT: [ ] PASS [ ] FAIL
 ### **TEST 6: Mobile Responsiveness**
 
 **Setup:**
+
 - Open /gate page on mobile phone
 - Barcode scanner app or mobile camera
 - Expected: Full functionality on mobile
 
 **Steps:**
+
 ```
 1. Open /gate on iPhone or Android
 2. Allow camera permissions if needed
@@ -352,10 +366,12 @@ RESULT: [ ] PASS [ ] FAIL
 ### **TEST 7: Manual Entry Fallback**
 
 **Setup:**
+
 - Barcode scanner fails or not available
 - Expected: Manual entry works same as scan
 
 **Steps:**
+
 ```
 1. If scanner not working:
    - Click input field
@@ -383,10 +399,12 @@ RESULT: [ ] PASS [ ] FAIL
 ### **TEST 8: Sound Alerts**
 
 **Setup:**
+
 - Sound enabled
 - Expected: Beeps for success/error
 
 **Steps:**
+
 ```
 1. Go to /gate page
 2. Ensure speaker volume is ON
@@ -630,6 +648,7 @@ RESPONSE TIME TARGET: < 1 second per scan
 **Start Testing Now!** 🎯
 
 Once all tests pass, we'll proceed with:
+
 - Email notification testing
 - PDF download verification
 - Load testing

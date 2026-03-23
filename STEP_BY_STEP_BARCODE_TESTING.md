@@ -54,6 +54,7 @@ curl -X POST http://localhost:3000/api/test/generate-ticket \
 ```
 
 **What to expect:**
+
 ```
 ✅ Response shows:
 - "message": "Created 1 test ticket(s)"
@@ -67,6 +68,7 @@ Example: REG-M3K8P2X-A7B9C1
 **Step 1.2: Generate Second Test Ticket**
 
 Run the same command but change:
+
 - `"customerName"` to `"Test User Beta"`
 - `"customerEmail"` to `"beta@test.com"`
 - `"customerPhone"` to `"08022222222"`
@@ -124,9 +126,9 @@ fetch('/api/test/generate-ticket', {
 .catch(e => console.error('❌ Error:', e));
 ```
 
-5. Press **Enter**
-6. Look in console for the **Ticket Code**
-7. COPY it down
+1. Press **Enter**
+2. Look in console for the **Ticket Code**
+3. COPY it down
 
 ---
 
@@ -209,6 +211,7 @@ BEFORE proceeding to gate page:
 **Objective**: Scan a new ticket → Should show GREEN success
 
 **Steps**:
+
 ```
 1. Click on the input field (you'll see green border)
 2. Take your barcode scanner
@@ -244,6 +247,7 @@ Parking Shows: [ ] YES [ ] NO
 **Objective**: Scan SAME ticket again → Should show RED error
 
 **Steps**:
+
 ```
 1. WITHOUT clearing the previous result
 2. Scan TICKET 1 again (same code)
@@ -276,6 +280,7 @@ Duplicate Blocked: [ ] YES [ ] NO
 **Objective**: Scan different ticket → Should show GREEN
 
 **Steps**:
+
 ```
 1. Clear previous result (click elsewhere)
 2. Scan TICKET 2 (different code from Test 1)
@@ -304,6 +309,7 @@ History Shows Both: [ ] YES [ ] NO
 **Objective**: Scan VIP ticket → Should show VIP details with correct parking
 
 **Steps**:
+
 ```
 1. Scan TICKET 3 (VIP Group of 2)
 2. Wait for validation
@@ -332,6 +338,7 @@ Math Correct (1+1+2=4): [ ] YES [ ] NO
 **Objective**: Scan fake code → Should show RED error
 
 **Steps**:
+
 ```
 1. Manually type (or scan): INVALID-123-456
 2. Press Enter
@@ -357,6 +364,7 @@ Stats Unchanged: [ ] YES [ ] NO
 **Objective**: Type ticket code manually (scanner fallback)
 
 **Steps**:
+
 ```
 1. Clear scanner from table
 2. Manually TYPE TICKET 2 code (from memory or notes)
@@ -407,6 +415,7 @@ RESULT:
 ## 🐛 TROUBLESHOOTING DURING TESTS
 
 ### **Problem: Barcode Scanner Not Working**
+
 ```
 Solution:
 1. Try typing the code manually instead
@@ -418,6 +427,7 @@ Solution:
 ```
 
 ### **Problem: "Ticket not found" for Valid Code**
+
 ```
 Solution:
 1. Check ticket code spelling (copy from notes)
@@ -428,6 +438,7 @@ Solution:
 ```
 
 ### **Problem: Stats Not Updating**
+
 ```
 Solution:
 1. Refresh page (F5)
@@ -437,6 +448,7 @@ Solution:
 ```
 
 ### **Problem: Sound Not Playing**
+
 ```
 Solution:
 1. Check volume is ON (speaker icon bottom left)
@@ -530,6 +542,7 @@ WHEN READY FOR EVENT:
 ## 📞 CONTACT & SUPPORT
 
 If you encounter issues:
+
 1. Check **TROUBLESHOOTING DURING TESTS** section above
 2. Review [BARCODE_SCANNER_TESTING_SETUP.md](BARCODE_SCANNER_TESTING_SETUP.md) for detailed guidance
 3. Check [QR_BARCODE_QUICK_REFERENCE.md](QR_BARCODE_QUICK_REFERENCE.md) for common issues

@@ -58,6 +58,7 @@ Before you start, make sure you have:
 ## 🎯 THE 6 TESTS YOU'LL RUN
 
 ### **Test 1: First Valid Ticket**
+
 ```
 Action:   Scan first test ticket code using barcode scanner
 Expected: ✅ GREEN screen with customer name
@@ -65,6 +66,7 @@ Result:   [Pass/Fail] ___________
 ```
 
 ### **Test 2: Duplicate Prevention**
+
 ```
 Action:   Scan the SAME ticket code again
 Expected: ❌ RED screen with "Already scanned" error
@@ -72,6 +74,7 @@ Result:   [Pass/Fail] ___________
 ```
 
 ### **Test 3: Second Valid Ticket**
+
 ```
 Action:   Scan a different test ticket code
 Expected: ✅ GREEN screen with different customer name
@@ -79,6 +82,7 @@ Result:   [Pass/Fail] ___________
 ```
 
 ### **Test 4: VIP Ticket**
+
 ```
 Action:   Scan a VIP ticket code (if generated)
 Expected: ✅ GREEN screen with "VIP" tier shown
@@ -86,6 +90,7 @@ Result:   [Pass/Fail] ___________
 ```
 
 ### **Test 5: Invalid Code**
+
 ```
 Action:   Type random code (e.g., "INVALID-12345") and press Enter
 Expected: ❌ RED screen with "Ticket not found" error
@@ -93,6 +98,7 @@ Result:   [Pass/Fail] ___________
 ```
 
 ### **Test 6: Manual Entry**
+
 ```
 Action:   Type a valid ticket code manually and press Enter
 Expected: ✅ GREEN screen (same as barcode scan)
@@ -149,11 +155,12 @@ cd c:\Users\HP-PC\Desktop\lrn_auto_festival
 npm run dev
 ```
 
-Wait for: `  ▲ Next.js 16.2.1`
+Wait for: `▲ Next.js 16.2.1`
 
 ### **STEP 2: Generate Test Tickets**
 
 **Option A: PowerShell Script**
+
 ```powershell
 .\TEST_BARCODE_SCANNER.ps1
 # Select option 4 (Generate Test Bundle)
@@ -161,6 +168,7 @@ Wait for: `  ▲ Next.js 16.2.1`
 ```
 
 **Option B: Manual Curl**
+
 ```bash
 # Regular Ticket 1
 curl -X POST http://localhost:3000/api/test/generate-ticket \
@@ -473,10 +481,12 @@ FINAL RESULT:
 ## 📞 SUPPORT
 
 **During Testing:**
+
 - Check: `QR_BARCODE_QUICK_REFERENCE.md` (quick fixes)
 - Check: `BARCODE_SCANNER_TESTING_SETUP.md` (detailed guide)
 
 **After All Tests:**
+
 1. Document all results above
 2. Note any issues or improvements
 3. Proceed to next phase
@@ -488,6 +498,7 @@ FINAL RESULT:
 Congratulations! Your barcode scanner is working perfectly! 🎉
 
 **Next Steps:**
+
 ```
 Phase 2: Email Notifications
   └─ Test /api/emails/send-receipt

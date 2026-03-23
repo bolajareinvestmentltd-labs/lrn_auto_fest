@@ -20,6 +20,7 @@ curl -X POST http://localhost:3000/api/test/generate-ticket \
 ```
 
 **Expected Response:**
+
 ```json
 {
   "success": true,
@@ -95,10 +96,11 @@ curl -X POST http://localhost:3000/api/test/generate-ticket \
 2. **Create New Request**
 3. **Method**: POST
 4. **URL**: `http://localhost:3000/api/test/generate-ticket`
-5. **Headers**: 
+5. **Headers**:
    - Key: `Content-Type`
    - Value: `application/json`
 6. **Body** (Raw JSON):
+
 ```json
 {
   "customerName": "John Doe",
@@ -109,8 +111,9 @@ curl -X POST http://localhost:3000/api/test/generate-ticket \
   "quantity": 1
 }
 ```
+
 7. **Click Send**
-8. **View Response** → Copy ticket code
+2. **View Response** → Copy ticket code
 
 ---
 
@@ -143,9 +146,9 @@ fetch('/api/test/generate-ticket', {
   .catch(e => console.error('❌ Error:', e));
 ```
 
-5. **Press Enter**
-6. **Copy the Ticket Code** from console output
-7. Use in barcode scanner test
+1. **Press Enter**
+2. **Copy the Ticket Code** from console output
+3. Use in barcode scanner test
 
 ---
 
@@ -154,38 +157,47 @@ fetch('/api/test/generate-ticket', {
 ### **Test Set: Create 5 Different Tickets**
 
 **Ticket 1: REGULAR - First Valid Scan**
+
 ```bash
 curl -X POST http://localhost:3000/api/test/generate-ticket \
   -H "Content-Type: application/json" \
   -d '{"customerName":"User A","customerEmail":"a@test.com","customerPhone":"08011111111","ticketType":"REGULAR","groupSize":"SINGLE","quantity":1}'
 ```
+
 Save ticket code → **Use for first gate scan (should be ✅ GREEN)**
 
 **Ticket 2: REGULAR - Second Valid Scan**
+
 ```bash
 curl -X POST http://localhost:3000/api/test/generate-ticket \
   -H "Content-Type: application/json" \
   -d '{"customerName":"User B","customerEmail":"b@test.com","customerPhone":"08022222222","ticketType":"REGULAR","groupSize":"SINGLE","quantity":1}'
 ```
+
 Save ticket code → **Use for second gate scan (should be ✅ GREEN)**
 
 **Ticket 3: VIP - VIP Ticket Test**
+
 ```bash
 curl -X POST http://localhost:3000/api/test/generate-ticket \
   -H "Content-Type: application/json" \
   -d '{"customerName":"User C VIP","customerEmail":"c@test.com","customerPhone":"08033333333","ticketType":"VIP","groupSize":"GROUP_2","quantity":1}'
 ```
+
 Save ticket code → **Use for VIP scan test**
 
 **Ticket 4: GROUP SIZE TEST**
+
 ```bash
 curl -X POST http://localhost:3000/api/test/generate-ticket \
   -H "Content-Type: application/json" \
   -d '{"customerName":"User D Group","customerEmail":"d@test.com","customerPhone":"08044444444","ticketType":"REGULAR","groupSize":"GROUP_4","quantity":1}'
 ```
+
 Save ticket code → **Verify shows 2 parking passes**
 
 **Ticket 5: DUPLICATE TEST (Same as Ticket 1)**
+
 ```
 Take the ticket code from Ticket 1
 Scan it again after first successful scan
@@ -197,6 +209,7 @@ Should show: ❌ "Already scanned"
 ## 🎯 Testing Workflow
 
 ### **Step 1: Generate Test Tickets**
+
 ```
 1. Create Ticket 1 (REGULAR)
 2. Create Ticket 2 (REGULAR)
@@ -206,11 +219,13 @@ Should show: ❌ "Already scanned"
 ```
 
 ### **Step 2: Go to Gate Page**
+
 ```
 Navigate to: https://ilorincarshow.com/gate
 ```
 
 ### **Step 3: Execute Tests**
+
 ```
 TEST 1: Scan Ticket 1 → ✅ GREEN
 TEST 2: Scan Ticket 2 → ✅ GREEN
@@ -221,6 +236,7 @@ TEST 6: Scan invalid code → ❌ RED "Not found"
 ```
 
 ### **Step 4: Verify Results**
+
 ```
 ✅ All GREEN tests show correct customer details
 ✅ All RED tests show appropriate error messages
@@ -241,6 +257,7 @@ curl -X GET http://localhost:3000/api/test/generate-ticket
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -265,6 +282,7 @@ curl -X GET http://localhost:3000/api/test/generate-ticket
 ### **API Request/Response Examples**
 
 **CREATE TEST TICKET - POST**
+
 ```
 Endpoint: /api/test/generate-ticket
 Method: POST
@@ -291,6 +309,7 @@ Response:
 ```
 
 **RETRIEVE TEST TICKETS - GET**
+
 ```
 Endpoint: /api/test/generate-ticket
 Method: GET
@@ -309,23 +328,26 @@ Response:
 ## ⚡ Quick Commands (Copy-Paste)
 
 ### **Generate 1 Quick Test Ticket:**
+
 ```bash
 curl -X POST http://localhost:3000/api/test/generate-ticket -H "Content-Type: application/json" -d '{"customerName":"Quick Test","customerEmail":"quick@test.com","customerPhone":"08001234567","ticketType":"REGULAR","groupSize":"SINGLE","quantity":1}'
 ```
 
 ### **Generate 3 Tickets for Sequential Testing:**
+
 ```bash
 curl -X POST http://localhost:3000/api/test/generate-ticket -H "Content-Type: application/json" -d '{"customerName":"Sequential Test","customerEmail":"seq@test.com","customerPhone":"08001234568","ticketType":"REGULAR","groupSize":"SINGLE","quantity":3}'
 ```
 
 ### **Get All Test Tickets:**
+
 ```bash
 curl -X GET http://localhost:3000/api/test/generate-ticket
 ```
 
 ---
 
-## 🎊 Ready to Test!
+## 🎊 Ready to Test
 
 1. **Generate test tickets** using one of the methods above
 2. **Go to `/gate` page**
