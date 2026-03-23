@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Trophy, Zap, Car, Mic, Crown, Utensils } from "lucide-react";
 
 const features = [
-  { title: "Drift King", icon: Trophy, desc: "Battle for the Ilorin title." },
+  { title: "Drift King", icon: Trophy, desc: "Battle for the championship title." },
   { title: "Bike Stunts", icon: Zap, desc: "High-adrenaline stunts." },
   { title: "Exotic Cars", icon: Car, desc: "Supercars up close." },
   { title: "Music", icon: Mic, desc: "Top Afrobeats artists." },
