@@ -7,11 +7,13 @@
 ## 📁 WHERE TO ADD IMAGES
 
 ### **Directory Path:**
+
 ```
 public/images/champions/
 ```
 
 ### **Create This Directory If It Doesn't Exist:**
+
 ```bash
 mkdir public\images\champions
 ```
@@ -23,6 +25,7 @@ mkdir public\images\champions
 The champions data file uses this exact naming pattern. **Use these exact names:**
 
 ### **Drift Championship (4 Champions)**
+
 ```
 jamal-adeyemi.jpg
 zainab-hassan.jpg
@@ -31,6 +34,7 @@ amara-oluwaseun.jpg
 ```
 
 ### **Drag Race (4 Champions)**
+
 ```
 kingsley-obi.jpg
 chioma-uche.jpg
@@ -39,6 +43,7 @@ adeola-bello.jpg
 ```
 
 ### **Best Build (4 Champions)**
+
 ```
 ahmed-kareem.jpg
 blessing-okonkwo.jpg
@@ -51,6 +56,7 @@ grace-okafor.jpg
 ## 📋 COMPLETE CHAMPION LIST WITH IMAGE NAMES
 
 ### **DRIFT CHAMPIONSHIP**
+
 | Champion Name | Image File Name | Title |
 |---|---|---|
 | Jamal Adeyemi | `jamal-adeyemi.jpg` | 2025 Drift King |
@@ -59,6 +65,7 @@ grace-okafor.jpg
 | Amara Oluwaseun | `amara-oluwaseun.jpg` | Rising Star |
 
 ### **DRAG RACE**
+
 | Champion Name | Image File Name | Title |
 |---|---|---|
 | Kingsley Obi | `kingsley-obi.jpg` | 2025 Drag Champion |
@@ -67,6 +74,7 @@ grace-okafor.jpg
 | Adeola Bello | `adeola-bello.jpg` | Track Specialist |
 
 ### **BEST BUILD**
+
 | Champion Name | Image File Name | Title |
 |---|---|---|
 | Ahmed Kareem | `ahmed-kareem.jpg` | Best Build Master |
@@ -79,17 +87,20 @@ grace-okafor.jpg
 ## 📝 STEP-BY-STEP INSTRUCTIONS
 
 ### **Step 1: Create Directory**
+
 ```bash
 mkdir public\images\champions
 ```
 
 ### **Step 2: Add Your Images**
+
 - Rename your champion images to match the exact names above
 - Save them to: `public/images/champions/`
 - Image format: `.jpg` (or `.png`, but use `.jpg` for consistency)
 - Recommended size: 300x300px or 400x400px
 
 ### **Step 3: Verify Files Are In Place**
+
 ```
 public/
 └── images/
@@ -109,11 +120,13 @@ public/
 ```
 
 ### **Step 4: Restart Dev Server**
+
 ```bash
 npm run dev
 ```
 
 ### **Step 5: View Champions**
+
 1. Go to: `http://localhost:3000/register`
 2. Select a category (Drift, Drag, or Build)
 3. Click "Click to view X past champions →"
@@ -124,16 +137,20 @@ npm run dev
 ## 🔧 HOW IT WORKS
 
 ### **Code Location:**
+
 - Champions data: `src/data/champions.ts`
 - Register page: `src/app/register/page.tsx`
 
 ### **Image Reference:**
+
 The code looks for images at this path:
+
 ```typescript
 image: "/images/champions/jamal-adeyemi.jpg"
 ```
 
 So the file MUST be:
+
 - Named exactly as specified
 - Located in: `public/images/champions/`
 - Referenced with the `/images/champions/` prefix in the data file
@@ -143,6 +160,7 @@ So the file MUST be:
 ## 📸 IMAGE SPECIFICATIONS
 
 ### **Recommended Settings:**
+
 ```
 Format: JPG or PNG
 Dimensions: 300x300px or 400x400px
@@ -152,6 +170,7 @@ Background: Preferably solid color or blurred
 ```
 
 ### **Tools for Image Compression:**
+
 - Online: TinyPNG.com, Compressor.io
 - Local: ImageMagick, IrfanView
 - VS Code Extension: Image Optimizer
@@ -178,6 +197,7 @@ Background: Preferably solid color or blurred
 ## 🚀 AFTER ADDING IMAGES
 
 ### **Commit to Git:**
+
 ```bash
 git add public/images/champions/
 git commit -m "feat: add champion profile images for drift, drag, and build categories"
@@ -185,6 +205,7 @@ git push origin main
 ```
 
 ### **Images Will Auto-Deploy:**
+
 - Vercel will automatically deploy the new images
 - No code changes needed
 - Images will be live on production
@@ -206,6 +227,7 @@ git push origin main
 If you have a champion photo named `Jamal.png`, rename it to `jamal-adeyemi.jpg` and place it in `public/images/champions/`
 
 That's it! The system will automatically:
+
 1. Load the image from that directory
 2. Display it in the champions modal
 3. Show it on the register page
@@ -215,16 +237,19 @@ That's it! The system will automatically:
 ## 📞 TROUBLESHOOTING
 
 ### **Images Not Showing?**
+
 - Check file names match exactly (case-sensitive on Linux, not on Windows)
 - Verify directory path is correct
 - Reload browser (Ctrl+Shift+R)
 - Check browser console for 404 errors
 
 ### **Wrong Image For Wrong Champion?**
+
 - Double-check the filename matches the champion data
 - The champion name should match the image filename pattern
 
 ### **File Size Too Large?**
+
 - Compress using TinyPNG or similar
 - Optimize using ImageMagick
 - Resize to recommended dimensions
