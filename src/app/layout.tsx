@@ -4,8 +4,6 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Playfair_Display, Poppins, Montserrat, Raleway } from 'next/font/google';
 
-import { Playfair_Display, Poppins, Montserrat, Raleway } from 'next/font/google';
-
 // Google Fonts Configuration for Elegant Typography
 const playfairDisplay = Playfair_Display({
   subsets: ['latin'],
