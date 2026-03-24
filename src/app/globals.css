@@ -8,13 +8,15 @@
 :root {
   --font-inter: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-orbitron: 'Orbitron', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  /* NEW – Barlow Condensed: ultra-bold condensed display for headings — automotive/motorsport standard */
+  /* Russo One – F1 / Need for Speed racing display font, exact match to reference screenshot */
+  --font-russo: 'Russo One', 'Barlow Condensed', system-ui, sans-serif;
+  /* Barlow Condensed: retained for section headings & cards */
   --font-barlow-condensed: 'Barlow Condensed', 'Barlow', system-ui, sans-serif;
   /* Bebas Neue retained as fallback only */
   --font-bebas: 'Bebas Neue', 'Barlow Condensed', system-ui, sans-serif;
-  /* NEW – Barlow: crisp refined body / navigation font */
+  /* Barlow: crisp refined body / navigation font */
   --font-barlow: 'Barlow', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  /* NEW – Cinzel Decorative: elegant classical serif for prestige accent text */
+  /* Cinzel Decorative: elegant classical serif for prestige accent text */
   --font-cinzel: 'Cinzel Decorative', 'Cinzel', Georgia, 'Times New Roman', serif;
 }
 
@@ -31,10 +33,10 @@
   --color-electric-500: #00C0CC;
   --color-electric-600: #009099;
 
-  --font-heading: var(--font-barlow-condensed);
+  --font-heading: var(--font-russo);
   --font-sans: var(--font-barlow);
-  /* NEW – semantic aliases */
-  --font-display: var(--font-barlow-condensed);
+  /* semantic aliases */
+  --font-display: var(--font-russo);
   --font-accent: var(--font-cinzel);
 
   --radius: 0.5rem;
