@@ -19,10 +19,10 @@ export default function Sponsors() {
         <section className="py-16 bg-black/50 border-y border-white/10">
             <div className="container mx-auto px-4">
                 <div className="text-center mb-12">
-                    <h3 className="text-white/80 text-sm font-sans uppercase tracking-widest mb-2">
+                    <h3 className="font-sans font-medium text-white/50 text-[10px] sm:text-xs uppercase tracking-[0.35em] mb-2">
                         Powered By
                     </h3>
-                    <h2 className="font-heading text-3xl md:text-4xl font-bold text-white uppercase italic">
+                    <h2 className="font-heading text-fluid-section text-white uppercase tracking-widest">
                         Official <span className="text-brand-blue">Partners</span>
                     </h2>
                 </div>
@@ -56,12 +56,12 @@ export default function Sponsors() {
 
                 {/* Call to Action for More Sponsors */}
                 <div className="text-center mt-12">
-                    <p className="text-white/60 text-sm mb-4">
+                    <p className="font-sans font-light text-white/50 text-sm tracking-widest uppercase mb-4">
                         Interested in sponsoring the festival?
                     </p>
                     <a
                         href="mailto:info@iaf2026.com"
-                        className="inline-block px-6 py-2 border border-brand-blue text-brand-blue hover:bg-brand-blue/10 rounded-full transition-all text-sm font-semibold uppercase"
+                        className="inline-block px-6 py-2 border border-brand-blue text-brand-blue hover:bg-brand-blue/10 rounded-full transition-all text-xs font-sans font-semibold uppercase tracking-widest"
                     >
                         Become a Sponsor
                     </a>

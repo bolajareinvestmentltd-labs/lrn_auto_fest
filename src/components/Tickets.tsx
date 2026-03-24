@@ -115,10 +115,10 @@ export default function Tickets() {
 
                     {/* Section Header */}
                     <div className="text-center mb-16">
-                        <h2 className="font-heading text-4xl md:text-6xl font-black text-white uppercase italic tracking-tighter">
+                        <h2 className="font-heading text-fluid-section text-white uppercase tracking-widest">
                             Get Your <span className="text-brand-orange">Access</span>
                         </h2>
-                        <p className="text-gray-400 mt-4 max-w-lg mx-auto">
+                        <p className="font-sans font-light text-gray-400 mt-4 max-w-lg mx-auto text-sm sm:text-base tracking-wide">
                             Secure your spot at the biggest automotive event in West Africa.
                         </p>
                     </div>
@@ -164,18 +164,18 @@ export default function Tickets() {
                                             )}
 
                                             <CardHeader className="text-center pb-2">
-                                                <CardTitle className="font-heading text-2xl text-white uppercase tracking-wide">
+                                                <CardTitle className="font-heading text-3xl text-white uppercase tracking-widest">
                                                     {tier.name}
                                                 </CardTitle>
                                                 <div className="mt-4">
-                                                    <span className="text-4xl font-bold text-white">
+                                                    <span className="font-display text-5xl text-white tracking-tight">
                                                         ₦{(tier.presaleSinglePrice || tier.onsaleSinglePrice || 0).toLocaleString()}
                                                     </span>
-                                                    <p className="text-xs text-gray-400 mt-2">
+                                                    <p className="font-sans font-light text-xs text-gray-400 mt-2 tracking-widest uppercase">
                                                         {tier.presaleSinglePrice ? 'Presale Price (ends March 31)' : 'Price'}
                                                     </p>
                                                 </div>
-                                                <div className="mt-3 text-xs text-gray-500">
+                                                <div className="font-sans mt-3 text-xs text-gray-500 tracking-wider">
                                                     {remaining} of {tier.totalUnits} remaining
                                                 </div>
                                             </CardHeader>
@@ -185,7 +185,7 @@ export default function Tickets() {
                                                     {perks.map((perk, i) => (
                                                         <li key={i} className="flex items-start gap-3 text-gray-300">
                                                             <Check className={`w-5 h-5 shrink-0 mt-0.5 ${isVip ? 'text-brand-orange' : 'text-brand-blue'}`} />
-                                                            <span className="text-sm">{perk}</span>
+                                                            <span className="font-sans text-sm font-light tracking-wide">{perk}</span>
                                                         </li>
                                                     ))}
                                                 </ul>
@@ -193,7 +193,7 @@ export default function Tickets() {
 
                                             <CardFooter>
                                                 <Button
-                                                    className={`w-full h-12 font-bold text-lg uppercase tracking-wider rounded-full
+                                                    className={`w-full h-12 font-sans font-semibold text-base uppercase tracking-widest rounded-full
                             ${isVip ? 'bg-brand-orange hover:bg-orange-600 text-white' : 'bg-transparent border border-white/20 hover:bg-white/10 text-white'}`}
                                                     onClick={() => handleBuyClick(tier)}
                                                 >

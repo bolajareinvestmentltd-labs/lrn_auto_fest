@@ -8,6 +8,12 @@
 :root {
   --font-inter: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-orbitron: 'Orbitron', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* NEW – Bebas Neue: sharp condensed display font for all headings */
+  --font-bebas: 'Bebas Neue', 'Barlow Condensed', system-ui, sans-serif;
+  /* NEW – Barlow: crisp refined body / navigation font */
+  --font-barlow: 'Barlow', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  /* NEW – Cinzel Decorative: elegant classical serif for prestige accent text */
+  --font-cinzel: 'Cinzel Decorative', 'Cinzel', Georgia, 'Times New Roman', serif;
 }
 
 @theme {
@@ -23,8 +29,11 @@
   --color-electric-500: #00C0CC;
   --color-electric-600: #009099;
 
-  --font-heading: var(--font-orbitron);
-  --font-sans: var(--font-inter);
+  --font-heading: var(--font-bebas);
+  --font-sans: var(--font-barlow);
+  /* NEW – semantic aliases */
+  --font-display: var(--font-bebas);
+  --font-accent: var(--font-cinzel);
 
   --radius: 0.5rem;
 }
@@ -51,4 +60,41 @@ body {
 /* Dark background utility used by gallery, FAQ, contact pages */
 .bg-dark-900 {
   background-color: #050505;
+}
+
+/* ─── Typography Refinements ─────────────────────────────────────────────── */
+
+/* Bebas Neue renders at a single weight – strip conflicting weight/style */
+.font-heading,
+.font-display {
+  font-weight: 400;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Cinzel Decorative – keep normal rendering, allow italic */
+.font-accent {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Barlow – crisp at all sizes */
+.font-sans {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Responsive fluid heading helper – clamp-based for smooth scaling */
+.text-fluid-hero {
+  font-size: clamp(3rem, 10vw, 10rem);
+  line-height: 1;
+  letter-spacing: 0.05em;
+}
+
+.text-fluid-section {
+  font-size: clamp(2.25rem, 6vw, 5rem);
+  line-height: 1.05;
+  letter-spacing: 0.08em;
 }

@@ -95,7 +95,7 @@ export default function Hero() {
           animate={{ y: 0 }}
           className="absolute top-0 left-0 right-0 z-30 bg-gradient-to-r from-brand-orange via-orange-500 to-brand-orange py-2 text-center"
         >
-          <p className="text-white text-sm md:text-base font-bold tracking-wide">
+          <p className="font-sans font-semibold text-white text-xs sm:text-sm md:text-base tracking-widest uppercase">
             🎟️ EARLY BIRD ENDS MARCH 31, 2026 — Prices Increase April 1st!
           </p>
         </motion.div>
@@ -125,14 +125,13 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-white/80 text-xl sm:text-2xl md:text-3xl mb-4 italic -mt-1"
-          style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
+          className="font-accent text-white/70 text-lg sm:text-2xl md:text-3xl mb-4 italic -mt-1 tracking-widest"
         >
           Presents
         </motion.p>
 
         {/* Animated Title - ILORIN CAR SHOW 3.0 */}
-        <div className="font-heading font-black italic tracking-tighter text-white uppercase text-4xl sm:text-6xl md:text-8xl leading-tight">
+        <div className="font-heading text-fluid-hero tracking-widest text-white uppercase">
           <AnimatePresence>
             {titleIndex >= 0 && (
               <motion.span
@@ -201,7 +200,7 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="mt-2 text-brand-orange font-semibold text-lg sm:text-xl md:text-2xl italic"
+          className="font-accent mt-2 text-brand-orange text-base sm:text-xl md:text-2xl italic tracking-wider"
         >
           [The Reborn Edition]
         </motion.p>
@@ -212,10 +211,10 @@ export default function Hero() {
           transition={{ delay: 0.4 }}
           className="mt-4 mx-auto max-w-xl"
         >
-          <p className="text-gray-300 font-sans text-base sm:text-xl">
+          <p className="font-sans font-light text-white/80 text-sm sm:text-lg md:text-xl tracking-wide">
             Drift Championship • Keke Race • Drag Race • Stunts and Lots More
           </p>
-          <p className="text-gray-300 font-sans text-base sm:text-xl mt-2">
+          <p className="font-sans font-light text-white/70 text-sm sm:text-lg md:text-xl mt-2 tracking-wide">
             The Biggest Auto Experience in Northern Nigeria
           </p>
         </motion.div>
@@ -234,7 +233,7 @@ export default function Hero() {
             className="flex items-center gap-2 hover:text-brand-orange transition-colors cursor-pointer group"
           >
             <Calendar className="w-5 h-5 text-brand-orange group-hover:scale-110 transition-transform" />
-            <span className="text-sm md:text-base font-semibold group-hover:underline">May 30, 2026</span>
+            <span className="font-sans text-sm md:text-base font-semibold tracking-wide group-hover:underline">May 30, 2026</span>
             <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
           </a>
           <span className="hidden sm:block text-white/40">|</span>
@@ -245,7 +244,7 @@ export default function Hero() {
             className="flex items-center gap-2 hover:text-brand-blue transition-colors cursor-pointer group"
           >
             <MapPin className="w-5 h-5 text-brand-blue group-hover:scale-110 transition-transform" />
-            <span className="text-sm md:text-base group-hover:underline">{EVENT_VENUE}</span>
+            <span className="font-sans text-sm md:text-base font-light tracking-wide group-hover:underline">{EVENT_VENUE}</span>
             <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
           </a>
         </motion.div>
@@ -257,7 +256,7 @@ export default function Hero() {
           transition={{ delay: 0.6 }}
           className="mt-8"
         >
-          <p className="text-white/60 text-xs uppercase tracking-widest mb-3">Countdown to Event</p>
+          <p className="font-sans font-medium text-white/50 text-[10px] sm:text-xs uppercase tracking-[0.35em] mb-3">Countdown to Event</p>
           <CountdownTimer targetDate={EVENT_DATE} />
         </motion.div>
 

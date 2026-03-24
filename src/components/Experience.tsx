@@ -16,7 +16,7 @@ export default function Experience() {
     <section className="py-24 bg-[#050505] relative z-20">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="font-heading text-4xl md:text-5xl font-bold text-white uppercase italic">
+          <h2 className="font-heading text-fluid-section text-white uppercase tracking-widest">
             Experience <span className="text-brand-blue">Highlights</span>
           </h2>
         </div>
@@ -28,8 +28,8 @@ export default function Experience() {
                 <div className="p-4 rounded-full bg-white/5 mb-6 text-brand-orange">
                   <item.icon className="w-10 h-10" />
                 </div>
-                <h3 className="font-heading text-xl text-white mb-2 uppercase">{item.title}</h3>
-                <p className="text-gray-400 text-sm">{item.desc}</p>
+                <h3 className="font-heading text-2xl text-white mb-2 uppercase tracking-widest">{item.title}</h3>
+                <p className="font-sans font-light text-gray-400 text-sm leading-relaxed">{item.desc}</p>
               </CardContent>
             </Card>
           ))}

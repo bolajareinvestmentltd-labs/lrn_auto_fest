@@ -61,11 +61,11 @@ export default function CountdownTimer({ targetDate, className = "" }: Countdown
                 {["Days", "Hours", "Mins", "Secs"].map((label) => (
                     <div key={label} className="flex flex-col items-center">
                         <div className="relative">
-                            <div className="bg-gradient-to-b from-white/10 to-white/5 border border-white/20 rounded-lg px-3 py-2 md:px-5 md:py-3 min-w-[60px] md:min-w-[80px] backdrop-blur-sm">
-                                <span className="text-2xl md:text-4xl font-bold text-white font-mono">--</span>
+                            <div className="bg-gradient-to-b from-white/10 to-white/5 border border-white/20 rounded-lg px-3 py-2 md:px-6 md:py-4 min-w-[60px] md:min-w-[90px] backdrop-blur-sm">
+                                <span className="font-display text-3xl md:text-5xl text-white">--</span>
                             </div>
                         </div>
-                        <span className="text-[10px] md:text-xs text-white/60 uppercase tracking-wider mt-2 font-semibold">
+                        <span className="font-sans text-[10px] md:text-xs text-white/50 uppercase tracking-[0.3em] mt-2 font-medium">
                             {label}
                         </span>
                     </div>
@@ -86,15 +86,15 @@ export default function CountdownTimer({ targetDate, className = "" }: Countdown
             {timeUnits.map((unit) => (
                 <div key={unit.label} className="flex flex-col items-center">
                     <div className="relative">
-                        <div className="bg-gradient-to-b from-white/10 to-white/5 border border-white/20 rounded-lg px-3 py-2 md:px-5 md:py-3 min-w-[60px] md:min-w-[80px] backdrop-blur-sm">
-                            <span className="text-2xl md:text-4xl font-bold text-white font-mono">
+                        <div className="bg-gradient-to-b from-white/10 to-white/5 border border-white/20 rounded-lg px-3 py-2 md:px-6 md:py-4 min-w-[60px] md:min-w-[90px] backdrop-blur-sm">
+                            <span className="font-display text-3xl md:text-5xl text-white">
                                 {String(unit.value).padStart(2, "0")}
                             </span>
                         </div>
                         {/* Glowing effect */}
                         <div className="absolute inset-0 bg-brand-orange/20 rounded-lg blur-xl -z-10" />
                     </div>
-                    <span className="text-[10px] md:text-xs text-white/60 uppercase tracking-wider mt-2 font-semibold">
+                    <span className="font-sans text-[10px] md:text-xs text-white/50 uppercase tracking-[0.3em] mt-2 font-medium">
                         {unit.label}
                     </span>
                 </div>
