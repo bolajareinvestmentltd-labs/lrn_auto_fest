@@ -131,7 +131,7 @@ export default function Hero() {
         </motion.p>
 
         {/* Animated Title - ILORIN CAR SHOW 3.0 */}
-        <div className="font-heading text-fluid-hero tracking-widest text-white uppercase">
+        <div className="font-heading font-black italic text-fluid-hero text-white uppercase">
           <AnimatePresence>
             {titleIndex >= 0 && (
               <motion.span
