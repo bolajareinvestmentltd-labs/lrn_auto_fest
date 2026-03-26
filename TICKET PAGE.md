@@ -2,7 +2,7 @@ TICKETS PAGE
 
 Regular Tickets
  • Pre-sale: ₦3,000
- • At Venue: ₦5,000
+ • On-sale: ₦5,000
  • Includes: General access, food vendors, main stunt/drift view
  • Button: “Buy Now” → integrated with payment gateway
 
@@ -73,7 +73,7 @@ Each VIP tier must have:
 
 4️⃣ VENDOR BOOKING PAGE
  • Fee: ₦100,000
- • Limit: 20 vendors
+ • Limit: 10 vendors
  • Product type: food, drink, eatables only
  • Form fields:
  • Business Name

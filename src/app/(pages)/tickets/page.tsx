@@ -203,7 +203,7 @@ export default function TicketsPage() {
         <Card className={`relative h-full flex flex-col border-2 ${colors.border} ${colors.bg} overflow-hidden`}>
           <div className="absolute left-4 top-4 z-10 flex flex-wrap gap-2">
             <span className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${remaining <= 10 ? "bg-red-500/20 text-red-300 border border-red-500/40" : "bg-white/10 text-white border border-white/15"}`}>
-              {soldOut ? "Sold Out" : `${remaining} tickets left`}
+              {remaining > 0 ? `${remaining} left` : "0 left"}
             </span>
             {isVip && !soldOut && (
               <span className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider text-black ${colors.badge}`}>
@@ -215,7 +215,7 @@ export default function TicketsPage() {
           {soldOut && (
             <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/75 backdrop-blur-[1px]">
               <span className="rounded-full border-2 border-red-500 px-6 py-2 text-lg font-black uppercase tracking-[0.25em] text-red-400">
-                Sold Out
+                0 left
               </span>
             </div>
           )}
@@ -234,7 +234,7 @@ export default function TicketsPage() {
                     {GROUP_OPTIONS.find((option) => option.value === chosenGroupSize)?.label || "Single"}
                   </p>
                   <p className="text-xs text-gray-500">
-                    {tier.presaleActive && new Date() < new Date(PRESALE_END_DATE) ? "Current price: Pre-sale" : "Current price: At venue"}
+                    {tier.presaleActive && new Date() < new Date(PRESALE_END_DATE) ? "Current price: Pre-sale" : "Current price: On-sale"}
                   </p>
                 </div>
                 <p className="text-3xl font-black text-brand-orange">
@@ -273,7 +273,7 @@ export default function TicketsPage() {
                         </div>
                         <div className="text-right text-xs">
                           <p className="text-gray-400">Pre-sale: <span className="font-semibold text-white">{presalePrice !== null ? `₦${presalePrice.toLocaleString()}` : "—"}</span></p>
-                          <p className="mt-1 text-gray-400">At venue: <span className="font-semibold text-white">{onSalePrice !== null ? `₦${onSalePrice.toLocaleString()}` : "—"}</span></p>
+                          <p className="mt-1 text-gray-400">On-sale: <span className="font-semibold text-white">{onSalePrice !== null ? `₦${onSalePrice.toLocaleString()}` : "—"}</span></p>
                         </div>
                       </div>
                     </button>
@@ -307,7 +307,7 @@ export default function TicketsPage() {
               <div className="flex items-center justify-between gap-4">
                 <p className="text-xs uppercase tracking-[0.25em] text-gray-500">Availability countdown</p>
                 <p className={`text-sm font-semibold ${remaining <= 10 ? "text-red-400" : "text-gray-300"}`}>
-                  {soldOut ? "0 tickets left" : `${remaining} tickets left`}
+                  {remaining > 0 ? `${remaining} left` : "0 left"}
                 </p>
               </div>
               <progress

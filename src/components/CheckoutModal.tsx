@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Lock, Car, Users, CreditCard, Building2, Copy, CheckCircle } from "lucide-react";
+import { Loader2, Lock, Car, Users, CreditCard } from "lucide-react";
 
 interface TicketTier {
     id: string;
@@ -26,7 +26,7 @@ interface TicketTier {
 }
 
 type GroupSize = "SINGLE" | "GROUP_2" | "GROUP_4";
-type PaymentMethod = "paystack" | "bank_transfer";
+type PaymentMethod = "paystack";
 
 interface CheckoutModalProps {
     isOpen: boolean;
@@ -41,13 +41,6 @@ const GROUP_LABELS: Record<GroupSize, { label: string; people: number; parking: 
     GROUP_4: { label: "Group of 4", people: 4, parking: 2 },
 };
 
-// Bank transfer details
-const BANK_DETAILS = {
-    bankName: "First Bank of Nigeria",
-    accountNumber: "3012345678",
-    accountName: "Ilorin Automotive Festival",
-};
-
 export default function CheckoutModal({
     isOpen,
     onClose,
@@ -60,10 +53,6 @@ export default function CheckoutModal({
     const [quantity, setQuantity] = useState(1);
     const [isProcessing, setIsProcessing] = useState(false);
     const [paystackLoaded, setPaystackLoaded] = useState(false);
-    const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("paystack");
-    const [copiedField, setCopiedField] = useState<string | null>(null);
-    const [transferSubmitted, setTransferSubmitted] = useState(false);
-
     const groupInfo = GROUP_LABELS[groupSize];
 
     // Load Paystack script on component mount
@@ -93,12 +82,6 @@ export default function CheckoutModal({
             setTransferSubmitted(false);
         }
     }, [isOpen]);
-
-    const copyToClipboard = (text: string, field: string) => {
-        navigator.clipboard.writeText(text);
-        setCopiedField(field);
-        setTimeout(() => setCopiedField(null), 2000);
-    };
 
     if (!tier) return null;
 
@@ -141,48 +124,9 @@ export default function CheckoutModal({
         // Cap at ₦2,500 to be fair to high-value purchases
         return Math.min(fee, 2500);
     };
-    const processingFee = paymentMethod === "paystack" ? calculateProcessingFee(subtotalWithService + vat) : 0;
+    const processingFee = calculateProcessingFee(subtotalWithService + vat);
     const total = subtotalWithService + vat + processingFee;
     const referenceCode = `IAF-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-
-    const handleBankTransferSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!fullName.trim() || !email.trim() || !phone.trim()) {
-            alert("Please fill in all fields");
-            return;
-        }
-
-        setIsProcessing(true);
-
-        try {
-            // Register the pending transfer
-            const response = await fetch('/api/paystack/initialize', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email,
-                    amount: total,
-                    ticketTierId: tier.id,
-                    ticketType: tier.name,
-                    customerName: fullName,
-                    phone,
-                    quantity,
-                    groupSize,
-                    paymentMethod: 'bank_transfer',
-                    reference: referenceCode,
-                })
-            });
-
-            if (response.ok) {
-                setTransferSubmitted(true);
-            }
-        } catch (error) {
-            console.error("Failed to register transfer:", error);
-        } finally {
-            setIsProcessing(false);
-        }
-    };
 
     const handlePayment = (e: React.FormEvent) => {
         e.preventDefault();
@@ -259,33 +203,7 @@ export default function CheckoutModal({
                     <p className="text-sm text-gray-400 mt-2">{tier.name}</p>
                 </SheetHeader>
 
-                <form onSubmit={paymentMethod === "paystack" ? handlePayment : handleBankTransferSubmit} className="space-y-4 mt-4">
-                    {/* Payment Method Selector */}
-                    <div className="grid grid-cols-2 gap-3 mb-4">
-                        <button
-                            type="button"
-                            onClick={() => setPaymentMethod("paystack")}
-                            className={`flex items-center justify-center gap-2 p-3 rounded-lg border transition-all ${paymentMethod === "paystack"
-                                ? "bg-brand-orange/20 border-brand-orange text-white"
-                                : "bg-white/5 border-white/10 text-gray-400 hover:border-white/30"
-                                }`}
-                        >
-                            <CreditCard className="w-5 h-5" />
-                            <span className="text-sm font-medium">Card / Bank</span>
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setPaymentMethod("bank_transfer")}
-                            className={`flex items-center justify-center gap-2 p-3 rounded-lg border transition-all ${paymentMethod === "bank_transfer"
-                                ? "bg-brand-blue/20 border-brand-blue text-white"
-                                : "bg-white/5 border-white/10 text-gray-400 hover:border-white/30"
-                                }`}
-                        >
-                            <Building2 className="w-5 h-5" />
-                            <span className="text-sm font-medium">Direct Transfer</span>
-                        </button>
-                    </div>
-
+                <form onSubmit={handlePayment} className="space-y-4 mt-4">
                     {/* Ticket Summary */}
                     <div className="bg-brand-orange/10 border border-brand-orange/30 rounded-lg p-4 mb-4">
                         <div className="flex justify-between items-center mb-3">
@@ -407,12 +325,10 @@ export default function CheckoutModal({
                                     <span className="text-gray-400">VAT (5)</span>
                                     <span className="text-white">₦{vat.toLocaleString()}</span>
                                 </div>
-                                {paymentMethod === "paystack" && (
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-gray-400">Processing Fee</span>
-                                        <span className="text-gray-300">₦{processingFee.toLocaleString()}</span>
-                                    </div>
-                                )}
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-gray-400">Processing Fee</span>
+                                    <span className="text-gray-300">₦{processingFee.toLocaleString()}</span>
+                                </div>
                                 <div className="flex justify-between pt-2 border-t border-white/10">
                                     <span className="text-xs text-gray-500 uppercase">Total</span>
                                     <span className="text-xl font-bold text-brand-orange">
@@ -423,119 +339,26 @@ export default function CheckoutModal({
                         </div>
                     </div>
 
-                    {/* Bank Transfer Details */}
-                    {paymentMethod === "bank_transfer" && !transferSubmitted && (
-                        <div className="bg-brand-blue/10 border border-brand-blue/30 rounded-lg p-4 mt-4 space-y-3">
-                            <h4 className="text-sm font-semibold text-white flex items-center gap-2">
-                                <Building2 className="w-4 h-4 text-brand-blue" />
-                                Bank Transfer Details
-                            </h4>
-
-                            <div className="space-y-2">
-                                <div className="flex justify-between items-center bg-white/5 rounded p-2">
-                                    <div>
-                                        <p className="text-xs text-gray-500">Bank Name</p>
-                                        <p className="text-white font-medium">{BANK_DETAILS.bankName}</p>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => copyToClipboard(BANK_DETAILS.bankName, 'bank')}
-                                        className="p-1.5 hover:bg-white/10 rounded transition-colors"
-                                    >
-                                        {copiedField === 'bank' ? <CheckCircle className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-gray-400" />}
-                                    </button>
-                                </div>
-
-                                <div className="flex justify-between items-center bg-white/5 rounded p-2">
-                                    <div>
-                                        <p className="text-xs text-gray-500">Account Number</p>
-                                        <p className="text-white font-mono font-bold text-lg">{BANK_DETAILS.accountNumber}</p>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => copyToClipboard(BANK_DETAILS.accountNumber, 'account')}
-                                        className="p-1.5 hover:bg-white/10 rounded transition-colors"
-                                    >
-                                        {copiedField === 'account' ? <CheckCircle className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-gray-400" />}
-                                    </button>
-                                </div>
-
-                                <div className="flex justify-between items-center bg-white/5 rounded p-2">
-                                    <div>
-                                        <p className="text-xs text-gray-500">Account Name</p>
-                                        <p className="text-white font-medium">{BANK_DETAILS.accountName}</p>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => copyToClipboard(BANK_DETAILS.accountName, 'name')}
-                                        className="p-1.5 hover:bg-white/10 rounded transition-colors"
-                                    >
-                                        {copiedField === 'name' ? <CheckCircle className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-gray-400" />}
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded p-2 mt-3">
-                                <p className="text-xs text-yellow-400">
-                                    <strong>Important:</strong> Use this as your payment reference: <span className="font-mono bg-black/30 px-1 rounded">{referenceCode}</span>
-                                </p>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Transfer Submitted Success */}
-                    {transferSubmitted && (
-                        <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4 mt-4 text-center">
-                            <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
-                            <h4 className="text-lg font-bold text-white mb-2">Transfer Details Saved!</h4>
-                            <p className="text-sm text-gray-400 mb-3">
-                                Please complete your bank transfer of <span className="text-green-400 font-bold">₦{total.toLocaleString()}</span> using the reference code:
-                            </p>
-                            <p className="font-mono text-lg text-brand-orange bg-black/30 p-2 rounded">{referenceCode}</p>
-                            <p className="text-xs text-gray-500 mt-3">
-                                Your ticket will be sent via email once payment is confirmed (usually within 24 hours).
-                            </p>
-                        </div>
-                    )}
-
                     {/* Pay Button */}
-                    {!transferSubmitted && (
-                        <Button
-                            type="submit"
-                            disabled={isProcessing || !fullName || !email || !phone}
-                            className={`w-full ${paymentMethod === "paystack" ? "bg-brand-orange hover:bg-orange-600" : "bg-brand-blue hover:bg-blue-600"} text-white font-bold h-12 text-lg uppercase tracking-wide mt-6`}
-                        >
-                            {isProcessing ? (
-                                <>
-                                    <Loader2 className="animate-spin mr-2 h-4 w-4" />
-                                    Processing...
-                                </>
-                            ) : paymentMethod === "paystack" ? (
-                                <>
-                                    Pay Now <Lock className="w-4 h-4 ml-2" />
-                                </>
-                            ) : (
-                                <>
-                                    Confirm Transfer Details <CheckCircle className="w-4 h-4 ml-2" />
-                                </>
-                            )}
-                        </Button>
-                    )}
-
-                    {transferSubmitted && (
-                        <Button
-                            type="button"
-                            onClick={onClose}
-                            className="w-full bg-white/10 hover:bg-white/20 text-white font-bold h-12 text-lg uppercase tracking-wide mt-6"
-                        >
-                            Close
-                        </Button>
-                    )}
+                    <Button
+                        type="submit"
+                        disabled={isProcessing || !fullName || !email || !phone}
+                        className="w-full bg-brand-orange hover:bg-orange-600 text-white font-bold h-12 text-lg uppercase tracking-wide mt-6"
+                    >
+                        {isProcessing ? (
+                            <>
+                                <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                                Processing...
+                            </>
+                        ) : (
+                            <>
+                                Pay Now <Lock className="w-4 h-4 ml-2" />
+                            </>
+                        )}
+                    </Button>
 
                     <p className="text-xs text-center text-gray-600">
-                        {paymentMethod === "paystack"
-                            ? "Secured by Paystack. Non-refundable."
-                            : "Manual verification may take up to 24 hours."}
+                        Secured by Paystack. Non-refundable.
                     </p>
                 </form>
             </SheetContent>

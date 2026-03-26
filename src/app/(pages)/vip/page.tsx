@@ -285,7 +285,7 @@ export default function VIPPage() {
                         </div>
                         {remaining <= 10 && remaining > 0 && (
                           <span className="bg-black/20 text-black px-3 py-1 rounded-full text-xs font-bold animate-pulse">
-                            Only {remaining} left!
+                            {remaining} left
                           </span>
                         )}
                       </div>
@@ -294,7 +294,7 @@ export default function VIPPage() {
                       {soldOut && (
                         <div className="absolute inset-0 bg-black/90 z-10 flex items-center justify-center">
                           <span className="text-3xl font-bold text-red-500 uppercase tracking-wider rotate-[-15deg] border-4 border-red-500 px-8 py-3">
-                            Sold Out
+                            0 left
                           </span>
                         </div>
                       )}
