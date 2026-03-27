@@ -161,7 +161,7 @@ export default function CheckoutModal({
             return;
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const handler = ((window as unknown) as Record<string, any>).PaystackPop.setup({
             key: paystackKey,
             email: email,
@@ -178,17 +178,18 @@ export default function CheckoutModal({
                     { display_name: "Parking Passes", variable_name: "parking", value: groupInfo.parking * quantity },
                 ]
             },
-            callback_url: `${window.location.origin}/payment-confirmation`,
             onClose: () => {
                 setIsProcessing(false);
             },
+            // FIXED: Raw Paystack JS uses 'callback', not 'onSuccess'
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onSuccess: (transaction: any) => {
-                // Redirect to confirmation page
-                window.location.href = `/payment-confirmation?reference=${transaction.reference}`;
+            callback: (response: any) => {
+                // Redirect directly to your confirmation page with the reference
+                window.location.href = `/payment-confirmation?reference=${response.reference}`;
             }
         });
         handler.openIframe();
+
     };
 
     return (
