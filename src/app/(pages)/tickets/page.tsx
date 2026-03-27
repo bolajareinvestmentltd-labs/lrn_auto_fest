@@ -171,13 +171,19 @@ export default function TicketsPage() {
   };
 
   const getPackageOptions = (tier: TicketTier) => {
-    return GROUP_OPTIONS.filter((option) => {
-      return (
-        getPriceForPeriod(tier, option.value, "presale") !== null ||
-        getPriceForPeriod(tier, option.value, "onsale") !== null
-      );
-    });
-  };
+  return GROUP_OPTIONS.filter((option) => {
+    // Hide group options if it is a REGULAR ticket
+    if (tier.ticketType === "REGULAR" && option.value !== "SINGLE") {
+      return false;
+    }
+    // Keep options if they have a price
+    return (
+      getPriceForPeriod(tier, option.value, "presale") !== null ||
+      getPriceForPeriod(tier, option.value, "onsale") !== null
+    );
+  });
+};
+
 
   const regularTiers = tiers.filter((tier) => tier.ticketType === "REGULAR");
   const vipTiers = tiers.filter((tier) => tier.ticketType !== "REGULAR");
