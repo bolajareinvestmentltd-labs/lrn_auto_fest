@@ -200,13 +200,9 @@ export default function CheckoutModal({
                     </SheetTitle>
                     <p className="text-sm text-gray-400 mt-2">{tier.name}</p>
                 </SheetHeader>
-
-<<<<<<< HEAD
-                <form onSubmit={handlePayment} className="space-y-4 mt-4">
-=======
-                <form onSubmit={handlePayment} className="space-y-4 mt-4">
-                    {/* Ticket Summary */}
->>>>>>> 83d6f3c00bbc19a34e09fdc53a92ce3a55734c76
+<form onSubmit={handlePayment} className="space-y-4 mt-4">
+  {/* Ticket Summary */}
+    
                     <div className="bg-brand-orange/10 border border-brand-orange/30 rounded-lg p-4 mb-4">
                         <div className="flex justify-between items-center mb-3">
                             <div>
