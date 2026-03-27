@@ -161,12 +161,12 @@ export default function CheckoutModal({
             return;
         }
 
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const handler = ((window as unknown) as Record<string, any>).PaystackPop.setup({
             key: paystackKey,
             email: email,
             amount: total * 100, // Amount in kobo
-            ref: `IAF-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+            ref: referenceCode, // USING THE GENERATED REFERENCE CODE HERE
             currency: "NGN",
             metadata: {
                 custom_fields: [
@@ -189,7 +189,6 @@ export default function CheckoutModal({
             }
         });
         handler.openIframe();
-
     };
 
     return (
@@ -201,9 +200,8 @@ export default function CheckoutModal({
                     </SheetTitle>
                     <p className="text-sm text-gray-400 mt-2">{tier.name}</p>
                 </SheetHeader>
-<form onSubmit={handlePayment} className="space-y-4 mt-4">
-  {/* Ticket Summary */}
-    
+                <form onSubmit={handlePayment} className="space-y-4 mt-4">
+                    {/* Ticket Summary */}
                     <div className="bg-brand-orange/10 border border-brand-orange/30 rounded-lg p-4 mb-4">
                         <div className="flex justify-between items-center mb-3">
                             <div>
@@ -363,4 +361,5 @@ export default function CheckoutModal({
             </SheetContent>
         </Sheet>
     );
-}
+        }
+                        
