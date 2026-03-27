@@ -321,10 +321,8 @@ export default function TicketsPage() {
                 max={tier.totalUnits || 1}
                 value={soldOut ? tier.totalUnits : Math.max(tier.soldUnits, remaining === tier.totalUnits ? 0 : 1)}
               />
-              <p className="text-xs text-gray-500">
-                {tier.soldUnits.toLocaleString()} sold out of {tier.totalUnits.toLocaleString()} units.
-              </p>
-            </div>
+        
+           </div>
           </CardContent>
 
           <CardFooter className="pt-4">
