@@ -35,41 +35,81 @@ export async function POST(request: NextRequest) {
         }
 
         const { data } = paystackData;
-        const orderId = data.reference; // We use order ID as reference
+        const fallbackOrderId = data.reference; 
 
-        // Find the order
-        const existingOrder = await prisma.order.findUnique({
-            where: { id: orderId },
+        // 1. Try to find the existing order
+        let orderToProcess = await prisma.order.findUnique({
+            where: { id: fallbackOrderId },
             include: { ticketPrice: true }
         });
 
-        if (!existingOrder) {
+        if (!orderToProcess) {
             // Try to find by payment reference
             const orderByRef = await prisma.order.findFirst({
                 where: { paymentRefId: reference },
                 include: { ticketPrice: true }
             });
 
-            if (orderByRef && orderByRef.paymentStatus === "COMPLETED") {
-                return NextResponse.json({
-                    success: true,
-                    message: "Payment already verified",
-                    orderId: orderByRef.id,
-                    orderNumber: orderByRef.orderNumber,
-                });
+            if (orderByRef) {
+                if (orderByRef.paymentStatus === "COMPLETED") {
+                    return NextResponse.json({
+                        success: true,
+                        message: "Payment already verified",
+                        orderId: orderByRef.id,
+                        orderNumber: orderByRef.orderNumber,
+                    });
+                }
+                orderToProcess = orderByRef;
             }
-
-            return NextResponse.json(
-                { error: "Order not found" },
-                { status: 404 }
-            );
         }
 
-        // Update order status based on payment status
+        // 2. OPTION B FIX: If order STILL doesn't exist, create it from Paystack metadata
+        if (!orderToProcess) {
+            const metadata = data.metadata?.custom_fields || [];
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const getMeta = (key: string) => metadata.find((f: any) => f.variable_name === key)?.value;
+
+            const ticketTypeName = getMeta("ticket_type");
+
+            if (ticketTypeName) {
+                const ticketTier = await prisma.ticketPrice.findFirst({
+                    where: { name: ticketTypeName }
+                });
+
+                if (ticketTier) {
+                    orderToProcess = await prisma.order.create({
+                        data: {
+                            orderNumber: `ORD-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+                            customerName: getMeta("customer_name") || "Guest",
+                            customerEmail: data.customer.email,
+                            groupSize: getMeta("group_size") || "SINGLE",
+                            quantity: parseInt(getMeta("quantity") || "1"),
+                            totalPrice: data.amount / 100, // Convert kobo to Naira
+                            parkingPasses: parseInt(getMeta("parking") || "0"),
+                            paymentStatus: "PENDING",
+                            orderStatus: "PENDING",
+                            paymentRefId: reference,
+                            ticketPriceId: ticketTier.id,
+                        },
+                        include: { ticketPrice: true }
+                    });
+                }
+            }
+
+            // If it still couldn't be created (e.g. tier not found), return the 404
+            if (!orderToProcess) {
+                return NextResponse.json(
+                    { error: "Order not found and could not be created" },
+                    { status: 404 }
+                );
+            }
+        }
+
+        // 3. Update order status based on payment status
         if (data.status === "success") {
             // Update order
             const order = await prisma.order.update({
-                where: { id: orderId },
+                where: { id: orderToProcess.id },
                 data: {
                     paymentStatus: "COMPLETED",
                     orderStatus: "COMPLETED",
@@ -110,7 +150,7 @@ export async function POST(request: NextRequest) {
                     prisma.ticketOrder.create({
                         data: {
                             orderId: order.id,
-                            userId: order.userId,
+                            userId: order.userId || null,
                             ticketCode,
                             qrCode: ticketCode, // Using ticket code as QR identifier
                             qrCodeUrl: qrCodeData,
@@ -199,7 +239,7 @@ export async function POST(request: NextRequest) {
         } else {
             // Payment failed
             await prisma.order.update({
-                where: { id: orderId },
+                where: { id: orderToProcess.id },
                 data: {
                     paymentStatus: "FAILED",
                     orderStatus: "FAILED",
@@ -221,4 +261,5 @@ export async function POST(request: NextRequest) {
             { status: 500 }
         );
     }
-}
+                }
+                    
