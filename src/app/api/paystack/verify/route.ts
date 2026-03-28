@@ -79,6 +79,11 @@ export async function POST(request: NextRequest) {
                 if (ticketTier) {
                     const customerEmail = data.customer.email;
                     const customerName = getMeta("customer_name") || "Guest";
+                    
+                    // Split the name to satisfy the database schema
+                    const nameParts = customerName.trim().split(" ");
+                    const firstName = nameParts[0] || "Guest";
+                    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "User";
 
                     orderToProcess = await prisma.order.create({
                         data: {
@@ -94,7 +99,6 @@ export async function POST(request: NextRequest) {
                             orderStatus: "PENDING",
                             paymentRefId: reference,
                             paymentMethod: "PAYSTACK",
-                            // THE NEW TICKET CONNECTION FIX
                             ticketPrice: {
                                 connect: { id: ticketTier.id }
                             },
@@ -104,6 +108,8 @@ export async function POST(request: NextRequest) {
                                     create: {
                                         email: customerEmail,
                                         name: customerName,
+                                        firstName: firstName, // <-- FIXED
+                                        lastName: lastName,   // <-- ADDED JUST IN CASE
                                     }
                                 }
                             }
