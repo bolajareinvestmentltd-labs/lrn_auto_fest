@@ -94,8 +94,10 @@ export async function POST(request: NextRequest) {
                             orderStatus: "PENDING",
                             paymentRefId: reference,
                             paymentMethod: "PAYSTACK",
-                            ticketPriceId: ticketTier.id,
-                            // THE NEW USER CONNECTION FIX
+                            // THE NEW TICKET CONNECTION FIX
+                            ticketPrice: {
+                                connect: { id: ticketTier.id }
+                            },
                             user: {
                                 connectOrCreate: {
                                     where: { email: customerEmail },
