@@ -82,6 +82,7 @@ export async function POST(request: NextRequest) {
                             orderNumber: `ORD-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
                             customerName: getMeta("customer_name") || "Guest",
                             customerEmail: data.customer.email,
+                            customerPhone: getMeta("customer_phone") || getMeta("phone") || "Not provided", // <-- THE NEW PHONE NUMBER FIX
                             groupSize: getMeta("group_size") || "SINGLE",
                             quantity: parseInt(getMeta("quantity") || "1"),
                             totalPrice: data.amount / 100, // Convert kobo to Naira
@@ -89,7 +90,7 @@ export async function POST(request: NextRequest) {
                             paymentStatus: "PENDING",
                             orderStatus: "PENDING",
                             paymentRefId: reference,
-                            paymentMethod: "PAYSTACK", // <-- THIS IS THE MISSING PIECE WE JUST ADDED
+                            paymentMethod: "PAYSTACK",
                             ticketPriceId: ticketTier.id,
                         },
                         include: { ticketPrice: true }
