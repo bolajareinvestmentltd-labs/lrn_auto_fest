@@ -171,18 +171,25 @@ export default function TicketsPage() {
   };
 
   const getPackageOptions = (tier: TicketTier) => {
-  return GROUP_OPTIONS.filter((option) => {
-    // Hide group options if it is a REGULAR ticket
-    if (tier.ticketType === "REGULAR" && option.value !== "SINGLE") {
-      return false;
-    }
-    // Keep options if they have a price
-    return (
-      getPriceForPeriod(tier, option.value, "presale") !== null ||
-      getPriceForPeriod(tier, option.value, "onsale") !== null
-    );
-  });
-};
+    return GROUP_OPTIONS.filter((option) => {
+      // RULE 1: Regular tickets are Single only
+      if (tier.ticketType === "REGULAR" && option.value !== "SINGLE") {
+        return false;
+      }
+
+      // RULE 2: Gold and Diamond VIPs are Single and Group of 2 ONLY (No Group of 4)
+      if ((tier.ticketType === "VIP_GOLD" || tier.ticketType === "VIP_DIAMOND") && option.value === "GROUP_4") {
+        return false;
+      }
+
+      // RULE 3: Bronze and Silver automatically pass through and get all 3 options
+      // (assuming they have a price configured in the database)
+      return (
+        getPriceForPeriod(tier, option.value, "presale") !== null ||
+        getPriceForPeriod(tier, option.value, "onsale") !== null
+      );
+    });
+  };
 
 
   const regularTiers = tiers.filter((tier) => tier.ticketType === "REGULAR");
