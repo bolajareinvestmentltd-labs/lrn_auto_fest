@@ -89,6 +89,7 @@ export async function POST(request: NextRequest) {
                             paymentStatus: "PENDING",
                             orderStatus: "PENDING",
                             paymentRefId: reference,
+                            paymentMethod: "PAYSTACK", // <-- THIS IS THE MISSING PIECE WE JUST ADDED
                             ticketPriceId: ticketTier.id,
                         },
                         include: { ticketPrice: true }
@@ -261,4 +262,4 @@ export async function POST(request: NextRequest) {
             { status: 500 }
         );
     }
-} 
+}
