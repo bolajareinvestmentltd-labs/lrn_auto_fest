@@ -254,12 +254,11 @@ export async function POST(request: NextRequest) {
                 { status: 400 }
             );
         }
-    } catch (error) {
+    } catch (error: any) {
         console.error("Paystack verification error:", error);
         return NextResponse.json(
-            { error: "Internal server error" },
+            { error: `CRASH DETAILS: ${error.message || "Unknown error"}` },
             { status: 500 }
         );
     }
-                }
-                    
+} 
