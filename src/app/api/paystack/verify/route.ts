@@ -107,9 +107,9 @@ export async function POST(request: NextRequest) {
                                     where: { email: customerEmail },
                                     create: {
                                         email: customerEmail,
-                                        name: customerName,
-                                        firstName: firstName, // <-- FIXED
-                                        lastName: lastName,   // <-- ADDED JUST IN CASE
+                                        firstName: firstName, 
+                                        lastName: lastName,   
+                                        // THE GENERIC "NAME" FIELD IS NOW DELETED
                                     }
                                 }
                             }
@@ -224,7 +224,7 @@ export async function POST(request: NextRequest) {
 
                 await sendEmail(
                     order.customerEmail,
-                    `🎉 Your Ilorin Car Show 3.0 Ticket Confirmed! - ${firstTicket?.ticketCode || order.orderNumber}`,
+                    `🎉 Your AY'SMRT INVESTMENT LTD Ticket Confirmed! - ${firstTicket?.ticketCode || order.orderNumber}`,
                     emailHtml
                 );
 
