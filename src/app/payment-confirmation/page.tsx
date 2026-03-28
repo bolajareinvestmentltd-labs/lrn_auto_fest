@@ -33,7 +33,7 @@ function PaymentConfirmationContent() {
 
             if (!reference) {
                 setStatus("failed");
-                setError("No payment reference found");
+                setError("No payment reference found in URL");
                 return;
             }
 
@@ -52,12 +52,13 @@ function PaymentConfirmationContent() {
                     setOrderDetails(data);
                 } else {
                     setStatus("failed");
-                    setError(data.message || "Payment verification failed");
+                    // UPDATED: Now it will read the exact backend error!
+                    setError(data.error || data.message || "Payment verification failed");
                 }
             } catch (err) {
                 console.error("Verification error:", err);
                 setStatus("failed");
-                setError("Error verifying payment. Please contact support.");
+                setError("Network error verifying payment. Please contact support.");
             }
         };
 
@@ -219,17 +220,17 @@ function PaymentConfirmationContent() {
                                     Payment Failed
                                 </h1>
                                 <p className="text-gray-300 text-lg">
-                                    We couldn&apos;t complete your payment
+                                    We couldn't complete your payment
                                 </p>
                             </div>
 
                             {/* Error Details */}
                             <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6 text-left">
-                                <h3 className="text-red-300 font-bold mb-2">What Happened?</h3>
-                                <p className="text-red-300/80 text-sm">
-                                    {error || "Your payment could not be processed. This may be due to:"}
+                                <h3 className="text-red-300 font-bold mb-2">Backend Error Reason:</h3>
+                                <p className="text-red-300/80 font-mono text-sm bg-black/20 p-3 rounded border border-red-500/20">
+                                    {error}
                                 </p>
-                                <ul className="space-y-1 text-red-300/70 text-sm mt-3">
+                                <ul className="space-y-1 text-red-300/70 text-sm mt-4">
                                     <li>• Insufficient funds in your account</li>
                                     <li>• Card declined by your bank</li>
                                     <li>• Network connection issues</li>
