@@ -77,12 +77,15 @@ export async function POST(request: NextRequest) {
                 });
 
                 if (ticketTier) {
+                    const customerEmail = data.customer.email;
+                    const customerName = getMeta("customer_name") || "Guest";
+
                     orderToProcess = await prisma.order.create({
                         data: {
                             orderNumber: `ORD-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
-                            customerName: getMeta("customer_name") || "Guest",
-                            customerEmail: data.customer.email,
-                            customerPhone: getMeta("customer_phone") || getMeta("phone") || "Not provided", // <-- THE NEW PHONE NUMBER FIX
+                            customerName: customerName,
+                            customerEmail: customerEmail,
+                            customerPhone: getMeta("customer_phone") || getMeta("phone") || "Not provided",
                             groupSize: getMeta("group_size") || "SINGLE",
                             quantity: parseInt(getMeta("quantity") || "1"),
                             totalPrice: data.amount / 100, // Convert kobo to Naira
@@ -92,6 +95,16 @@ export async function POST(request: NextRequest) {
                             paymentRefId: reference,
                             paymentMethod: "PAYSTACK",
                             ticketPriceId: ticketTier.id,
+                            // THE NEW USER CONNECTION FIX
+                            user: {
+                                connectOrCreate: {
+                                    where: { email: customerEmail },
+                                    create: {
+                                        email: customerEmail,
+                                        name: customerName,
+                                    }
+                                }
+                            }
                         },
                         include: { ticketPrice: true }
                     });
