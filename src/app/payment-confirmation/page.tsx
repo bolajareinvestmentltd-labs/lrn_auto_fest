@@ -72,22 +72,51 @@ function PaymentConfirmationContent() {
     return (
         <div className="min-h-screen bg-[#050505] flex items-center justify-center px-4 py-12">
             {/* CSS to ensure the ticket looks perfect when saved as PDF */}
-            <style>{`
-                @media print {
-                    .no-print { display: none !important; }
-                    body { background: white !important; padding: 0 !important; margin: 0 !important; }
-                    .print-container { 
-                        visibility: visible !important; 
-                        display: block !important;
-                        position: absolute; left: 0; top: 0; width: 100%;
-                        background: white !important; color: black !important;
-                        padding: 40px; border: 2px solid black; border-radius: 20px;
-                        text-align: center;
-                    }
-                    .print-text-black { color: black !important; }
-                    .print-qr { margin: 20px auto; background: white !important; padding: 10px; border: 1px solid #ddd; }
-                }
-            `}</style>
+           <style>{`
+    @media print {
+        /* Hide everything else on the screen */
+        .no-print { display: none !important; }
+        body { background: white !important; padding: 0 !important; margin: 0 !important; }
+
+        /* Style the Ticket for the PDF */
+        #print-container { 
+            visibility: visible !important; 
+            display: block !important;
+            position: absolute; left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%; 
+            background: #0a0a0a !important; /* Force Black Background */
+            color: white !important;
+            padding: 40px; 
+            border: 4px solid #FF4500 !important; /* Branded Orange Border */
+            border-radius: 30px;
+            text-align: center;
+            -webkit-print-color-adjust: exact; /* Force Chrome/Safari to keep colors */
+            print-color-adjust: exact;
+        }
+
+        .print-text-black { color: white !important; }
+        .print-qr { 
+            margin: 20px auto; 
+            background: white !important; 
+            padding: 15px; 
+            border-radius: 15px; 
+            display: inline-block;
+        }
+        
+        /* Add "Official Ticket" Watermark for the PDF */
+        #print-container::after {
+            content: "OFFICIAL IAF 2026 ENTRY PASS";
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            font-size: 10px;
+            color: #444;
+            letter-spacing: 2px;
+        }
+    }
+`}</style>
 
             <div className="w-full max-w-lg">
                 {status === "loading" && (
