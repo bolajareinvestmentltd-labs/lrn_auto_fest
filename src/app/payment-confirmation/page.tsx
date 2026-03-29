@@ -161,10 +161,11 @@ function PaymentConfirmationContent() {
                             {/* Added QR Code for the PDF/Print version */}
                             <div className="print-qr inline-block rounded-xl">
                                 <img 
-                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${orderDetails.orderNumber}`} 
-                                    alt="Ticket QR" 
-                                    className="w-40 h-40" 
-                                />
+    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${orderDetails.tickets?.[0]?.ticketCode}`} 
+    alt="Entry QR Code" 
+    className="w-full h-full object-contain"
+/>
+
                             </div>
 
                             {/* Order Summary */}
