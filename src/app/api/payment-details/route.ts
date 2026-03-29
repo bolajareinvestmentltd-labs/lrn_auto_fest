@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma"; // <-- ADDED PRISMA
 
 // In a real application, you would fetch this from your database
 // For now, we'll use mock data that matches the Paystack metadata
@@ -23,14 +24,47 @@ export async function GET(request: NextRequest) {
         const reference = request.nextUrl.searchParams.get("reference");
         const type = request.nextUrl.searchParams.get("type");
 
-        if (!reference || !type) {
+        if (!reference) {
             return NextResponse.json(
                 { error: "Missing required parameters" },
                 { status: 400 }
             );
         }
 
-        // Check mock data first
+        // --- THE MAGIC UPGRADE: CHECK NEON DATABASE FIRST ---
+        try {
+            // Find the real order and INCLUDE the tickets to get the ICS code
+            const realOrder = await prisma.order.findUnique({
+                where: { paymentReference: reference },
+                include: { 
+                    tickets: true,
+                    ticketPrice: true 
+                }
+            });
+
+            if (realOrder) {
+                return NextResponse.json({
+                    // Send the real ICS ticket code as the ID
+                    id: realOrder.tickets[0]?.ticketCode || realOrder.orderNumber,
+                    reference: realOrder.paymentReference,
+                    customerName: realOrder.customerName,
+                    email: realOrder.customerEmail,
+                    ticketType: realOrder.ticketPrice?.ticketType || type,
+                    quantity: realOrder.groupSize === 'group4' ? 4 : realOrder.groupSize === 'group2' ? 2 : 1,
+                    total: realOrder.totalAmount,
+                    parkingSlots: realOrder.parkingPasses || 0,
+                    vipSeats: 0,
+                    // Send the full tickets array for the success page QR code
+                    tickets: realOrder.tickets 
+                });
+            }
+        } catch (dbError) {
+            console.error("Database search failed, falling back to mock data:", dbError);
+        }
+        // --- END MAGIC UPGRADE ---
+
+
+        // Check mock data if database fails
         const record = paymentRecords[reference];
 
         if (record) {
@@ -48,7 +82,6 @@ export async function GET(request: NextRequest) {
         }
 
         // If not found in mock data, generate from reference
-        // In production, verify with Paystack API
         return NextResponse.json({
             id: `TICKET-${Date.now()}`,
             reference,
