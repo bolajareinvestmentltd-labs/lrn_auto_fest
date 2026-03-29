@@ -176,7 +176,7 @@ export default function Tickets() {
                                                     </p>
                                                 </div>
                                                 <div className="font-sans mt-3 text-xs text-gray-500 tracking-wider">
-                                                    {remaining > 0 ? `${remaining} left` : "0 left"}
+                                                    {remaining} of {tier.totalUnits} remaining
                                                 </div>
                                             </CardHeader>
 
