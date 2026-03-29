@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -69,29 +69,60 @@ export default function CheckInPage() {
         }
     };
 
-    // --- CAMERA SCANNER LOGIC ---
+    // --- SAFE CAMERA SCANNER LOGIC ---
+    // 1. Simply trigger the UI state
     const startScanner = () => {
         setIsScannerActive(true);
         setError(null);
-        setTimeout(() => {
-            const html5QrCode = new (window as any).Html5Qrcode("reader");
-            html5QrCode.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: { width: 250, height: 250 } },
-                (decodedText: string) => {
-                    setSearchQuery(decodedText);
-                    html5QrCode.stop().then(() => {
-                        setIsScannerActive(false);
-                        handleSearch(decodedText);
-                    });
-                },
-                (errorMessage: string) => { /* scanning... */ }
-            ).catch((err: any) => {
-                setError("Camera permission denied.");
-                setIsScannerActive(false);
-            });
-        }, 300);
     };
+
+    // 2. Safely launch the camera only AFTER the UI is visible
+    useEffect(() => {
+        let scanner: any = null;
+
+        if (isScannerActive) {
+            const initScanner = async () => {
+                try {
+                    // Check if the script has finished downloading
+                    if (!(window as any).Html5Qrcode) {
+                        setError("Camera library still loading... close and tap again.");
+                        setIsScannerActive(false);
+                        return;
+                    }
+
+                    scanner = new (window as any).Html5Qrcode("reader");
+                    await scanner.start(
+                        { facingMode: "environment" }, // Forces the back camera
+                        { fps: 10, qrbox: { width: 250, height: 250 } },
+                        (decodedText: string) => {
+                            // On successful scan!
+                            if (scanner) {
+                                scanner.stop().then(() => {
+                                    setIsScannerActive(false);
+                                    handleSearch(decodedText);
+                                });
+                            }
+                        },
+                        (scanError: string) => { /* Ignore background scanning noise */ }
+                    );
+                } catch (err: any) {
+                    console.error("Camera Boot Error:", err);
+                    setError(`Camera Blocked: ${err?.message || "Please check phone permissions"}`);
+                    setIsScannerActive(false);
+                }
+            };
+
+            // Wait exactly 400ms for the Framer Motion animation to finish opening the box
+            setTimeout(initScanner, 400); 
+        }
+
+        // Cleanup: Turn off the camera if the user hits "Cancel"
+        return () => {
+            if (scanner && scanner.isScanning) {
+                scanner.stop().catch(console.error);
+            }
+        };
+    }, [isScannerActive]);
 
     const handleSearch = async (manualCode?: string) => {
         const codeToUse = manualCode || searchQuery;
@@ -150,24 +181,6 @@ export default function CheckInPage() {
         }
     };
 
-    const handleCheckIn = async (orderNumber: string, type: string) => {
-        try {
-            const response = await fetch("/api/check-in", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ orderNumber, type }),
-            });
-
-            if (response.ok) {
-                setIsCheckedIn(true);
-            }
-        } catch (err) {
-            console.error("Check-in failed:", err);
-        }
-    };
-
-    const eventDate = new Date("2026-05-30T09:00:00");
-
     // --- SECURITY SHIELD RENDER ---
     if (!isAuthorized) {
         return (
@@ -217,7 +230,7 @@ export default function CheckInPage() {
                     {isScannerActive ? (
                         <motion.div key="scanner" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full max-w-md space-y-4">
                             <div id="reader" className="overflow-hidden rounded-3xl border-2 border-brand-orange bg-zinc-900 aspect-square shadow-2xl shadow-orange-500/20"></div>
-                            <Button onClick={() => window.location.reload()} variant="outline" className="w-full border-white/10 text-white h-14 font-bold">
+                            <Button onClick={() => setIsScannerActive(false)} variant="outline" className="w-full border-white/10 text-white h-14 font-bold">
                                 <RefreshCw className="mr-2 w-4 h-4" /> Cancel Scanner
                             </Button>
                         </motion.div>
