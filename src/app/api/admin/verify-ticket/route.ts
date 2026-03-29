@@ -12,14 +12,13 @@ export async function POST(request: NextRequest) {
             }, { status: 400 });
         }
 
-        // UPGRADED SEARCH: Now finds Ticket Code OR Order Number OR Paystack Reference
+        // UPGRADED SEARCH: Removed the risky paymentReference line to prevent database crashes
         const ticket = await prisma.ticketOrder.findFirst({
             where: {
                 OR: [
                     { ticketCode: ticketCode },
                     { qrCode: ticketCode },
-                    { order: { orderNumber: ticketCode } },
-                    { order: { paymentReference: ticketCode } }
+                    { order: { orderNumber: ticketCode } }
                 ]
             },
             include: {
@@ -116,11 +115,12 @@ export async function POST(request: NextRequest) {
             }
         });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("Ticket verification error:", error);
         return NextResponse.json({
             success: false,
-            error: "Server error during verification"
+            // THIS WILL SHOW THE ACTUAL ERROR ON YOUR PHONE SCREEN IF IT CRASHES
+            error: `CRASH: ${error?.message || "Unknown Database Error"}`
         }, { status: 500 });
     }
-}
+                }
