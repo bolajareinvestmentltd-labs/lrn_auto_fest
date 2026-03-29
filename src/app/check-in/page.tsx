@@ -212,8 +212,7 @@ export default function CheckInPage() {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#050505] flex flex-col">
-            <Script src="https://unpkg.com/html5-qrcode" strategy="beforeInteractive" />
-
+            <Script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" strategy="afterInteractive" />
             <header className="p-4 border-b border-white/10 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <Image src="/images/logo.png" alt="IAF 2026" width={40} height={40} className="rounded-lg" />
