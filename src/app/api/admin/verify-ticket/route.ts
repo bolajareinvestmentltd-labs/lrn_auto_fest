@@ -12,12 +12,14 @@ export async function POST(request: NextRequest) {
             }, { status: 400 });
         }
 
-        // Find the ticket
+        // UPGRADED SEARCH: Now finds Ticket Code OR Order Number OR Paystack Reference
         const ticket = await prisma.ticketOrder.findFirst({
             where: {
                 OR: [
                     { ticketCode: ticketCode },
-                    { qrCode: ticketCode }
+                    { qrCode: ticketCode },
+                    { order: { orderNumber: ticketCode } },
+                    { order: { paymentReference: ticketCode } }
                 ]
             },
             include: {
