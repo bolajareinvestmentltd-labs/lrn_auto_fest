@@ -224,7 +224,7 @@ export async function POST(request: NextRequest) {
 
                 await sendEmail(
                     order.customerEmail,
-                    `🎉 Your AY'SMRT INVESTMENT LTD Ticket Confirmed! - ${firstTicket?.ticketCode || order.orderNumber}`,
+                    `🎉 Your ILORIN AUTOMOTIVE FESTIVAL Ticket Confirmed! - ${firstTicket?.ticketCode || order.orderNumber}`,
                     emailHtml
                 );
 
@@ -249,7 +249,7 @@ export async function POST(request: NextRequest) {
                 // Don't fail the request if email fails
             }
 
-            return NextResponse.json({
+                        return NextResponse.json({
                 success: true,
                 message: "Payment verified successfully",
                 orderId: order.id,
@@ -258,7 +258,10 @@ export async function POST(request: NextRequest) {
                 quantity: order.quantity,
                 customerName: order.customerName,
                 customerEmail: order.customerEmail,
+                // THE MAGIC HANDOFF LINE:
+                id: firstTicket?.ticketCode || order.orderNumber
             });
+
         } else {
             // Payment failed
             await prisma.order.update({
