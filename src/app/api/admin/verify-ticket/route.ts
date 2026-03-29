@@ -12,13 +12,12 @@ export async function POST(request: NextRequest) {
             }, { status: 400 });
         }
 
-        // UPGRADED SEARCH: Removed the risky paymentReference line to prevent database crashes
+                // STRICT SEARCH: Only accepts the unique Ticket Code (ICS-...) or the QR Code data
         const ticket = await prisma.ticketOrder.findFirst({
             where: {
                 OR: [
                     { ticketCode: ticketCode },
-                    { qrCode: ticketCode },
-                    { order: { orderNumber: ticketCode } }
+                    { qrCode: ticketCode }
                 ]
             },
             include: {
@@ -30,6 +29,7 @@ export async function POST(request: NextRequest) {
                 }
             }
         });
+
 
         if (!ticket) {
             return NextResponse.json({
