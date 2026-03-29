@@ -43,36 +43,53 @@ export default function CheckInPage() {
     const [isCheckedIn, setIsCheckedIn] = useState(false);
 
     const handleSearch = async () => {
-        if (!searchQuery.trim()) {
-            setError("Please enter your ticket number or email");
-            return;
+    if (!searchQuery.trim()) {
+        setError("Please enter your ticket number");
+        return;
+    }
+
+    setIsSearching(true);
+    setError(null);
+    setResult(null);
+    setIsCheckedIn(false);
+
+    try {
+        // 1. Hit your ACTUAL API path
+        const response = await fetch("/api/admin/verify-ticket", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ticketCode: searchQuery.trim() }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Ticket not found");
         }
 
-        setIsSearching(true);
-        setError(null);
-        setResult(null);
-        setIsCheckedIn(false);
-
-        try {
-            const response = await fetch(`/api/check-in?query=${encodeURIComponent(searchQuery.trim())}`);
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.error || "Ticket not found");
+        // 2. Map your Database Data to your UI Design
+        // This ensures the green "VALID" screen shows the right info
+        setResult({
+            valid: data.success,
+            type: "ticket",
+            data: {
+                orderNumber: data.ticket.ticketCode,
+                customerName: data.ticket.customerName,
+                customerEmail: data.ticket.email,
+                itemName: `${data.ticket.tier} (${data.ticket.groupSize})`, // Puts Tier & Group in the "Item" slot
+                status: "PAID",
+                purchaseDate: new Date().toLocaleDateString(),
             }
+        });
 
-            setResult(data);
-
-            // Auto check-in after verification
-            if (data.valid && data.data.status === "PAID") {
-                await handleCheckIn(data.data.orderNumber, data.type);
-            }
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Something went wrong");
-        } finally {
-            setIsSearching(false);
-        }
-    };
+        setIsCheckedIn(true); // Since your API auto-marks as 'SCANNED', we show checked-in immediately
+        
+    } catch (err) {
+        setError(err instanceof Error ? err.message : "Invalid Ticket ID");
+    } finally {
+        setIsSearching(false);
+    }
+};
 
     const handleCheckIn = async (orderNumber: string, type: string) => {
         try {
