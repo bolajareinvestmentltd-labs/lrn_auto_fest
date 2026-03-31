@@ -21,7 +21,9 @@ import {
     Home,
     ShoppingCart,
     ShoppingBag,
-    Settings
+    Settings,
+    Store,
+    Shirt
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -46,6 +48,29 @@ interface OrderData {
     qrCode?: string;
 }
 
+// --- NEW VENDOR & MERCH INTERFACES ---
+interface VendorData {
+    id: string;
+    ticketId: string;
+    businessName: string;
+    contactPerson: string;
+    boothType: string;
+    status: string;
+    createdAt: string;
+}
+
+interface MerchData {
+    id: string;
+    orderNumber: string;
+    customerName: string;
+    itemName: string;
+    quantity: number;
+    status: string;
+    pickupCode: string;
+    createdAt: string;
+}
+// -------------------------------------
+
 interface DashboardStats {
     totalSales: number;
     totalRevenue: number;
@@ -53,6 +78,9 @@ interface DashboardStats {
     parkingPasses: number;
     salesByTier: SalesData[];
     recentOrders: OrderData[];
+    recentVendors: VendorData[]; // Added
+    recentMerch: MerchData[];    // Added
+}
 }
 
 // Mock data for development
@@ -90,6 +118,8 @@ export default function AdminDashboard() {
     const [scanResult, setScanResult] = useState<{ valid: boolean; message: string } | null>(null);
     const [manualCode, setManualCode] = useState("");
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    // --- NEW TAB STATE ---
+    const [activeTab, setActiveTab] = useState<'tickets' | 'vendors' | 'merch'>('tickets');
 
     // Check authentication
     useEffect(() => {
@@ -411,77 +441,119 @@ export default function AdminDashboard() {
                     </div>
                 </div>
 
-                {/* Recent Orders */}
+               {/* NEW TABBED RECENT ACTIVITY TABLE */}
                 <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
-                    <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                        <Calendar className="w-5 h-5 text-orange-400" />
-                        Recent Orders
-                    </h2>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+                        <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+                            {activeTab === 'tickets' && <Ticket className="w-5 h-5 text-orange-400" />}
+                            {activeTab === 'vendors' && <Store className="w-5 h-5 text-purple-400" />}
+                            {activeTab === 'merch' && <Shirt className="w-5 h-5 text-blue-400" />}
+                            Recent Activity
+                        </h2>
+
+                        {/* TAB CONTROLS */}
+                        <div className="flex bg-black/40 rounded-lg p-1">
+                            <button onClick={() => setActiveTab('tickets')} className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'tickets' ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white'}`}>
+                                Tickets
+                            </button>
+                            <button onClick={() => setActiveTab('vendors')} className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'vendors' ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white'}`}>
+                                Vendors
+                            </button>
+                            <button onClick={() => setActiveTab('merch')} className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'merch' ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white'}`}>
+                                Merch
+                            </button>
+                        </div>
+                    </div>
 
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
                                 <tr className="border-b border-white/10">
-                                    <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Ticket ID</th>
-                                    <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Customer</th>
-                                    <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Tier</th>
-                                    <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Group</th>
-                                    <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Amount</th>
+                                    <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">ID Code</th>
+                                    {activeTab === 'tickets' && (
+                                        <>
+                                            <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Customer</th>
+                                            <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Tier</th>
+                                            <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Amount</th>
+                                        </>
+                                    )}
+                                    {activeTab === 'vendors' && (
+                                        <>
+                                            <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Business</th>
+                                            <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Booth</th>
+                                        </>
+                                    )}
+                                    {activeTab === 'merch' && (
+                                        <>
+                                            <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Customer</th>
+                                            <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Item</th>
+                                            <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Qty</th>
+                                        </>
+                                    )}
                                     <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Status</th>
                                     <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Date</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {stats.recentOrders.map((order) => (
+                                {/* TICKETS */}
+                                {activeTab === 'tickets' && stats.recentOrders?.map((order) => (
                                     <tr key={order.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                        <td className="py-3 px-4"><code className="text-xs text-blue-400">{order.ticketId}</code></td>
                                         <td className="py-3 px-4">
-                                            <code className="text-xs text-blue-400">{order.ticketId}</code>
+                                            <p className="text-white text-sm">{order.customerName}</p>
+                                            <p className="text-gray-500 text-xs">{order.email}</p>
                                         </td>
+                                        <td className="py-3 px-4"><span className={`inline-flex px-2 py-1 rounded text-xs font-medium text-white ${TIER_COLORS[order.tier] || 'bg-purple-500'}`}>{order.tier}</span></td>
+                                        <td className="py-3 px-4 text-white text-sm font-medium">{formatCurrency(order.amount)}</td>
                                         <td className="py-3 px-4">
-                                            <div>
-                                                <p className="text-white text-sm">{order.customerName}</p>
-                                                <p className="text-gray-500 text-xs">{order.email}</p>
-                                            </div>
-                                        </td>
-                                        <td className="py-3 px-4">
-                                            <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium text-white ${TIER_COLORS[order.tier]}`}>
-                                                {order.tier}
-                                            </span>
-                                        </td>
-                                        <td className="py-3 px-4 text-gray-300 text-sm capitalize">
-                                            {order.groupSize.replace('group', 'Group ')}
-                                        </td>
-                                        <td className="py-3 px-4 text-white text-sm font-medium">
-                                            {formatCurrency(order.amount)}
-                                        </td>
-                                        <td className="py-3 px-4">
-                                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${order.status === 'COMPLETED'
-                                                ? 'bg-green-500/20 text-green-400'
-                                                : 'bg-yellow-500/20 text-yellow-400'
-                                                }`}>
-                                                {order.status === 'COMPLETED' ? (
-                                                    <CheckCircle2 className="w-3 h-3" />
-                                                ) : (
-                                                    <AlertCircle className="w-3 h-3" />
-                                                )}
+                                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${order.status === 'COMPLETED' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
+                                                {order.status === 'COMPLETED' ? <CheckCircle2 className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
                                                 {order.status}
                                             </span>
                                         </td>
-                                        <td className="py-3 px-4 text-gray-400 text-sm">
-                                            {new Date(order.createdAt).toLocaleDateString('en-NG', {
-                                                day: 'numeric',
-                                                month: 'short',
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            })}
+                                        <td className="py-3 px-4 text-gray-400 text-sm">{new Date(order.createdAt).toLocaleDateString()}</td>
+                                    </tr>
+                                ))}
+
+                                {/* VENDORS */}
+                                {activeTab === 'vendors' && stats.recentVendors?.map((vendor) => (
+                                    <tr key={vendor.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                        <td className="py-3 px-4"><code className="text-xs text-purple-400">{vendor.ticketId}</code></td>
+                                        <td className="py-3 px-4">
+                                            <p className="text-white text-sm">{vendor.businessName}</p>
+                                            <p className="text-gray-500 text-xs">{vendor.contactPerson}</p>
                                         </td>
+                                        <td className="py-3 px-4 text-gray-300 text-sm capitalize">{vendor.boothType}</td>
+                                        <td className="py-3 px-4">
+                                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${vendor.status === 'CONFIRMED' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
+                                                {vendor.status === 'CONFIRMED' ? <CheckCircle2 className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
+                                                {vendor.status}
+                                            </span>
+                                        </td>
+                                        <td className="py-3 px-4 text-gray-400 text-sm">{new Date(vendor.createdAt).toLocaleDateString()}</td>
+                                    </tr>
+                                ))}
+
+                                {/* MERCH */}
+                                {activeTab === 'merch' && stats.recentMerch?.map((merch) => (
+                                    <tr key={merch.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                        <td className="py-3 px-4"><code className="text-xs text-orange-400">{merch.pickupCode || merch.orderNumber}</code></td>
+                                        <td className="py-3 px-4"><p className="text-white text-sm">{merch.customerName}</p></td>
+                                        <td className="py-3 px-4 text-gray-300 text-sm">{merch.itemName}</td>
+                                        <td className="py-3 px-4 text-white text-sm">{merch.quantity}</td>
+                                        <td className="py-3 px-4">
+                                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${merch.status === 'PICKED_UP' ? 'bg-blue-500/20 text-blue-400' : 'bg-green-500/20 text-green-400'}`}>
+                                                {merch.status === 'PICKED_UP' ? <CheckCircle2 className="w-3 h-3" /> : <CheckCircle2 className="w-3 h-3" />}
+                                                {merch.status}
+                                            </span>
+                                        </td>
+                                        <td className="py-3 px-4 text-gray-400 text-sm">{new Date(merch.createdAt).toLocaleDateString()}</td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
                 </div>
-
                 {/* Mobile Logout */}
                 <div className="lg:hidden mt-8">
                     <button
