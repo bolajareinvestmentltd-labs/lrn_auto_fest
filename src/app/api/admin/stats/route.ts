@@ -25,7 +25,7 @@ const MOCK_STATS = {
 export async function GET() {
     try {
         // Try to fetch from database
-        const [orders, ticketPrices] = await Promise.all([
+        const [orders, ticketPrices, vendors, merch] = await Promise.all([
             prisma.order.findMany({
                 where: { orderStatus: "COMPLETED" },
                 include: {
@@ -37,7 +37,20 @@ export async function GET() {
                 take: 50,
             }),
             prisma.ticketPrice.findMany(),
+            // ADDED: Fetch recent vendors
+            prisma.vendor.findMany({
+                orderBy: { createdAt: "desc" },
+                take: 10,
+            }),
+            // ADDED: Fetch recent merch orders
+            prisma.merchOrder.findMany({
+                include: { merchItem: true },
+                orderBy: { createdAt: "desc" },
+                take: 10,
+            })
         ]);
+
+        // ... [Keep all your existing calculations for attendees, revenue, and salesByTier exactly as they are] ...
 
         // Calculate stats from real data
         const totalSales = orders.length;
@@ -82,6 +95,30 @@ export async function GET() {
             createdAt: order.createdAt.toISOString(),
         }));
 
+       // Map Recent Vendors
+        const recentVendors = vendors.map(v => ({
+            id: v.id,
+            ticketId: v.ticketId,
+            businessName: v.businessName,
+            contactPerson: v.contactPerson,
+            boothType: v.boothType,
+            status: v.status,
+            createdAt: v.createdAt.toISOString(),
+        }));
+
+        // Map Recent Merch
+        const recentMerch = merch.map(m => ({
+            id: m.id,
+            orderNumber: m.orderNumber,
+            customerName: m.customerName,
+            itemName: m.merchItem?.name || "Unknown Item", // Safe fallback just in case
+            quantity: m.quantity,
+            status: m.orderStatus,
+            pickupCode: m.pickupCode,
+            createdAt: m.createdAt.toISOString(),
+        }));
+
+        // THE SINGLE, UNIFIED RETURN
         return NextResponse.json({
             success: true,
             data: {
@@ -91,9 +128,13 @@ export async function GET() {
                 parkingPasses,
                 salesByTier,
                 recentOrders,
+                recentVendors,
+                recentMerch,
             }
         });
 
+    
+        // ... (Keep your existing catch block her
     } catch (error) {
         console.error("Admin stats error:", error);
 
