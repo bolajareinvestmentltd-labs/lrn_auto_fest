@@ -311,8 +311,8 @@ export default function Hero() {
           <p className="font-sans font-medium text-white/50 text-[10px] sm:text-xs uppercase tracking-[0.35em] mb-3">Countdown to Event</p>
           <CountdownTimer targetDate={EVENT_DATE} />
         </motion.div>
-
-        {/* CTA Buttons - Row 1 */}
+        
+{/* CTA Buttons - Row 1 */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -321,7 +321,7 @@ export default function Hero() {
         >
           <Link href="/register">
             <Button size="lg" className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-green-900/20">
-              🎤 PERFORM
+              🎤 Register
             </Button>
           </Link>
           <Link href="/tickets">
@@ -329,14 +329,14 @@ export default function Hero() {
               🎟️ Get Tickets
             </Button>
           </Link>
-          <Link href="/vendors">
-            <Button size="lg" className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-blue-900/20">
-              🏪 Vendor Space
-            </Button>
-          </Link>
           <Link href="/merchandise">
             <Button size="lg" className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-purple-900/20">
               🛍️ Get Merch
+            </Button>
+          </Link>
+          <Link href="/vendors">
+            <Button size="lg" className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-blue-900/20">
+              🏪 Vendors
             </Button>
           </Link>
           <Link href="/logistics">
