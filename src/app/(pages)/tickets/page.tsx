@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { Check, Loader2, Car, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import CheckoutModal from "@/components/CheckoutModal";
 import CountdownTimer from "@/components/CountdownTimer";
 
 interface TicketTier {
@@ -37,6 +36,9 @@ type GroupSize = "SINGLE" | "GROUP_2" | "GROUP_4";
 type SalePeriod = "presale" | "onsale";
 
 const PRESALE_END_DATE = "2026-03-31T23:59:59Z";
+
+// External payment link - placeholder using Paystack
+const EXTERNAL_PAYMENT_URL = "https://paystack.com/pay/ilorinautofest";
 
 const GROUP_OPTIONS: { value: GroupSize; label: string; parking: number }[] = [
   { value: "SINGLE", label: "Single (1 person)", parking: 1 },
@@ -91,9 +93,6 @@ export default function TicketsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedGroupSize, setSelectedGroupSize] = useState<Record<string, GroupSize>>({});
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedTier, setSelectedTier] = useState<TicketTier | null>(null);
-  const [selectedGroup, setSelectedGroup] = useState<GroupSize>("SINGLE");
 
   useEffect(() => {
     async function fetchTickets() {
@@ -146,11 +145,9 @@ export default function TicketsPage() {
     return groupSize === "GROUP_4" ? 2 : 1;
   };
 
-  const handleBuyClick = (tier: TicketTier) => {
-    const groupSize = selectedGroupSize[tier.id] || "SINGLE";
-    setSelectedTier(tier);
-    setSelectedGroup(groupSize);
-    setIsModalOpen(true);
+  const handleBuyClick = () => {
+    // Redirect directly to external payment link
+    window.open(EXTERNAL_PAYMENT_URL, "_blank");
   };
 
   const isAvailable = (tier: TicketTier, groupSize: GroupSize): boolean => {
@@ -334,7 +331,7 @@ export default function TicketsPage() {
 
           <CardFooter className="pt-4">
             <Button
-              onClick={() => handleBuyClick(tier)}
+              onClick={() => handleBuyClick()}
               disabled={soldOut || !available}
               className={`w-full h-12 font-bold text-lg uppercase tracking-wider rounded-full transition-all ${soldOut || !available
                 ? "bg-gray-600 cursor-not-allowed"
