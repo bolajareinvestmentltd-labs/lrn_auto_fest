@@ -452,14 +452,6 @@ export default function TicketsPage() {
           </div>
         </section>
       )}
-
-      {/* Checkout Modal */}
-      <CheckoutModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        tier={selectedTier}
-        groupSize={selectedGroup}
-      />
     </main>
   );
 }
