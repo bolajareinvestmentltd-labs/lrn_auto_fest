@@ -26,7 +26,7 @@ export const allChampions: CategoryChampions[] = [
                 title: "2025 Drift King",
                 image: "/images/champions/mohammed-lexus.jpg",
                 bio: "Professional drift champion with exceptional car control and precision.",
-                instagram: "https://www.instagram.com/mohammed_lexus?igsh=MXY1aGVmN3ZoMHFyYQ==",
+                instagram: "https://www.instagram.com/mohammed_lexus/",
             },
             {
                 id: "drift-2",
@@ -34,7 +34,7 @@ export const allChampions: CategoryChampions[] = [
                 title: "Drift Expert",
                 image: "/images/champions/ameer-bulama.jpg",
                 bio: "Talented drift driver known for smooth techniques and competitive spirit.",
-                instagram: "https://www.instagram.com/ameerr_bulama?igsh=N2dicG9sMmJ6aHQ0",
+                instagram: "https://www.instagram.com/ameerr_bulama/",
             },
             {
                 id: "drift-3",
@@ -42,7 +42,7 @@ export const allChampions: CategoryChampions[] = [
                 title: "Rising Champion",
                 image: "/images/champions/real-sam.jpg",
                 bio: "Emerging talent making a mark in the drift championship scene.",
-                instagram: "https://www.instagram.com/realsam09?igsh=MXUzZ2MzOGtpOThqbQ==",
+                instagram: "https://www.instagram.com/realsam09/",
             },
         ],
     },
