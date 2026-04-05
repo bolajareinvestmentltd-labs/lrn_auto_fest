@@ -393,7 +393,7 @@ export default function VendorPage() {
                                             Processing Payment...
                                         </>
                                     ) : (
-                                        `Pay ₦${calculateTotal().total.toLocaleString()} via Paystack`
+                                        `Pay ₦${getTotal().toLocaleString()} via Paystack`
                                     )}
                                 </Button>
 

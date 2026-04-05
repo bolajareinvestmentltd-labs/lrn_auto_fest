@@ -103,8 +103,13 @@ export default function RegisterPage() {
     };
 
     const handleRegisterClick = (category: Category) => {
-        // Show champions modal
-        setSelectedCategoryId(category.id);
+        // Only show modal for Drift Championship, else redirect directly to form
+        if (category.id === "driftChampionship") {
+            setSelectedCategoryId(category.id);
+        } else {
+            // For Drag Race and Best Build, go directly to Google Form
+            window.open(category.googleFormUrl, "_blank");
+        }
     };
 
     const handleProceedToForm = (category: Category) => {
