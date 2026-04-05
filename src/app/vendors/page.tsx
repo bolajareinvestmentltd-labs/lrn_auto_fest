@@ -374,4 +374,38 @@ export default function VendorPage() {
                                 </div>
 
                                 <div className="bg-brand-orange/10 border border-brand-orange/50 p-4 rounded-lg space-y-3">
-                            
+                                    <p className="text-xs text-gray-400">💰 Booking Summary</p>
+                                    <div className="space-y-1">
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-300">Standard Vendor Slot</span>
+                                            <span className="font-bold text-white">₦{VENDOR_BOOKING_FEE.toLocaleString()}</span>
+                                        </div>
+                                    </div>
+                                    <div className="pt-2 border-t border-brand-orange/20 flex justify-between">
+                                        <span className="font-bold text-white uppercase text-sm">Total Due</span>
+                                        <span className="font-black text-brand-orange text-xl">₦{getTotal().toLocaleString()}</span>
+                                    </div>
+                                </div>
+
+                                <Button
+                                    type="submit"
+                                    disabled={isSubmitting || slotsLeft <= 0}
+                                    className="w-full bg-brand-blue hover:bg-brand-blue/80 text-white py-6 text-lg font-bold uppercase tracking-widest mt-4"
+                                >
+                                    {isSubmitting ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                            Processing...
+                                        </>
+                                    ) : (
+                                        "Secure My Slot"
+                                    )}
+                                </Button>
+                            </form>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </main>
+    );
+}
