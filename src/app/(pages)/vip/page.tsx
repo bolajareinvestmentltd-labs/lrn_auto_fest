@@ -18,7 +18,11 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import CheckoutModal from "@/components/CheckoutModal";
+
+type GroupSize = "SINGLE" | "GROUP_2" | "GROUP_4";
+
+// External payment link for VIP tickets
+const EXTERNAL_PAYMENT_URL = "https://paystack.com/pay/ilorinautofest";
 
 interface TicketTier {
   id: string;
@@ -43,8 +47,6 @@ interface TicketTier {
   highlightVideo: number;
   highlightPhotos: number;
 }
-
-type GroupSize = "SINGLE" | "GROUP_2" | "GROUP_4";
 
 // VIP tier configuration
 const VIP_CONFIG: Record<string, {
@@ -125,9 +127,6 @@ export default function VIPPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedGroupSize, setSelectedGroupSize] = useState<Record<string, GroupSize>>({});
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedTier, setSelectedTier] = useState<TicketTier | null>(null);
-  const [selectedGroup, setSelectedGroup] = useState<GroupSize>("SINGLE");
 
   useEffect(() => {
     async function fetchTickets() {
@@ -181,10 +180,8 @@ export default function VIPPage() {
   };
 
   const handleBuyClick = (tier: TicketTier) => {
-    const groupSize = selectedGroupSize[tier.id] || "SINGLE";
-    setSelectedTier(tier);
-    setSelectedGroup(groupSize);
-    setIsModalOpen(true);
+    // Redirect directly to external payment link
+    window.open(EXTERNAL_PAYMENT_URL, '_blank');
   };
 
   const getRemainingUnits = (tier: TicketTier): number => tier.totalUnits - tier.soldUnits;
@@ -433,17 +430,6 @@ export default function VIPPage() {
           </div>
         </div>
       </section>
-
-      {/* Checkout Modal */}
-      <CheckoutModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        tier={selectedTier ? {
-          ...selectedTier,
-          presaleSinglePrice: getPrice(selectedTier, selectedGroup) || 0
-        } : null}
-        groupSize={selectedGroup}
-      />
     </main>
   );
 }
