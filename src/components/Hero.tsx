@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import CountdownTimer from "./CountdownTimer";
-import { Calendar, MapPin, ExternalLink } from "lucide-react";
+import { Calendar, MapPin, ExternalLink, Zap, Flame, Trophy, Music } from "lucide-react";
 import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 
@@ -209,12 +209,64 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="mt-4 mx-auto max-w-xl"
+          className="mt-4 mx-auto max-w-4xl"
         >
-          <p className="font-sans font-light text-white/80 text-sm sm:text-lg md:text-xl tracking-wide">
-            Drift Championship • Keke Race • Drag Race • Stunts and Lots More
-          </p>
-          <p className="font-sans font-light text-white/70 text-sm sm:text-lg md:text-xl mt-2 tracking-wide">
+          {/* Icon-based event categories - like the flyer design */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6">
+            {/* Drift Championship */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="flex flex-col items-center"
+            >
+              <div className="p-3 rounded-full bg-blue-500/20 mb-2">
+                <Zap className="w-6 h-6 md:w-8 md:h-8 text-blue-400" />
+              </div>
+              <p className="text-white/80 text-xs md:text-sm font-semibold uppercase tracking-widest">Drift</p>
+            </motion.div>
+
+            {/* Keke Race */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.55 }}
+              className="flex flex-col items-center"
+            >
+              <div className="p-3 rounded-full bg-yellow-500/20 mb-2">
+                <Trophy className="w-6 h-6 md:w-8 md:h-8 text-yellow-400" />
+              </div>
+              <p className="text-white/80 text-xs md:text-sm font-semibold uppercase tracking-widest">Keke Race</p>
+            </motion.div>
+
+            {/* Drag Race */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="flex flex-col items-center"
+            >
+              <div className="p-3 rounded-full bg-red-500/20 mb-2">
+                <Flame className="w-6 h-6 md:w-8 md:h-8 text-red-400" />
+              </div>
+              <p className="text-white/80 text-xs md:text-sm font-semibold uppercase tracking-widest">Drag Race</p>
+            </motion.div>
+
+            {/* Stunts & More */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.65 }}
+              className="flex flex-col items-center"
+            >
+              <div className="p-3 rounded-full bg-purple-500/20 mb-2">
+                <Music className="w-6 h-6 md:w-8 md:h-8 text-purple-400" />
+              </div>
+              <p className="text-white/80 text-xs md:text-sm font-semibold uppercase tracking-widest">Stunts & More</p>
+            </motion.div>
+          </div>
+
+          <p className="font-sans font-light text-white/70 text-sm sm:text-lg md:text-xl tracking-wide">
             The Biggest Auto Experience in Northern Nigeria
           </p>
         </motion.div>
