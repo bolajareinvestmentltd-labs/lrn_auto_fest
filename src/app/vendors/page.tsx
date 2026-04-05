@@ -1,27 +1,34 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { useState, useEffect } from "react";
-import { Loader2, CheckCircle, Store, AlertTriangle } from "lucide-react";
+import { Input } from "@/components/ui/inpu         } else {
+                        throw new Error("Failed to save vendor application");
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                    alert("Payment verified but failed to save application. Please contact support.");
+                    setIsSubmitting(false);
+                }
+            }
+        });
+        handler.openIframe();
+    };
 
-const VENDOR_BOOKING_FEE = 100000;
-const MAX_VENDORS = 10;
-const PRODUCT_TYPES = [
-    { id: "food", label: "Food" },
-    { id: "drink", label: "Drink" },
-    { id: "eatables", label: "Eatables" },
-] as const;
+    return (
+        <main className="bg-[#050505] min-h-screen text-white">
 
-export default function VendorPage() {
-    const [formData, setFormData] = useState({
-        businessName: "",
-        contactPerson: "",
-        phone: "",
-        email: "",
-        productType: "",
-    });
-    const [isSubmitting, setIsSubmitting] = useState(false);
+            <div className="container mx-auto px-4 py-32">
+                
+                {/* Header */}
+                <div className="text-center max-w-3xl mx-auto mb-16">
+                    <h1 className="font-heading text-4xl md:text-6xl font-black italic uppercase">
+                        Become a <span className="text-brand-blue">Vendor</span>
+                    </h1>
+                    <p className="text-gray-400 mt-6 text-lg">
+                        Vendor slots is strictly limited to Food, Drinks and Eatables only.<br />
+                        <span className="text-brand-orange font-bold">Only 10 slots available!</span>
+                    </p>
+    ] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [paystackLoaded, setPaystackLoaded] = useState(false);
     const [ticketId, setTicketId] = useState("");
@@ -172,14 +179,15 @@ export default function VendorPage() {
         <main className="bg-[#050505] min-h-screen text-white">
 
             <div className="container mx-auto px-4 py-32">
+                
                 {/* Header */}
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <h1 className="font-heading text-4xl md:text-6xl font-black italic uppercase">
                         Become a <span className="text-brand-blue">Vendor</span>
                     </h1>
                     <p className="text-gray-400 mt-6 text-lg">
-                        Vendor Reservation is strictly for food, Drinks, and eatables only.
-
+                        Vendor slots is strictly limited to Food, Drinks and Eatables only.<br />
+                        <span className="text-brand-orange font-bold">Only 10 slots available!</span>
                     </p>
                 </div>
 
