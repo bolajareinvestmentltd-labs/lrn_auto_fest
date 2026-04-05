@@ -81,7 +81,6 @@ interface DashboardStats {
     recentVendors: VendorData[]; // Added
     recentMerch: MerchData[];    // Added
 }
-}
 
 // Mock data for development
 const MOCK_STATS: DashboardStats = {
