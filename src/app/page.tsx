@@ -11,7 +11,6 @@ export default function Home() {
     <div className="bg-background min-h-screen">
       <Hero />
       <Experience />
-      <EventCategories />
       <Tickets />
       <Sponsors />
       <SocialProof />
