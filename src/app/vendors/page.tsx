@@ -6,8 +6,6 @@ import { useState, useEffect } from "react";
 import { Loader2, CheckCircle, Store, AlertTriangle } from "lucide-react";
 
 const VENDOR_BOOKING_FEE = 100000;
-const PROCESSING_CHARGE = 100;
-const VAT_PERCENTAGE = 5; // 5% - Industry standard
 const MAX_VENDORS = 10;
 const PRODUCT_TYPES = [
     { id: "food", label: "Food" },
@@ -32,16 +30,8 @@ export default function VendorPage() {
 
     const slotsLeft = Math.max(MAX_VENDORS - confirmedVendors, 0);
 
-    // Calculate total amount with charges and VAT
-    const calculateTotal = () => {
-        const subtotal = VENDOR_BOOKING_FEE + PROCESSING_CHARGE;
-        const vat = subtotal * (VAT_PERCENTAGE / 100);
-        return {
-            subtotal,
-            vat,
-            total: subtotal + vat
-        };
-    };
+    // Get booking fee (no additional charges or VAT)
+    const getTotal = () => VENDOR_BOOKING_FEE;
 
     // Load Paystack script
     useEffect(() => {
@@ -116,7 +106,7 @@ export default function VendorPage() {
         };
 
         const newTicketId = generateTicketId();
-        const totalAmount = calculateTotal().total;
+        const totalAmount = getTotal();
 
         // Use environment variable for Paystack key
         const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
@@ -154,15 +144,17 @@ export default function VendorPage() {
                             ticketId: newTicketId,
                             paymentReference: transaction.reference,
                             amount: VENDOR_BOOKING_FEE,
-                            processingCharge: PROCESSING_CHARGE,
-                            vat: calculateTotal().vat,
                             totalAmount: totalAmount,
                         })
                     });
 
                     if (response.ok) {
-                        // Redirect to vendor payment confirmation page with ticket ID and reference
-                        window.location.href = `/vendor-payment-confirmation?reference=${transaction.reference}&ticketId=${newTicketId}`;
+                        setSubmitted(true);
+                        setTicketId(newTicketId);
+                        // Redirect to vendor payment confirmation page after brief delay
+                        setTimeout(() => {
+                            window.location.href = `/vendor-payment-confirmation?reference=${transaction.reference}&ticketId=${newTicketId}`;
+                        }, 2000);
                     } else {
                         throw new Error("Failed to save vendor application");
                     }
@@ -205,7 +197,10 @@ export default function VendorPage() {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4 text-gray-300">
-                                <p className="text-3xl font-black text-brand-orange">₦{VENDOR_BOOKING_FEE.toLocaleString()}</p>
+                                <div className="space-y-2">
+                                    <p className="text-xs uppercase tracking-[0.25em] text-gray-500">Total Amount</p>
+                                    <p className="text-4xl font-black text-brand-orange">₦{VENDOR_BOOKING_FEE.toLocaleString()}</p>
+                                </div>
                                 <div className="rounded-xl border border-white/10 bg-black/20 p-4">
                                     <p className="text-xs uppercase tracking-[0.25em] text-gray-500">Availability</p>
                                     {countLoading ? (
@@ -380,21 +375,9 @@ export default function VendorPage() {
                                 <div className="bg-brand-orange/10 border border-brand-orange/50 p-4 rounded-lg space-y-3">
                                     <p className="text-xs text-gray-400">💰 Booking Summary</p>
                                     <div className="space-y-1 text-sm bg-black/30 p-3 rounded">
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-400">Vendor Booking Fee:</span>
-                                            <span className="text-white">₦{VENDOR_BOOKING_FEE.toLocaleString()}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-400">Processing Charge:</span>
-                                            <span className="text-white">₦{PROCESSING_CHARGE.toLocaleString()}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-400">VAT ({VAT_PERCENTAGE}%):</span>
-                                            <span className="text-white">₦{calculateTotal().vat.toLocaleString()}</span>
-                                        </div>
-                                        <div className="flex justify-between pt-2 border-t border-white/10">
+                                        <div className="flex justify-between pt-2">
                                             <span className="font-semibold text-gray-300">Total Amount:</span>
-                                            <span className="text-lg font-bold text-brand-orange">₦{calculateTotal().total.toLocaleString()}</span>
+                                            <span className="text-lg font-bold text-brand-orange">₦{getTotal().toLocaleString()}</span>
                                         </div>
                                     </div>
                                 </div>
