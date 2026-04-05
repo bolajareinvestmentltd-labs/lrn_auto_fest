@@ -398,7 +398,7 @@ export default function VendorPage() {
                                             Processing...
                                         </>
                                     ) : (
-                                        "Secure My Slot"
+                                        "PAY NOW"
                                     )}
                                 </Button>
                             </form>
