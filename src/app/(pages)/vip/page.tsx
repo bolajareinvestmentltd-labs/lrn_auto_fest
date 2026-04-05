@@ -23,6 +23,8 @@ type GroupSize = "SINGLE" | "GROUP_2" | "GROUP_4";
 
 // External payment link for VIP tickets
 const EXTERNAL_PAYMENT_URL = "https://paystack.com/pay/ilorinautofest";
+
+interface TicketTier {
   id: string;
   ticketType: string;
   name: string;
@@ -45,8 +47,6 @@ const EXTERNAL_PAYMENT_URL = "https://paystack.com/pay/ilorinautofest";
   highlightVideo: number;
   highlightPhotos: number;
 }
-
-type GroupSize = "SINGLE" | "GROUP_2" | "GROUP_4";
 
 // VIP tier configuration
 const VIP_CONFIG: Record<string, {
