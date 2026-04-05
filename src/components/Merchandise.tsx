@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight, ShoppingBag, CreditCard, Sparkles, AlertTriangle } from "lucide-react";
 import Image from "next/image";
-import MerchandiseCheckoutModal from "./MerchandiseCheckoutModal";
 
 interface MerchItem {
     id: string;
@@ -69,10 +68,11 @@ const PROMO_IMAGES = [
     },
 ];
 
+// External payment link for merchandise
+const EXTERNAL_MERCH_PAYMENT_URL = "https://paystack.com/pay/ilorinautofestmerch";
+
 export default function Merchandise() {
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-    const [selectedItem, setSelectedItem] = useState<MerchItem | null>(null);
 
     const nextSlide = () => {
         setCurrentIndex((prev) => (prev + 1) % MERCHANDISE.length);
@@ -95,8 +95,8 @@ export default function Merchandise() {
     };
 
     const handleBuyNow = (item: MerchItem) => {
-        setSelectedItem(item);
-        setIsCheckoutOpen(true);
+        // Redirect directly to external payment link
+        window.open(EXTERNAL_MERCH_PAYMENT_URL, '_blank');
     };
 
     const currentItem = MERCHANDISE[currentIndex];
@@ -349,13 +349,6 @@ export default function Merchandise() {
                     </div>
                 </motion.div>
             </div>
-
-            {/* Checkout Modal */}
-            <MerchandiseCheckoutModal
-                isOpen={isCheckoutOpen}
-                onClose={() => setIsCheckoutOpen(false)}
-                item={selectedItem}
-            />
         </section>
     );
 }

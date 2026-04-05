@@ -173,7 +173,7 @@ export default function RegisterPage() {
                                     >
                                         {/* Category Header - Clickable */}
                                         <div
-                                            onClick={() => setSelectedCategoryId(category.id)}
+                                            onClick={() => handleRegisterClick(category)}
                                             className={`w-full p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer ${isFull
                                                 ? "bg-gray-800/50 border-gray-700 opacity-60"
                                                 : "bg-gray-800/50 border-gray-600 hover:border-gray-400 hover:bg-gray-800"
