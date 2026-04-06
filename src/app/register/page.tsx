@@ -45,8 +45,7 @@ export default function RegisterPage() {
             icon: <Zap className="w-8 h-8" />,
             color: "from-blue-500 to-cyan-500",
             googleFormUrl: GOOGLE_FORM_URL,
-            email: "contact@ilorinautomotivefrstival.com.ng
-        },
+            email: "contact@ilorinautomotivefestival.com.ng",
         {
             id: "dragRace",
             name: "Drag Race",
