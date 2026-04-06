@@ -6,7 +6,7 @@ import { generateVendorConfirmationEmail, generateAdminNotificationEmail, sendEm
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || process.env.NEXT_PUBLIC_ADMIN_EMAIL || "admin@ilorincarshow.com";
 const MAX_VENDORS = 10;
-const VENDOR_BOOKING_FEE = 100000;
+const VENDOR_BOOKING_FEE = 103500; // UPDATED PRICE HERE
 const ALLOWED_PRODUCT_TYPES = new Set(["food", "drink", "eatables"]);
 
 /**
@@ -266,7 +266,7 @@ async function sendAdminNotificationEmailForVendor(vendor: any) {
  */
 function formatBoothType(type: string): string {
   const types: { [key: string]: string } = {
-    "food_drink_eatables": "🍔 Food / Drink / Eatables Vendor Slot - ₦100,000"
+    "food_drink_eatables": "🍔 Food / Drink / Eatables Vendor Slot - ₦103,500" // UPDATED PRICE HERE
   };
   return types[type] || type;
 }
