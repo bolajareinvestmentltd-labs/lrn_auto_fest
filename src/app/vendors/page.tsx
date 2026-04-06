@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import { Loader2, CheckCircle, Store, AlertTriangle } from "lucide-react";
 
-const VENDOR_BOOKING_FEE = 100000;
+const VENDOR_BOOKING_FEE = 103500;
 const MAX_VENDORS = 10;
 const PRODUCT_TYPES = [
     { id: "food", label: "Food" },
@@ -151,10 +151,10 @@ export default function VendorPage() {
                     if (response.ok) {
                         setSubmitted(true);
                         setTicketId(newTicketId);
-                        // Redirect to vendor payment confirmation page after brief delay
+                        // Redirect to the home page after 6 seconds so they have time to read the success message!
                         setTimeout(() => {
-                            window.location.href = `/vendor-payment-confirmation?reference=${transaction.reference}&ticketId=${newTicketId}`;
-                        }, 2000);
+                            window.location.href = "/";
+                        }, 6000);
                     } else {
                         throw new Error("Failed to save vendor application");
                     }
@@ -172,14 +172,15 @@ export default function VendorPage() {
         <main className="bg-[#050505] min-h-screen text-white">
 
             <div className="container mx-auto px-4 py-32">
+                
                 {/* Header */}
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <h1 className="font-heading text-4xl md:text-6xl font-black italic uppercase">
                         Become a <span className="text-brand-blue">Vendor</span>
                     </h1>
                     <p className="text-gray-400 mt-6 text-lg">
-                        Vendor Reservation is strictly for food, Drinks, and eatables only.
-
+                        Vendor slots is strictly limited to Food, Drinks and Eatables only.<br />
+                        <span className="text-brand-orange font-bold">Only 10 slots available!</span>
                     </p>
                 </div>
 
@@ -374,60 +375,37 @@ export default function VendorPage() {
 
                                 <div className="bg-brand-orange/10 border border-brand-orange/50 p-4 rounded-lg space-y-3">
                                     <p className="text-xs text-gray-400">💰 Booking Summary</p>
-                                    <div className="space-y-1 text-sm bg-black/30 p-3 rounded">
-                                        <div className="flex justify-between pt-2">
-                                            <span className="font-semibold text-gray-300">Total Amount:</span>
-                                            <span className="text-lg font-bold text-brand-orange">₦{getTotal().toLocaleString()}</span>
+                                    <div className="space-y-1">
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-300">Standard Vendor Slot</span>
+                                            <span className="font-bold text-white">₦{VENDOR_BOOKING_FEE.toLocaleString()}</span>
                                         </div>
+                                    </div>
+                                    <div className="pt-2 border-t border-brand-orange/20 flex justify-between">
+                                        <span className="font-bold text-white uppercase text-sm">Total Due</span>
+                                        <span className="font-black text-brand-orange text-xl">₦{getTotal().toLocaleString()}</span>
                                     </div>
                                 </div>
 
                                 <Button
                                     type="submit"
-                                    disabled={isSubmitting || !formData.productType || slotsLeft <= 0}
-                                    className="w-full bg-brand-orange hover:bg-orange-600 disabled:opacity-50 text-white font-bold uppercase h-11"
+                                    disabled={isSubmitting || slotsLeft <= 0}
+                                    className="w-full bg-brand-blue hover:bg-brand-blue/80 text-white py-6 text-lg font-bold uppercase tracking-widest mt-4"
                                 >
                                     {isSubmitting ? (
                                         <>
-                                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                            Processing Payment...
+                                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                            Processing...
                                         </>
                                     ) : (
-                                        `Pay ₦${getTotal().toLocaleString()} via Paystack`
+                                        "PAY NOW"
                                     )}
                                 </Button>
-
-                                <p className="text-[10px] text-center text-gray-500 uppercase">
-                                    🔒 Secure payment powered by Paystack.
-                                </p>
                             </form>
                         )}
                     </div>
                 </div>
-
-                {/* FAQs */}
-                <div className="max-w-3xl mx-auto mt-20 pt-20 border-t border-white/10">
-                    <h2 className="text-3xl font-heading uppercase mb-8 text-center">FAQs</h2>
-                    <div className="grid md:grid-cols-2 gap-8">
-                        <div>
-                            <h4 className="font-bold text-brand-orange mb-2">What can I sell?</h4>
-                            <p className="text-gray-400 text-sm">Only foods, drinks, and eatables.</p>
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-brand-orange mb-2">What&apos;s the booking fee?</h4>
-                            <p className="text-gray-400 text-sm">Each confirmed vendor slot costs ₦100,000.</p>
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-brand-orange mb-2">What&apos;s the event date?</h4>
-                            <p className="text-gray-400 text-sm">May 30, 2026 at <a href="https://www.google.com/maps/dir/?api=1&destination=8.4799,4.5418&travelmode=driving" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline">Metropolitan Square, Asadam Road, Ilorin ↗</a></p>
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-brand-orange mb-2">How many vendors are allowed?</h4>
-                            <p className="text-gray-400 text-sm">Only 10 .</p>
-                        </div>
-                    </div>
-                </div>
             </div>
-        </main >
+        </main>
     );
 }

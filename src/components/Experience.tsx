@@ -1,14 +1,13 @@
 "use client";
 import { Card, CardContent } from "@/components/ui/card";
-import { Trophy, Zap, Car, Mic, Crown, Utensils } from "lucide-react";
+import { Trophy, Flag, Zap, Flame, Sparkles } from "lucide-react";
 
 const features = [
-  { title: "Drift King", icon: Trophy, desc: "Battle for the championship title." },
-  { title: "Bike Stunts", icon: Zap, desc: "High-adrenaline stunts." },
-
-  { title: "Music", icon: Mic, desc: "Top Afrobeats artists." },
-
-  { title: "Food Court", icon: Utensils, desc: "Gourmet vendors." }
+  { title: "Drift Championship", icon: Trophy, desc: "Battle for the ultimate drifting title." },
+  { title: "Drag Race", icon: Flag, desc: "High-speed straight-line adrenaline." },
+  { title: "Keke Race", icon: Zap, desc: "Experience the thrill of the three-wheelers." },
+  { title: "Stunts", icon: Flame, desc: "High-adrenaline action and performances." },
+  { title: "Exhibition & lots more", icon: Sparkles, desc: "Showcases, displays, and endless surprises." }
 ];
 
 export default function Experience() {
