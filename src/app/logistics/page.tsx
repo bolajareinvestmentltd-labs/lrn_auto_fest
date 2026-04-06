@@ -1,5 +1,31 @@
 "use client";
 
+// ========================================
+// COMING SOON DISPLAY
+// ========================================
+// To re-enable the full logistics page, uncomment the code below
+// and remove the ComingSoon import/render
+
+import ComingSoon from "@/components/ComingSoon";
+
+export default function LogisticsPage() {
+  return (
+    <ComingSoon
+      title="Event Logistics & Pickup"
+      description="Convenient pickup and drop-off options for all ticket holders. Details coming soon!"
+      releaseDate="May 1, 2026"
+    />
+  );
+}
+
+/*
+// ========================================
+// ORIGINAL FULL LOGISTICS PAGE CODE
+// ========================================
+// Restore this section to re-enable full functionality
+
+"use client";
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";

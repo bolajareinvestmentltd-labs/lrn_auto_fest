@@ -3,6 +3,11 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// Get the app URL from environment or use production domain
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://ilorinautomotivefestival.com';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 interface EmailCampaignRequest {
   templateId: string;
   segments: string[];
@@ -45,7 +50,7 @@ const sendViaEmail = async (
 };
 
 // Email templates based on type
-const getEmailTemplate = (templateId: string) => {
+const getEmailTemplate = (templateId: string, appUrl: string = APP_URL) => {
   const templates: Record<string, { subject: string; html: string }> = {
     newsletter: {
       subject: 'Ilorin Auto Fest 2026 - Latest Updates & Exclusive News',
@@ -87,7 +92,7 @@ const getEmailTemplate = (templateId: string) => {
       <div class="section" style="background: #f5f5f5; padding: 20px; border-radius: 5px;">
         <h3>Featured: Premium VIP Experience</h3>
         <p>Experience the festival like never before with our exclusive VIP packages featuring priority rides, dedicated content, and premium amenities.</p>
-        <a href="https://yourfestival.com/vip" class="cta">Explore VIP Packages →</a>
+        <a href="${appUrl}/vip" class="cta">Explore VIP Packages →</a>
       </div>
       
       <p>Best regards,<br>The Ilorin Auto Festival Team 🎉</p>
@@ -95,7 +100,7 @@ const getEmailTemplate = (templateId: string) => {
     
     <div class="footer">
       <p>© 2026 Ilorin Automotive Festival. All rights reserved.</p>
-      <p>Prefer not to receive emails? <a href="{{ unsubscribe_url }}" style="color: #FF4500;">Unsubscribe here</a></p>
+      <p>Prefer not to receive emails? <a href="${appUrl}/unsubscribe" style="color: #FF4500;">Unsubscribe here</a></p>
     </div>
   </body>
 </html>
@@ -153,7 +158,7 @@ const getEmailTemplate = (templateId: string) => {
       </div>
       
       <p style="text-align: center; margin: 30px 0;">
-        <a href="https://yourfestival.com/checkout" class="cta">Grab Your VIP Ticket Now →</a>
+        <a href="${appUrl}/checkout" class="cta">Grab Your VIP Ticket Now →</a>
       </p>
       
       <p style="color: #999; font-size: 12px; text-align: center;">
@@ -215,7 +220,7 @@ const getEmailTemplate = (templateId: string) => {
       </p>
       
       <p style="text-align: center; margin: 30px 0;">
-        <a href="https://yourfestival.com/vip-lounge" class="cta">Access Your VIP Dashboard →</a>
+        <a href="${appUrl}/vip-lounge" class="cta">Access Your VIP Dashboard →</a>
       </p>
     </div>
     
@@ -274,7 +279,7 @@ const getEmailTemplate = (templateId: string) => {
       </p>
       
       <p style="text-align: center; margin: 30px 0;">
-        <a href="https://yourfestival.com/full-lineup" class="cta">View Full Lineup →</a>
+        <a href="${appUrl}/full-lineup" class="cta">View Full Lineup →</a>
       </p>
     </div>
     
@@ -322,7 +327,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Get email template
-    const template = getEmailTemplate(templateId);
+    const template = getEmailTemplate(templateId, APP_URL);
 
     // Collect all unique recipient emails
     const allRecipients = new Set<string>();

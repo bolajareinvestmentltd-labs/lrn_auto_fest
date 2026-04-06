@@ -1,4 +1,30 @@
 "use client";
+
+// ========================================
+// COMING SOON DISPLAY
+// ========================================
+// To re-enable the full vendors page, uncomment the code below
+// and remove the ComingSoon import/render
+
+import ComingSoon from "@/components/ComingSoon";
+
+export default function VendorPage() {
+  return (
+    <ComingSoon
+      title="Vendor Booking & Registration"
+      description="Join us as a vendor at the Ilorin Automotive Festival 2026! Food, drinks, and lifestyle vendors welcomed."
+      releaseDate="April 30, 2026"
+    />
+  );
+}
+
+/*
+// ========================================
+// ORIGINAL FULL VENDORS PAGE CODE
+// ========================================
+// Restore this section to re-enable full functionality
+
+"use client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
