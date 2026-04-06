@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
-import { Loader2, CheckCircle, Store, AlertTriangle } from "lucide-react";
+import { Loader2, CheckCircle, Store, AlertTriangle, X } from "lucide-react";
+import { motion } from "framer-motion";
 
 const VENDOR_BOOKING_FEE = 103500;
 const MAX_VENDORS = 10;
@@ -27,6 +28,8 @@ export default function VendorPage() {
     const [ticketId, setTicketId] = useState("");
     const [confirmedVendors, setConfirmedVendors] = useState(0);
     const [countLoading, setCountLoading] = useState(true);
+    // TODO: PAYMENT POPUP - Remove this state when payment is ready
+    const [showPaymentUnavailable, setShowPaymentUnavailable] = useState(false);
 
     const slotsLeft = Math.max(MAX_VENDORS - confirmedVendors, 0);
 
@@ -94,10 +97,10 @@ export default function VendorPage() {
             return;
         }
 
-        if (!paystackLoaded || !(window as unknown as Record<string, unknown>).PaystackPop) {
-            alert("Payment system is loading. Please try again.");
-            return;
-        }
+        // TODO: PAYMENT POPUP - Remove this entire block when payment is ready
+        // Temporarily show unavailable popup instead of processing payment
+        setShowPaymentUnavailable(true);
+        return;
 
         setIsSubmitting(true);
 
@@ -168,6 +171,42 @@ export default function VendorPage() {
 
     return (
         <main className="bg-[#050505] min-h-screen text-white">
+
+            {/* TODO: PAYMENT POPUP - Remove this entire section when payment is ready */}
+            {showPaymentUnavailable && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-gradient-to-br from-slate-900 to-slate-800 border border-brand-orange/30 rounded-2xl p-8 max-w-md mx-4 shadow-2xl"
+                    >
+                        <div className="flex items-start justify-between mb-4">
+                            <div className="flex-1">
+                                <h2 className="text-2xl font-bold text-white mb-2">Vendor Payments Coming Soon</h2>
+                                <p className="text-gray-300 text-sm">We're preparing an amazing payment experience for vendors.</p>
+                            </div>
+                            <button
+                                onClick={() => setShowPaymentUnavailable(false)}
+                                className="text-gray-400 hover:text-white ml-4 transition-colors"
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+                        </div>
+                        
+                        <div className="bg-brand-orange/10 border border-brand-orange/30 rounded-lg p-4 mb-6">
+                            <p className="text-brand-orange text-sm font-semibold">🚀 Coming Soon</p>
+                            <p className="text-gray-300 text-xs mt-2">Vendor booking payments will be available shortly. We'll notify you once it's live!</p>
+                        </div>
+
+                        <button
+                            onClick={() => setShowPaymentUnavailable(false)}
+                            className="w-full bg-brand-orange hover:bg-orange-600 text-white font-bold py-3 rounded-lg transition-all"
+                        >
+                            Got it
+                        </button>
+                    </motion.div>
+                </div>
+            )}
 
             <div className="container mx-auto px-4 py-32">
                 

@@ -93,6 +93,8 @@ export default function TicketsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedGroupSize, setSelectedGroupSize] = useState<Record<string, GroupSize>>({});
+  // TODO: PAYMENT POPUP - Remove this state when payment is ready
+  const [showPaymentUnavailable, setShowPaymentUnavailable] = useState(false);
 
   useEffect(() => {
     async function fetchTickets() {
@@ -146,8 +148,10 @@ export default function TicketsPage() {
   };
 
   const handleBuyClick = () => {
-    // Redirect directly to external payment link
-    window.open(EXTERNAL_PAYMENT_URL, "_blank");
+    // TODO: PAYMENT POPUP - Replace this with actual payment redirect when ready
+    // Temporarily show unavailable popup instead of redirecting to payment
+    setShowPaymentUnavailable(true);
+    // UNCOMMENT BELOW WHEN READY: window.open(EXTERNAL_PAYMENT_URL, "_blank");
   };
 
   const isAvailable = (tier: TicketTier, groupSize: GroupSize): boolean => {
@@ -350,6 +354,41 @@ export default function TicketsPage() {
 
   return (
     <main className="bg-[#050505] min-h-screen">
+      {/* TODO: PAYMENT POPUP - Remove this entire section when payment is ready */}
+      {showPaymentUnavailable && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-gradient-to-br from-slate-900 to-slate-800 border border-brand-orange/30 rounded-2xl p-8 max-w-md mx-4 shadow-2xl"
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold text-white mb-2">Payment Coming Soon</h2>
+                <p className="text-gray-300 text-sm">We're preparing an amazing payment experience for you.</p>
+              </div>
+              <button
+                onClick={() => setShowPaymentUnavailable(false)}
+                className="text-gray-400 hover:text-white ml-4 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <div className="bg-brand-orange/10 border border-brand-orange/30 rounded-lg p-4 mb-6">
+              <p className="text-brand-orange text-sm font-semibold">🚀 Payment system is being finalized</p>
+              <p className="text-gray-300 text-xs mt-2">We'll notify you as soon as payments are ready. Thank you for your patience!</p>
+            </div>
+
+            <button
+              onClick={() => setShowPaymentUnavailable(false)}
+              className="w-full bg-brand-orange hover:bg-orange-600 text-white font-bold py-3 rounded-lg transition-all"
+            >
+              Got it
+            </button>
+          </motion.div>
+        </div>
+      )}
 
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-4">
