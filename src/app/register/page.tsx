@@ -40,32 +40,32 @@ export default function RegisterPage() {
         {
             id: "driftChampionship",
             name: "Drift Championship",
-            description: "STAND A CHANCE TO DRIFT AGAINST THE GUEST DRIFTERS",
+            description: "STAND A CHANCE TO COMPETE AGAINST TOP DRIFTERS",
             maxSlots: 10,
             icon: <Zap className="w-8 h-8" />,
             color: "from-blue-500 to-cyan-500",
             googleFormUrl: GOOGLE_FORM_URL,
-            email: "drift@ilorincarshow.com",
+            email: "contact@ilorinautomotivefrstival.com.ng
         },
         {
             id: "dragRace",
             name: "Drag Race",
-            description: "Compete in our high-speed drag racing event",
+            description: "",
             maxSlots: 10,
             icon: <Car className="w-8 h-8" />,
             color: "from-red-500 to-orange-500",
             googleFormUrl: GOOGLE_FORM_URL,
-            email: "dragrace@ilorincarshow.com",
+            email: "contact@ilorinautomotivefestival.com.ng",
         },
         {
             id: "bestBuild",
-            name: "Best Build",
-            description: "Show off your custom car build and design expertise",
+            name: "Preety Buld",
+            description: "",
             maxSlots: 10,
             icon: <Car className="w-8 h-8" />,
             color: "from-purple-500 to-pink-500",
             googleFormUrl: GOOGLE_FORM_URL,
-            email: "bestbuild@ilorincarshow.com",
+            email: "support@ilprinaitomptivefestival.com.ng",
         },
     ];
 
@@ -140,7 +140,7 @@ export default function RegisterPage() {
                         />
                     </Link>
                     <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2">
-                        Event Registration
+                        Performer's Registration
                     </h1>
                 </motion.div>
 
@@ -198,9 +198,11 @@ export default function RegisterPage() {
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <p className="text-sm text-gray-400 mb-2">
-                                                        {category.description}
-                                                    </p>
+                                                    {category.description && (
+                                                        <p className="text-sm text-gray-400 mb-2">
+                                                            {category.description}
+                                                        </p>
+                                                    )}
                                                     <p className="text-xs text-gray-500">
                                                         Contact: <a href={`mailto:${category.email}`} className="text-brand-blue hover:underline">{category.email}</a>
                                                     </p>
@@ -215,10 +217,10 @@ export default function RegisterPage() {
                                                             } text-white font-bold px-6 py-3 rounded-lg`}
                                                     >
                                                         {isFull ? (
-                                                            "Closed"
+                                                            "CLOSED"
                                                         ) : (
                                                             <>
-                                                                Register Now
+                                                                REGISTER
                                                                 <ExternalLink className="w-4 h-4 ml-2" />
                                                             </>
                                                         )}
@@ -363,10 +365,9 @@ export default function RegisterPage() {
                                         </Button>
                                         <Button
                                             onClick={() => handleProceedToForm(selectedCategory)}
-                                            className={`bg-gradient-to-r ${selectedCategory.color} text-white font-bold px-8 py-3 rounded-lg`}
+                                            className={`bg-gradient-to-r ${selectedCategory.color} text-white font-bold px-8`}
                                         >
-                                            Proceed to Registration Form
-                                            <ExternalLink className="w-4 h-4 ml-2" />
+                                            Proceed to Register
                                         </Button>
                                     </div>
                                 </div>
@@ -377,4 +378,4 @@ export default function RegisterPage() {
             </AnimatePresence>
         </div>
     );
-}
+}   
