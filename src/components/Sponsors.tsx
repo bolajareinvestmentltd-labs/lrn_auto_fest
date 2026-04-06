@@ -19,27 +19,27 @@ const sponsors = [
     },
     {
         name: "AutoFest International",
-        logo: "/sponsors/autofest.png",
+        logo: "/sponsors/autofest.PNG",
         instagram: "https://instagram.com/YOUR_LINK_HERE"
     },
     {
         name: "Kwara Bikers MC",
-        logo: "/sponsors/kwara-bikers.png",
+        logo: "/sponsors/kwara-bikers.PNG",
         instagram: "https://instagram.com/YOUR_LINK_HERE"
     },
     {
         name: "Cusecho",
-        logo: "/sponsors/cusecho.png",
+        logo: "/sponsors/cusecho.PNG",
         instagram: "https://instagram.com/YOUR_LINK_HERE"
     },
     {
         name: "Bohemian Analytics",
-        logo: "/sponsors/bohemian.png",
+        logo: "/sponsors/bohemian.PNG",
         instagram: "https://instagram.com/YOUR_LINK_HERE"
     },
     {
         name: "Mohammed Lexus",
-        logo: "/sponsors/mohammed-lexus.png",
+        logo: "/sponsors/mohammed-lexus.PNG",
         instagram: "https://instagram.com/YOUR_LINK_HERE"
     },
     {
