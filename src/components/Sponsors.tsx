@@ -75,8 +75,9 @@ export default function Sponsors() {
                                 <Image
                                     src={sponsor.logo}
                                     alt={sponsor.name}
-                                    fill
-                                    className="object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                                    width={200}
+                                    height={128}
+                                    className="w-full h-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
                                     onError={(e) => {
                                         // Fallback: show text if image fails to load
                                         e.currentTarget.style.display = "none";
