@@ -354,11 +354,29 @@ export default function RegisterPage() {
                                         ))}
                                     </div>
 
-                                    {/* Action Buttons */}
+                                                                        {/* Action Buttons */}
                                     <div className="flex gap-4 justify-center pt-6 border-t border-gray-700">
                                         <Button
                                             onClick={() => setSelectedCategoryId(null)}
                                             variant="ghost"
                                             className="text-gray-400 hover:text-white"
                                         >
-               
+                                            Cancel
+                                        </Button>
+                                        <Button
+                                            onClick={() => handleProceedToForm(selectedCategory)}
+                                            className={`bg-gradient-to-r ${selectedCategory.color} text-white font-bold px-8`}
+                                        >
+                                            Proceed to Register
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+}
+
