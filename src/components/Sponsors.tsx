@@ -64,6 +64,7 @@ export default function Sponsors() {
                 {/* Sponsors Grid - 9 Partners with White Backgrounds */}
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
                     {sponsors.map((sponsor, i) => (
+                        sponsor.logo && (
                         <a
                             key={i}
                             href={sponsor.instagram}
@@ -89,6 +90,7 @@ export default function Sponsors() {
                                 </div>
                             </div>
                         </a>
+                        )
                     ))}
                 </div>
 
