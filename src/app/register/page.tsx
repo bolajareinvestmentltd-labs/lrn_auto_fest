@@ -46,6 +46,7 @@ export default function RegisterPage() {
             color: "from-blue-500 to-cyan-500",
             googleFormUrl: GOOGLE_FORM_URL,
             email: "contact@ilorinautomotivefestival.com.ng",
+        },
         {
             id: "dragRace",
             name: "Drag Race",
@@ -54,17 +55,17 @@ export default function RegisterPage() {
             icon: <Car className="w-8 h-8" />,
             color: "from-red-500 to-orange-500",
             googleFormUrl: GOOGLE_FORM_URL,
-            email: "contact@ilorinautomotivefestival.com.ng",
+            email: "info@ilorinautomotivefestival.com.ng",
         },
         {
             id: "bestBuild",
-            name: "Preety Buld",
+            name: "Preety Build",
             description: "",
             maxSlots: 10,
             icon: <Car className="w-8 h-8" />,
             color: "from-purple-500 to-pink-500",
             googleFormUrl: GOOGLE_FORM_URL,
-            email: "support@ilprinaitomptivefestival.com.ng",
+            email: "support@ilorinautomotivefestival.com.ng",
         },
     ];
 
@@ -139,7 +140,7 @@ export default function RegisterPage() {
                         />
                     </Link>
                     <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2">
-                        Performer's Registration
+                        Event Registration
                     </h1>
                 </motion.div>
 
@@ -360,21 +361,4 @@ export default function RegisterPage() {
                                             variant="ghost"
                                             className="text-gray-400 hover:text-white"
                                         >
-                                            Cancel
-                                        </Button>
-                                        <Button
-                                            onClick={() => handleProceedToForm(selectedCategory)}
-                                            className={`bg-gradient-to-r ${selectedCategory.color} text-white font-bold px-8`}
-                                        >
-                                            Proceed to Register
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
-                    </>
-                )}
-            </AnimatePresence>
-        </div>
-    );
-}   
+               
