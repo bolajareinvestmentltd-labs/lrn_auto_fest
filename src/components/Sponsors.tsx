@@ -4,17 +4,17 @@ import Image from "next/image";
 const sponsors = [
     {
         name: "Kwara State Government",
-        logo: "/sponsors/kwara-gov.png",
+        logo: "/sponsors/kwara-gov.jpeg",
         instagram: "https://instagram.com/YOUR_LINK_HERE"
     },
     {
         name: "Kwara State Sports Commission",
-        logo: "/sponsors/kwara-sports.png",
+        logo: "/sponsors/kwara-sports.jpeg",
         instagram: "https://instagram.com/YOUR_LINK_HERE"
     },
     {
         name: "Flow fm",
-        logo: "/sponsors/flow-fm.png",
+        logo: "/sponsors/flow-fm.jpeg",
         instagram: "https://instagram.com/YOUR_LINK_HERE"
     },
     {
@@ -44,7 +44,7 @@ const sponsors = [
     },
     {
         name: "Khaz Customs",
-        logo: "/sponsors/khaz-customs.png",
+        logo: "/sponsors/khaz-customs.jpeg",
         instagram: "https://instagram.com/YOUR_LINK_HERE"
     }
 ];
