@@ -151,10 +151,8 @@ export default function VendorPage() {
                     if (response.ok) {
                         setSubmitted(true);
                         setTicketId(newTicketId);
-                        // Redirect to the home page after 6 seconds so they have time to read the success message!
-                        setTimeout(() => {
-                            window.location.href = "/";
-                        }, 6000);
+                        // Redirect to vendor payment confirmation page to show success with QR code
+                        window.location.href = `/vendor-payment-confirmation?reference=${transaction.reference}&ticketId=${newTicketId}`;
                     } else {
                         throw new Error("Failed to save vendor application");
                     }
