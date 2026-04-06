@@ -3,9 +3,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Trophy, Flag, Zap, Flame, Sparkles } from "lucide-react";
 
 const features = [
-  { title: "Drift Championship", icon: Trophy, desc: "Battle for the ultimate drifting title." },
-  { title: "Drag Race", icon: Flag, desc: "High-speed straight-line adrenaline." },
-  { title: "Keke Race", icon: Zap, desc: "Experience the thrill of the three-wheelers." },
+  { title: "Drift Championship", icon: Trophy },
+  { title: "Drag Race", icon: Flag },
+  { title: "Keke Race", icon: Zap },
   { title: "Stunts", icon: Flame, desc: "High-adrenaline action and performances." },
   { title: "Exhibition & lots more", icon: Sparkles, desc: "Showcases, displays, and endless surprises." }
 ];
@@ -28,7 +28,7 @@ export default function Experience() {
                   <item.icon className="w-10 h-10" />
                 </div>
                 <h3 className="font-heading text-2xl text-white mb-2 uppercase tracking-widest">{item.title}</h3>
-                <p className="font-sans font-light text-gray-400 text-sm leading-relaxed">{item.desc}</p>
+                {item.desc && <p className="font-sans font-light text-gray-400 text-sm leading-relaxed">{item.desc}</p>}
               </CardContent>
             </Card>
           ))}

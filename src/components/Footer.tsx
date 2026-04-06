@@ -32,7 +32,7 @@ export default function Footer() {
 
                         <p className="text-white/60 text-sm">
 
-                            The Biggest Auto Experience in Northern Nigeria.
+                            The Reborn Edition
 
                         </p>
 
