@@ -545,4 +545,17 @@ model ManualSalesConfig {
   updatedAt       DateTime @updatedAt
 
   @@index([ticketType])
+} 
+model Vendor {
+  id               String   @id @default(cuid())
+  businessName     String
+  contactPerson    String
+  phone            String
+  email            String
+  productType      String
+  ticketId         String   @unique
+  paymentReference String   @unique
+  amount           Float
+  totalAmount      Float
+  createdAt        DateTime @default(now())
 }
