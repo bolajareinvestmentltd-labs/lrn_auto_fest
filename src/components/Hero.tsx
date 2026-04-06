@@ -19,6 +19,7 @@ export default function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [titleIndex, setTitleIndex] = useState(0);
   const [selectedVideo, setSelectedVideo] = useState<string>("");
+  const [showComingSoonModal, setShowComingSoonModal] = useState<string | null>(null);
 
   // Randomly select between two hero videos - professional approach
   useEffect(() => {
@@ -324,28 +325,60 @@ export default function Hero() {
               🎤 Register
             </Button>
           </Link>
-          <Link href="/tickets">
-            <Button size="lg" className="bg-brand-orange hover:bg-orange-600 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-orange-900/20">
-              🎟️ Get Tickets
-            </Button>
-          </Link>
-          <Link href="/merchandise">
-            <Button size="lg" className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-purple-900/20">
-              🛍️ Get Merch
-            </Button>
-          </Link>
+          <Button onClick={() => setShowComingSoonModal('tickets')} size="lg" className="bg-brand-orange hover:bg-orange-600 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-orange-900/20">
+            🎟️ Get Tickets
+          </Button>
+          <Button onClick={() => setShowComingSoonModal('merch')} size="lg" className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-purple-900/20">
+            🛍️ Get Merch
+          </Button>
           <Link href="/vendors">
             <Button size="lg" className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-blue-900/20">
               🏪 Vendors
             </Button>
           </Link>
-          <Link href="/logistics">
-            <Button size="lg" className="bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-600 hover:to-indigo-600 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-indigo-900/20">
-              🚌 Logistics
-            </Button>
-          </Link>
+          <Button onClick={() => setShowComingSoonModal('logistics')} size="lg" className="bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-600 hover:to-indigo-600 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-indigo-900/20">
+            🚌 Logistics
+          </Button>
         </motion.div>
       </div>
+
+      {/* Coming Soon Modals */}
+      <AnimatePresence>
+        {showComingSoonModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+            onClick={() => setShowComingSoonModal(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] border-2 border-brand-orange/50 rounded-2xl p-8 max-w-md w-full shadow-2xl"
+            >
+              <div className="text-center">
+                <div className="text-5xl mb-4">⏰</div>
+                <h3 className="text-2xl font-bold text-white mb-2 uppercase tracking-widest">Coming Soon!</h3>
+                <p className="text-gray-300 mb-6">
+                  {showComingSoonModal === 'tickets' && "🎟️ Ticket sales will be available soon!"}
+                  {showComingSoonModal === 'merch' && "🛍️ Our merchandise store is coming soon!"}
+                  {showComingSoonModal === 'logistics' && "🚌 Logistics information will be available soon!"}
+                </p>
+                <p className="text-brand-orange text-sm font-semibold mb-6">Stay tuned for updates!</p>
+                <Button
+                  onClick={() => setShowComingSoonModal(null)}
+                  className="bg-gradient-to-r from-brand-orange to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-6 py-2 rounded-full"
+                >
+                  Got It
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

@@ -59,7 +59,7 @@ export default function RegisterPage() {
         },
         {
             id: "bestBuild",
-            name: "Preety Build",
+            name: "Best Build",
             description: "",
             maxSlots: 10,
             icon: <Car className="w-8 h-8" />,
@@ -122,8 +122,13 @@ export default function RegisterPage() {
     const selectedChampions = selectedCategory ? getChampionsByCategory(selectedCategory.id) : [];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 py-12 px-4">
-            <div className="max-w-4xl mx-auto">
+        <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a1a2e] to-[#16213e] py-12 px-4 relative overflow-hidden">
+            {/* Gradient background accent */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-0 right-0 w-96 h-96 bg-brand-orange/10 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-blue/10 rounded-full blur-3xl" />
+            </div>
+            <div className="max-w-4xl mx-auto relative z-10">
                 {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
@@ -175,8 +180,8 @@ export default function RegisterPage() {
                                         <div
                                             onClick={() => handleRegisterClick(category)}
                                             className={`w-full p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer ${isFull
-                                                ? "bg-gray-800/50 border-gray-700 opacity-60"
-                                                : "bg-gray-800/50 border-gray-600 hover:border-gray-400 hover:bg-gray-800"
+                                                ? "bg-white/5 border-white/20 opacity-60"
+                                                : "bg-white/10 border-white/20 hover:border-brand-orange/60 hover:bg-white/15 hover:shadow-[0_0_20px_rgba(255,69,0,0.2)]"
                                                 }`}
                                         >
                                             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
@@ -367,7 +372,7 @@ export default function RegisterPage() {
                                             onClick={() => handleProceedToForm(selectedCategory)}
                                             className={`bg-gradient-to-r ${selectedCategory.color} text-white font-bold px-8`}
                                         >
-                                            Proceed to Register
+                                            Register
                                         </Button>
                                     </div>
                                 </div>
