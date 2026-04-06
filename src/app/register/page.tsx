@@ -140,7 +140,7 @@ export default function RegisterPage() {
                         />
                     </Link>
                     <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2">
-                        Event Registration
+                        Performer's Registration
                     </h1>
                 </motion.div>
 
