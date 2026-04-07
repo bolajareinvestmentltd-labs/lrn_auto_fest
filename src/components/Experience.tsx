@@ -6,8 +6,8 @@ const features = [
   { title: "Drift Championship", icon: Trophy },
   { title: "Drag Race", icon: Flag },
   { title: "Keke Race", icon: Zap },
-  { title: "Stunts", icon: Flame, desc: "High-adrenaline action and performances." },
-  { title: "Exhibition & lots more", icon: Sparkles, desc: "Showcases, displays, and endless surprises." }
+  { title: "Stunts", icon: Flame },
+  { title: "Exhibition & lots more", icon: Sparkles }
 ];
 
 export default function Experience() {

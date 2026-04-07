@@ -78,7 +78,7 @@ export default function Sponsors() {
                                     alt={sponsor.name}
                                     width={200}
                                     height={128}
-                                    className="w-full h-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                                    className="w-full h-full object-contain transition-all duration-300"
                                     onError={(e) => {
                                         // Fallback: show text if image fails to load
                                         e.currentTarget.style.display = "none";
@@ -96,9 +96,6 @@ export default function Sponsors() {
 
                 {/* Call to Action for More Sponsors */}
                 <div className="text-center mt-16">
-                    <p className="font-sans font-light text-white/50 text-sm tracking-widest uppercase mb-4">
-                        Interested in sponsoring the festival?
-                    </p>
                     <a
                         href="mailto:info@iaf2026.com"
                         className="inline-block px-8 py-3 border border-brand-blue text-brand-blue hover:bg-brand-blue hover:text-white rounded-full transition-all text-sm font-heading font-semibold uppercase tracking-widest"
