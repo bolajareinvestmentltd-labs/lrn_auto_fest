@@ -38,7 +38,7 @@ const Navbar = () => {
                 <Link href="/vip" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors px-3 py-2 text-sm tracking-widest uppercase">VIP</Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link href="/vendors" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors px-3 py-2 text-sm tracking-widest uppercase">Vendors</Link>
+                <button onClick={() => setShowComingSoonModal('vendors')} className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors px-3 py-2 text-sm tracking-widest uppercase">Vendors</button>
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <button onClick={() => setShowComingSoonModal('merch')} className="font-sans font-medium text-white/80 hover:text-brand-orange transition-colors px-3 py-2 text-sm tracking-widest uppercase">Merch</button>
@@ -87,7 +87,7 @@ const Navbar = () => {
                 <Link href="/register" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors text-sm tracking-widest uppercase">Performer</Link>
                 <button onClick={() => setShowComingSoonModal('tickets')} className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors text-sm tracking-widest uppercase text-left">Tickets</button>
                 <Link href="/vip" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors text-sm tracking-widest uppercase">VIP Packages</Link>
-                <Link href="/vendors" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors text-sm tracking-widest uppercase">Vendors</Link>
+                <button onClick={() => setShowComingSoonModal('vendors')} className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors text-sm tracking-widest uppercase text-left">Vendors</button>
                 <button onClick={() => setShowComingSoonModal('merch')} className="font-sans font-medium text-white/80 hover:text-brand-orange transition-colors text-sm tracking-widest uppercase text-left">Merchandise</button>
                 <button onClick={() => setShowComingSoonModal('logistics')} className="font-sans font-medium text-white/80 hover:text-blue-400 transition-colors text-sm tracking-widest uppercase text-left">🚌 Logistics</button>
                 <Link href="/gallery" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors text-sm tracking-widest uppercase">Gallery</Link>
@@ -141,6 +141,7 @@ const Navbar = () => {
                   {showComingSoonModal === 'tickets' && "🎟️ Ticket sales will be available soon!"}
                   {showComingSoonModal === 'merch' && "🛍️ Our merchandise store is coming soon!"}
                   {showComingSoonModal === 'logistics' && "🚌 Logistics information will be available soon!"}
+                  {showComingSoonModal === 'vendors' && "🏪 Vendor registration and booth options will be available soon!"}
                 </p>
                 <p className="text-brand-orange text-sm font-semibold mb-6">Stay tuned for updates!</p>
                 <Button
