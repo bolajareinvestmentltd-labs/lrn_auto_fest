@@ -5,7 +5,7 @@ const sponsors = [
     {
         name: "Kwara State Government",
         logo: "/sponsors/kwara-gov.jpeg",
-        instagram: "https://instagram.com/YOUR_LINK_HERE"
+        instagram: "https://www.instagram.com/followkwsg/"
     },
     {
         name: "Kwara State Sports Commission",
@@ -20,7 +20,7 @@ const sponsors = [
     {
         name: "AutoFest International",
         logo: "/sponsors/autofest.PNG",
-        instagram: "https://instagram.com/YOUR_LINK_HERE"
+        instagram: "https://www.instagram.com/autofest_intl/"
     },
     {
         name: "Kwara Bikers MC",
@@ -40,7 +40,7 @@ const sponsors = [
     {
         name: "Mohammed Lexus",
         logo: "/sponsors/mohammed-lexus.PNG",
-        instagram: "https://instagram.com/YOUR_LINK_HERE"
+        instagram: "https://www.instagram.com/mohammed_lexus?igsh=MXY1aGVmN3ZoMHFyYQ=="
     },
     {
         name: "Khaz Customs",
