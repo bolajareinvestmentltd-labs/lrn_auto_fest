@@ -118,17 +118,15 @@ export default function LogisticsPage() {
 
     return (
         <main className="min-h-screen bg-black">
-            {/* Hero Section */}
             <ComingSoon
                 title="Logistics"
                 description="Pickup locations and route information"
                 releaseDate="May 30, 2026"
             />
-            {/*
+            {/* COMMENTED OUT SECTION - Full logistics page code hidden
             <section className="relative pt-32 pb-16 overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-b from-brand-orange/10 to-transparent" />
                 <div className="container mx-auto px-4 relative z-10">
-                    Back Link
                     <Link
                         href="/"
                         className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8"

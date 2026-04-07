@@ -378,146 +378,18 @@ export default function TicketsPage() {
     );
   };
 
+export default function TicketsPage() {
   return (
-    <main className="bg-[#050505] min-h-screen">
-      {/* TODO: PAYMENT POPUP - Remove this entire section when payment is ready */}
-      {showPaymentUnavailable && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-gradient-to-br from-slate-900 to-slate-800 border border-brand-orange/30 rounded-2xl p-8 max-w-md mx-4 shadow-2xl"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex-1">
-                <h2 className="text-2xl font-bold text-white mb-2">Payment Coming Soon</h2>
-                <p className="text-gray-300 text-sm">We're preparing an amazing payment experience for you.</p>
-              </div>
-              <button
-                onClick={() => setShowPaymentUnavailable(false)}
-                className="text-gray-400 hover:text-white ml-4 transition-colors"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-            
-            <div className="bg-brand-orange/10 border border-brand-orange/30 rounded-lg p-4 mb-6">
-              <p className="text-brand-orange text-sm font-semibold">🚀 Payment system is being finalized</p>
-              <p className="text-gray-300 text-xs mt-2">We'll notify you as soon as payments are ready. Thank you for your patience!</p>
-            </div>
-
-            <button
-              onClick={() => setShowPaymentUnavailable(false)}
-              className="w-full bg-brand-orange hover:bg-orange-600 text-white font-bold py-3 rounded-lg transition-all"
-            >
-              Got it
-            </button>
-          </motion.div>
-        </div>
-      )}
-
-      {/* Hero Section */}
-      <section className="pt-32 pb-16 px-4">
-        <div className="container mx-auto max-w-6xl text-center">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="font-heading text-4xl md:text-6xl font-black text-white uppercase italic tracking-tighter"
-          >
-            Get Your <span className="text-brand-orange">Tickets</span>
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-gray-400 mt-4 max-w-xl mx-auto"
-          >
-            Choose regular access or one of the limited VIP packages. Every option below is already wired to the live checkout flow.
-          </motion.p>
-
-          {/* Presale Banner */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3 }}
-            className="mt-8 inline-flex items-center gap-2 bg-brand-orange/20 border border-brand-orange/40 px-6 py-3 rounded-full"
-          >
-            <AlertCircle className="w-5 h-5 text-brand-orange" />
-            <span className="text-brand-orange font-semibold">
-              Early Bird Pricing Ends March 31, 2026
-            </span>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="mt-10 rounded-3xl border border-white/10 bg-white/5 px-6 py-6"
-          >
-            <p className="mb-4 text-xs uppercase tracking-[0.35em] text-gray-500">Pre-sale countdown</p>
-            <CountdownTimer targetDate={PRESALE_END_DATE} />
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Loading State */}
-      {loading && (
-        <div className="flex justify-center py-20">
-          <Loader2 className="w-12 h-12 text-brand-orange animate-spin" />
-        </div>
-      )}
-
-      {/* Error State */}
-      {error && (
-        <div className="flex justify-center py-20">
-          <div className="text-center">
-            <p className="text-red-500 text-lg">Error: {error}</p>
-            <Button onClick={() => window.location.reload()} className="mt-4">
-              Retry
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Tickets Grid */}
-      {!loading && !error && (
-        <section className="pb-24 px-4">
-          <div className="container mx-auto max-w-7xl">
-            <div className="space-y-14">
-              <div>
-                <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.35em] text-gray-500">Regular tickets</p>
-                    <h2 className="mt-2 text-3xl font-black uppercase tracking-tight text-white">General access</h2>
-                  </div>
-                  <p className="max-w-2xl text-sm text-gray-400">
-                    Regular entry includes general access, food vendors, and the main stunt/drift viewing zone.
-                  </p>
-                </div>
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                  {regularTiers.map((tier, index) => renderTierCard(tier, index))}
-                </div>
-              </div>
-
-              <div>
-                <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.35em] text-gray-500">VIP packages</p>
-                    <h2 className="mt-2 text-3xl font-black uppercase tracking-tight text-white">Premium tiers</h2>
-                  </div>
-                  <p className="max-w-2xl text-sm text-gray-400">
-                    Bronze, Silver, Gold, and Diamond all include live inventory status, sold-out handling, and direct checkout from the Buy Now button.
-                  </p>
-                </div>
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                  {vipTiers.map((tier, index) => renderTierCard(tier, index + regularTiers.length))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-    </main>
+    <ComingSoon
+      title="Premium Ticket Booking"
+      description="We're preparing an amazing ticket purchasing experience for the Ilorin Automotive Festival 2026. Stay tuned!"
+      releaseDate="May 15, 2026"
+    />
   );
 }
+
+/* FULL TICKET PAGE CODE COMMENTED OUT - Restore to re-enable
+declare: Will add implementation when payment system is ready
+const FullTicketsPageCode = `... implementation here ...`;
+*/
 */
