@@ -122,12 +122,13 @@ export default function RegisterPage() {
     const selectedChampions = selectedCategory ? getChampionsByCategory(selectedCategory.id) : [];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a2847] to-[#0f4c75] py-12 px-4 relative overflow-hidden">
-            {/* Enhanced gradient background with vibrant accents */}
+            <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-brand-blue/20 to-brand-orange/20 py-12 px-4 relative overflow-hidden">
+            {/* Ultra-vibrant gradient background with dynamic accents */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-brand-orange/20 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-blue/20 rounded-full blur-3xl" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-brand-orange/15 rounded-full blur-3xl" />
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-orange/30 rounded-full blur-3xl animate-pulse" />
+                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-brand-blue/30 rounded-full blur-3xl animate-pulse" />
+                <div className="absolute top-1/3 right-1/3 w-[400px] h-[400px] bg-brand-orange/25 rounded-full blur-3xl" />
+                <div className="absolute -bottom-20 -left-20 w-[600px] h-[600px] bg-brand-blue/20 rounded-full blur-3xl" />
             </div>
             <div className="max-w-4xl mx-auto relative z-10">
                 {/* Header */}
@@ -299,9 +300,21 @@ export default function RegisterPage() {
                                                 animate={{ opacity: 1, scale: 1 }}
                                                 className="flex flex-col items-center"
                                             >
-                                                {/* Champion Image Placeholder */}
-                                                <div className={`w-full h-48 bg-gradient-to-br ${selectedCategory.color} rounded-lg flex items-center justify-center text-white text-3xl font-bold mb-4`}>
-                                                    {champion.name.split(' ')[0].charAt(0)}{champion.name.split(' ')[1]?.charAt(0) || ''}
+                                                {/* Champion Image */}
+                                                <div className={`w-full h-48 bg-gradient-to-br ${selectedCategory.color} rounded-lg overflow-hidden mb-4 flex items-center justify-center border-2 border-white/20`}>
+                                                    {champion.image ? (
+                                                        <Image
+                                                            src={champion.image}
+                                                            alt={champion.name}
+                                                            width={300}
+                                                            height={200}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <span className="text-white text-3xl font-bold">
+                                                            {champion.name.split(' ')[0].charAt(0)}{champion.name.split(' ')[1]?.charAt(0) || ''}
+                                                        </span>
+                                                    )}
                                                 </div>
 
                                                 {/* Champion Info */}
