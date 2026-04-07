@@ -228,13 +228,6 @@ export default function RegisterPage() {
                                                 </div>
                                             </div>
                                         </div>
-
-                                        {/* Past Champions Section - Hidden, shown in modal */}
-                                        {champions.length > 0 && (
-                                            <div className="text-center text-sm text-gray-400 mt-2">
-                                                Click to view {champions.length} past champions →
-                                            </div>
-                                        )}
                                     </motion.div>
                                 );
                             })}
