@@ -1,11 +1,5 @@
 "use client";
 
-// ========================================
-// COMING SOON DISPLAY
-// ========================================
-// To re-enable the full logistics page, uncomment the code below
-// and remove the ComingSoon import/render
-
 import ComingSoon from "@/components/ComingSoon";
 
 export default function LogisticsPage() {
@@ -18,17 +12,6 @@ export default function LogisticsPage() {
   );
 }
 
-/*
-// ========================================
-// ORIGINAL FULL LOGISTICS PAGE CODE
-// ========================================
-// Restore this section to re-enable full functionality
-
-"use client";
-
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";

@@ -1,11 +1,5 @@
 "use client";
 
-// ========================================
-// COMING SOON DISPLAY
-// ========================================
-// To re-enable the full tickets page, replace this entire file with the backup
-// or uncomment the code below and remove the ComingSoon import/render
-
 import ComingSoon from "@/components/ComingSoon";
 
 export default function TicketsPage() {
@@ -18,23 +12,6 @@ export default function TicketsPage() {
   );
 }
 
-/*
-// ========================================
-// ORIGINAL FULL TICKETS PAGE CODE
-// ========================================
-// Restore this section to re-enable full functionality
-
-"use client";
-
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Check, Loader2, Car, AlertCircle, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import CountdownTimer from "@/components/CountdownTimer";
-
-interface TicketTier {
-  id: string;
   ticketType: string;
   name: string;
   description: string;
@@ -391,5 +368,4 @@ export default function TicketsPage() {
 /* FULL TICKET PAGE CODE COMMENTED OUT - Restore to re-enable
 declare: Will add implementation when payment system is ready
 const FullTicketsPageCode = `... implementation here ...`;
-*/
 */
