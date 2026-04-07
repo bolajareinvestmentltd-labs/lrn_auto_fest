@@ -60,61 +60,51 @@ export default function Footer() {
 
                             <li>
 
-                                <Link href="/" className="text-white/60 hover:text-brand-blue transition-colors text-sm">
-
-                                    Home
-
-                                </Link>
-
-                            </li>
-
-                            <li>
-
-                                <Link href="/register" className="text-white/60 hover:text-brand-blue transition-colors text-sm">
+                                <span className="text-white/60 text-sm">
 
                                     Perform
 
-                                </Link>
+                                </span>
 
                             </li>
 
                             <li>
 
-                                <Link href="/tickets" className="text-white/60 hover:text-brand-blue transition-colors text-sm">
+                                <span className="text-white/60 text-sm">
 
                                     Tickets
 
-                                </Link>
+                                </span>
 
                             </li>
 
                             <li>
 
-                                <Link href="/logistics" className="text-white/60 hover:text-brand-blue transition-colors text-sm">
+                                <span className="text-white/60 text-sm">
 
                                     Logistics
 
-                                </Link>
+                                </span>
 
                             </li>
 
                             <li>
 
-                                <Link href="/merchandise" className="text-white/60 hover:text-brand-blue transition-colors text-sm">
+                                <span className="text-white/60 text-sm">
 
                                     Merchandise
 
-                                </Link>
+                                </span>
 
                             </li>
 
                             <li>
 
-                                <Link href="/vendors" className="text-white/60 hover:text-brand-blue transition-colors text-sm">
+                                <span className="text-white/60 text-sm">
 
                                     Vendors
 
-                                </Link>
+                                </span>
 
                             </li>
 
