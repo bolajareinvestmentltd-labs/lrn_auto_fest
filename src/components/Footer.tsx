@@ -62,7 +62,7 @@ export default function Footer() {
 
                                 <span className="text-white/60 text-sm">
 
-                                    Perform
+                                    Performer
 
                                 </span>
 
@@ -72,7 +72,7 @@ export default function Footer() {
 
                                 <span className="text-white/60 text-sm">
 
-                                    Tickets
+                                    Buy Get Ticket
 
                                 </span>
 
@@ -82,17 +82,7 @@ export default function Footer() {
 
                                 <span className="text-white/60 text-sm">
 
-                                    Logistics
-
-                                </span>
-
-                            </li>
-
-                            <li>
-
-                                <span className="text-white/60 text-sm">
-
-                                    Merchandise
+                                    Get Merch
 
                                 </span>
 
