@@ -50,19 +50,9 @@ export default function Footer() {
 
                             <li>
 
-                                <Link href="/" className="text-white/60 hover:text-brand-blue transition-colors text-sm">
-
-                                    Home
-
-                                </Link>
-
-                            </li>
-
-                            <li>
-
                                 <span className="text-white/60 text-sm">
 
-                                    Performer
+                                    Register
 
                                 </span>
 
@@ -72,7 +62,7 @@ export default function Footer() {
 
                                 <span className="text-white/60 text-sm">
 
-                                    Buy Get Ticket
+                                    Get tickets
 
                                 </span>
 
@@ -82,7 +72,27 @@ export default function Footer() {
 
                                 <span className="text-white/60 text-sm">
 
-                                    Get Merch
+                                    Get merch
+
+                                </span>
+
+                            </li>
+
+                            <li>
+
+                                <span className="text-white/60 text-sm">
+
+                                    Vendors
+
+                                </span>
+
+                            </li>
+
+                            <li>
+
+                                <span className="text-white/60 text-sm">
+
+                                    Logistics
 
                                 </span>
 
