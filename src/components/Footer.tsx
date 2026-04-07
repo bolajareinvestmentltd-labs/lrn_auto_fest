@@ -60,7 +60,17 @@ export default function Footer() {
 
                             <li>
 
-                                <Link href="/perform" className="text-white/60 hover:text-brand-blue transition-colors text-sm">
+                                <Link href="/" className="text-white/60 hover:text-brand-blue transition-colors text-sm">
+
+                                    Home
+
+                                </Link>
+
+                            </li>
+
+                            <li>
+
+                                <Link href="/register" className="text-white/60 hover:text-brand-blue transition-colors text-sm">
 
                                     Perform
 
@@ -72,7 +82,27 @@ export default function Footer() {
 
                                 <Link href="/tickets" className="text-white/60 hover:text-brand-blue transition-colors text-sm">
 
-                                    Get Tickets
+                                    Tickets
+
+                                </Link>
+
+                            </li>
+
+                            <li>
+
+                                <Link href="/logistics" className="text-white/60 hover:text-brand-blue transition-colors text-sm">
+
+                                    Logistics
+
+                                </Link>
+
+                            </li>
+
+                            <li>
+
+                                <Link href="/merchandise" className="text-white/60 hover:text-brand-blue transition-colors text-sm">
+
+                                    Merchandise
 
                                 </Link>
 

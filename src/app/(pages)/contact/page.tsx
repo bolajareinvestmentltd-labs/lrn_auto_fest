@@ -86,21 +86,21 @@ export default function ContactPage() {
               <ContactCard
                 icon={<Mail className="w-6 h-6" />}
                 title="Email"
-                value={process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'info@ilorinautofest.com'}
-                href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'info@ilorinautofest.com'}`}
+                value="contact@ilorinautomotivefestival.com.ng"
+                href="mailto:contact@ilorinautomotivefestival.com.ng"
                 color="brand-blue"
               />
               <ContactCard
                 icon={<Instagram className="w-6 h-6" />}
                 title="Instagram"
-                value="@ilorinautofest"
-                href="https://instagram.com/ilorinautofest"
+                value="@ilorin_carshow"
+                href="https://www.instagram.com/ilorin_carshow?igsh=Y29uNmZ1ODQzbXJ6"
                 color="pink-500"
               />
               <ContactCard
                 icon={<MapPin className="w-6 h-6" />}
                 title="Location"
-                value="Ilorin, Kwara State"
+                value="Northern Nigeria"
                 href="https://maps.google.com/?q=Ilorin+Kwara+State+Nigeria"
                 color="purple-500"
               />
