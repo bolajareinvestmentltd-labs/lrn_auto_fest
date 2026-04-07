@@ -128,7 +128,7 @@ export default function LogisticsPage() {
             <section className="relative pt-32 pb-16 overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-b from-brand-orange/10 to-transparent" />
                 <div className="container mx-auto px-4 relative z-10">
-                    {/* Back Link */}
+                    Back Link
                     <Link
                         href="/"
                         className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8"
@@ -137,7 +137,7 @@ export default function LogisticsPage() {
                         Back to Home
                     </Link>
 
-                    {/* Logo */}
+                    Logo
                     <div className="flex justify-center mb-8">
                         <Image
                             src="/images/logo.png"
@@ -148,7 +148,7 @@ export default function LogisticsPage() {
                         />
                     </div>
 
-                    {/* Title */}
+                    Title
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -172,6 +172,7 @@ export default function LogisticsPage() {
                     </motion.div>
                 </div>
             </section>
+            */}
 
             {/* Special Offer Banner */}
             <section className="py-6 bg-gradient-to-r from-green-500/20 via-green-500/10 to-green-500/20 border-y border-green-500/30">
