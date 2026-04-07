@@ -208,9 +208,6 @@ export default function RegisterPage() {
                                                             {category.description}
                                                         </p>
                                                     )}
-                                                    <p className="text-xs text-gray-500">
-                                                        Contact: <a href={`mailto:${category.email}`} className="text-brand-blue hover:underline">{category.email}</a>
-                                                    </p>
                                                 </div>
                                                 <div className="w-full sm:w-auto">
                                                     <Button
