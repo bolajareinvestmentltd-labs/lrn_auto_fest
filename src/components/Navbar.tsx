@@ -15,15 +15,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 const Navbar = () => {
   const [showComingSoonModal, setShowComingSoonModal] = useState<string | null>(null);
 
+  const STORE_URL = "https://cusecho.store/";
+
   return (
     <>
       <nav className="fixed top-0 w-full z-50 backdrop-blur-md bg-black/80 border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-20">
-          {/* Logo - Left Side */}
-          <Link href="/" className="flex-shrink-0 flex items-center hover:opacity-80 transition-opacity" aria-label="IAF 2026 Home">
+          
+          {/* Logo */}
+          <Link href="/" className="flex-shrink-0 flex items-center hover:opacity-80 transition-opacity">
             <Image
               src="/images/logo.png"
-              alt="Ilorin Automotive Festival"
+              alt="IAF 2026"
               width={60}
               height={60}
               priority
@@ -39,7 +42,7 @@ const Navbar = () => {
                   <Link href="/register" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors px-3 py-2 text-sm tracking-widest uppercase">Performer</Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                  <button onClick={() => setShowComingSoonModal('tickets')} className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors px-3 py-2 text-sm tracking-widest uppercase">Tickets</button>
+                  <a href={STORE_URL} target="_blank" rel="noopener noreferrer" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors px-3 py-2 text-sm tracking-widest uppercase">Tickets/Merch</a>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                   <Link href="/vip" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors px-3 py-2 text-sm tracking-widest uppercase">VIP</Link>
@@ -48,16 +51,10 @@ const Navbar = () => {
                   <Link href="/vendors" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors px-3 py-2 text-sm tracking-widest uppercase">Vendors</Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                  <button onClick={() => setShowComingSoonModal('merch')} className="font-sans font-medium text-white/80 hover:text-brand-orange transition-colors px-3 py-2 text-sm tracking-widest uppercase">Merch</button>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
                   <button onClick={() => setShowComingSoonModal('logistics')} className="font-sans font-medium text-white/80 hover:text-blue-400 transition-colors px-3 py-2 text-sm tracking-widest uppercase">Logistics</button>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                   <Link href="/gallery" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors px-3 py-2 text-sm tracking-widest uppercase">Gallery</Link>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <Link href="/map" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors px-3 py-2 text-sm tracking-widest uppercase">Map</Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                   <Link href="/live" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors px-3 py-2 text-sm tracking-widest uppercase flex items-center gap-1">
@@ -68,55 +65,35 @@ const Navbar = () => {
                     Live
                   </Link>
                 </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <Link href="/faq" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors px-3 py-2 text-sm tracking-widest uppercase">FAQ</Link>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <Link href="/contact" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors px-3 py-2 text-sm tracking-widest uppercase">Contact</Link>
-                </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
           </div>
 
-          {/* Buy Tickets Button - Right Side */}
+          {/* Action Button - Right Side */}
           <div className="hidden md:block">
-            <Button onClick={() => setShowComingSoonModal('tickets')} className="bg-brand-orange hover:bg-orange-600 text-white font-sans font-semibold text-xs uppercase tracking-widest px-5">Get Tickets</Button>
+            <Button asChild className="bg-brand-orange hover:bg-orange-600 text-white font-sans font-semibold text-xs uppercase tracking-widest px-5">
+              <a href={STORE_URL} target="_blank" rel="noopener noreferrer">Get Tickets/Merch</a>
+            </Button>
           </div>
 
           {/* Mobile Navigation */}
           <div className="md:hidden ml-auto">
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" className="text-white text-2xl p-0 h-auto w-auto" aria-label="Open menu">☰</Button>
+                <Button variant="ghost" className="text-white text-2xl p-0">☰</Button>
               </SheetTrigger>
               <SheetContent className="bg-[#050505] text-white border-l border-white/10">
                 <nav className="flex flex-col space-y-4 mt-8">
-                  <Link href="/register" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors text-sm tracking-widest uppercase">Performer</Link>
-                  <button onClick={() => setShowComingSoonModal('tickets')} className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors text-sm tracking-widest uppercase text-left">Tickets</button>
-                  <Link href="/vip" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors text-sm tracking-widest uppercase">VIP Packages</Link>
-                  <Link href="/vendors" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors text-sm tracking-widest uppercase">Vendors</Link>
-                  <button onClick={() => setShowComingSoonModal('merch')} className="font-sans font-medium text-white/80 hover:text-brand-orange transition-colors text-sm tracking-widest uppercase text-left">Merchandise</button>
-                  <button onClick={() => setShowComingSoonModal('logistics')} className="font-sans font-medium text-white/80 hover:text-blue-400 transition-colors text-sm tracking-widest uppercase text-left">🚌 Logistics</button>
-                  <Link href="/gallery" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors text-sm tracking-widest uppercase">Gallery</Link>
-                  <Link href="/map" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors text-sm tracking-widest uppercase">Event Map</Link>
-                  <Link href="/live" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors text-sm tracking-widest uppercase flex items-center gap-2">
-                    <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                    </span>
-                    Live Dashboard
-                  </Link>
-                  <Link href="/faq" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors text-sm tracking-widest uppercase">FAQ</Link>
-                  <Link href="/contact" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors text-sm tracking-widest uppercase">Contact</Link>
+                  <Link href="/register" className="text-sm tracking-widest uppercase">Performer</Link>
+                  <a href={STORE_URL} target="_blank" rel="noopener noreferrer" className="text-sm tracking-widest uppercase">🎟️ Tickets/Merch</a>
+                  <Link href="/vip" className="text-sm tracking-widest uppercase">VIP Packages</Link>
+                  <Link href="/vendors" className="text-sm tracking-widest uppercase">Vendors</Link>
+                  <button onClick={() => setShowComingSoonModal('logistics')} className="text-sm tracking-widest uppercase text-left">🚌 Logistics</button>
+                  <Link href="/gallery" className="text-sm tracking-widest uppercase">Gallery</Link>
+                  <Link href="/live" className="text-sm tracking-widest uppercase flex items-center gap-2">Live Dashboard</Link>
                   <hr className="border-white/20 my-2" />
-                  <Link href="/gate" className="font-sans font-medium text-amber-400 hover:text-amber-300 transition-colors text-sm tracking-widest uppercase flex items-center gap-2">
-                    🎫 Gate Check-In (Staff)
-                  </Link>
-                  <Link href="/admin" className="font-sans font-medium text-amber-400 hover:text-amber-300 transition-colors text-sm tracking-widest uppercase flex items-center gap-2">
-                    ⚙️ Admin Dashboard
-                  </Link>
-                  <Button onClick={() => setShowComingSoonModal('tickets')} className="w-full bg-brand-orange hover:bg-orange-600 text-white font-sans font-semibold text-xs uppercase tracking-widest mt-6">
-                    Get Tickets
+                  <Button asChild className="w-full bg-brand-orange text-white text-xs uppercase tracking-widest">
+                    <a href={STORE_URL} target="_blank" rel="noopener noreferrer">Get Tickets/Merch</a>
                   </Button>
                 </nav>
               </SheetContent>
@@ -125,7 +102,7 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Coming Soon Modal */}
+      {/* Coming Soon Modal (Now only for Logistics) */}
       <AnimatePresence>
         {showComingSoonModal && (
           <motion.div
@@ -140,25 +117,12 @@ const Navbar = () => {
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] border-2 border-brand-orange/50 rounded-2xl p-8 max-w-md w-full shadow-2xl"
+              className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] border-2 border-brand-orange/50 rounded-2xl p-8 max-w-md w-full shadow-2xl text-center"
             >
-              <div className="text-center">
-                <div className="text-5xl mb-4">⏰</div>
-                <h3 className="text-2xl font-bold text-white mb-2 uppercase tracking-widest">Coming Soon!</h3>
-                <p className="text-gray-300 mb-6">
-                  {showComingSoonModal === 'tickets' && "🎟️ Ticket sales will be available soon!"}
-                  {showComingSoonModal === 'merch' && "🛍️ Our merchandise store is coming soon!"}
-                  {showComingSoonModal === 'logistics' && "🚌 Logistics information will be available soon!"}
-                  {showComingSoonModal === 'vendors' && "🏪 Vendor registration and booth options will be available soon!"}
-                </p>
-                <p className="text-brand-orange text-sm font-semibold mb-6">Stay tuned for updates!</p>
-                <Button
-                  onClick={() => setShowComingSoonModal(null)}
-                  className="bg-gradient-to-r from-brand-orange to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-6 py-2 rounded-full"
-                >
-                  Got It
-                </Button>
-              </div>
+              <div className="text-5xl mb-4">⏰</div>
+              <h3 className="text-2xl font-bold text-white mb-2 uppercase tracking-widest">Coming Soon!</h3>
+              <p className="text-gray-300 mb-6">🚌 Logistics information and shuttle routes will be available soon!</p>
+              <Button onClick={() => setShowComingSoonModal(null)} className="bg-brand-orange text-white rounded-full">Got It</Button>
             </motion.div>
           </motion.div>
         )}
