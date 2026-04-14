@@ -11,70 +11,49 @@ import Image from "next/image";
 const EVENT_DATE = "2026-05-30T09:00:00";
 const PRESALE_END_DATE = "2026-03-31T23:59:59";
 const EVENT_VENUE = "Metropolitan Square, Asadam Road, Ilorin, Kwara State";
-const VENUE_COORDS = "8.4799,4.5418"; // Ilorin coordinates
+const VENUE_COORDS = "8.4799,4.5418";
+const STORE_URL = "https://cusecho.store/";
 
 export default function Hero() {
-  // Check if presale is still active
   const isPresaleActive = new Date() < new Date(PRESALE_END_DATE);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [titleIndex, setTitleIndex] = useState(0);
   const [selectedVideo, setSelectedVideo] = useState<string>("");
   const [showComingSoonModal, setShowComingSoonModal] = useState<string | null>(null);
 
-  // Randomly select between two hero videos - professional approach
   useEffect(() => {
-    const videos = [
-      "/videos/hero-video-primary.mp4",
-      "/videos/hero-video-secondary.mp4"
-    ];
+    const videos = ["/videos/hero-video-primary.mp4", "/videos/hero-video-secondary.mp4"];
     const randomVideo = videos[Math.floor(Math.random() * videos.length)];
     setSelectedVideo(randomVideo);
   }, []);
 
-  // Cycle through title animation - sequential reveal
   useEffect(() => {
-    // Start from -1 (nothing visible)
     setTitleIndex(-1);
-
-    // Reveal each part with delays
-    const timer1 = setTimeout(() => setTitleIndex(0), 500);   // Show ILORIN
-    const timer2 = setTimeout(() => setTitleIndex(1), 1200);  // Show CAR SHOW
-    const timer3 = setTimeout(() => setTitleIndex(2), 1900);  // Show 3.0
-    const timer4 = setTimeout(() => setTitleIndex(3), 2600);  // All complete
-
+    const timer1 = setTimeout(() => setTitleIndex(0), 500);
+    const timer2 = setTimeout(() => setTitleIndex(1), 1200);
+    const timer3 = setTimeout(() => setTitleIndex(2), 1900);
+    const timer4 = setTimeout(() => setTitleIndex(3), 2600);
     return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-      clearTimeout(timer3);
-      clearTimeout(timer4);
+      [timer1, timer2, timer3, timer4].forEach(clearTimeout);
     };
   }, []);
 
-  // Auto-play video with sound on page load
   useEffect(() => {
-    const playVideoWithSound = async () => {
+    const playVideo = async () => {
       if (videoRef.current) {
-        videoRef.current.muted = false;
         try {
-          await videoRef.current.play();
-        } catch {
-          // If autoplay with sound fails, try muted first then unmute
           videoRef.current.muted = true;
           await videoRef.current.play();
-          setTimeout(() => {
-            if (videoRef.current) {
-              videoRef.current.muted = false;
-            }
-          }, 100);
+        } catch (err) {
+          console.log("Autoplay blocked");
         }
       }
     };
-    playVideoWithSound();
+    playVideo();
   }, []);
 
   return (
-    <section className="relative min-h-screen w-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-900">
-      {/* 1. VIDEO BACKGROUND with fallback */}
+    <section className="relative min-h-screen w-full overflow-hidden flex items-center justify-center bg-black">
       <div className="absolute inset-0 bg-[url('/images/hero-fallback.svg')] bg-cover bg-center z-0" />
       <video
         key={selectedVideo}
@@ -82,6 +61,7 @@ export default function Hero() {
         autoPlay
         loop
         playsInline
+        muted
         className="absolute top-0 left-0 w-full h-full object-cover z-[1] opacity-60"
       >
         <source src={selectedVideo} type="video/mp4" />
@@ -89,294 +69,85 @@ export default function Hero() {
 
       <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-black/50 to-black/30 z-10" />
 
-      {/* 3. EARLY BIRD BANNER */}
       {isPresaleActive && (
         <motion.div
           initial={{ y: -100 }}
           animate={{ y: 0 }}
-          className="absolute top-0 left-0 right-0 z-30 bg-gradient-to-r from-brand-orange via-orange-500 to-brand-orange py-2 text-center"
+          className="absolute top-0 left-0 right-0 z-30 bg-brand-orange py-2 text-center"
         >
-          <p className="font-sans font-semibold text-white text-xs sm:text-sm md:text-base tracking-widest uppercase">
+          <p className="font-sans font-semibold text-white text-xs tracking-widest uppercase">
             🎟️ EARLY BIRD ENDS MARCH 31, 2026 — Prices Increase April 1st!
           </p>
         </motion.div>
       )}
 
-      {/* 4. CONTENT */}
-      <div className="relative z-20 text-center px-4 max-w-5xl mx-auto mt-16 md:mt-20">
-        {/* BIG LOGO AT TOP */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6 }}
-          className="mb-1"
-        >
-          <Image
-            src="/images/logo.png"
-            alt="Ilorin Car Show 3.0 Logo"
-            width={260}
-            height={260}
-            priority
-            className="mx-auto h-48 w-48 sm:h-56 sm:w-56 md:h-64 md:w-64 lg:h-72 lg:w-72 object-contain"
-          />
+      <div className="relative z-20 text-center px-4 max-w-5xl mx-auto mt-16">
+        <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="mb-1">
+          <Image src="/images/logo.png" alt="IAF 2026" width={260} height={260} priority className="mx-auto h-48 w-48 sm:h-64 sm:w-64 lg:h-72 lg:w-72 object-contain" />
         </motion.div>
 
-        {/* PRESENTS text - cursive */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="font-accent text-white/70 text-lg sm:text-2xl md:text-3xl mb-4 italic -mt-1 tracking-widest"
-        >
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-accent text-white/70 text-lg mb-4 italic tracking-widest">
           Presents
         </motion.p>
 
-        {/* Animated Title - ILORIN CAR SHOW 3.0 */}
         <div className="font-heading font-black italic text-fluid-hero text-white uppercase">
           <AnimatePresence>
-            {titleIndex >= 0 && (
-              <motion.span
-                key="ilorin"
-                initial={{ opacity: 0, scale: 0.3, rotateX: -90 }}
-                animate={{ opacity: 1, scale: 1, rotateX: 0 }}
-                transition={{
-                  type: "spring",
-                  stiffness: 200,
-                  damping: 15,
-                  duration: 0.6
-                }}
-                className="inline-block"
-              >
-                Ilorin{" "}
-              </motion.span>
-            )}
-          </AnimatePresence>
-          <AnimatePresence>
-            {titleIndex >= 1 && (
-              <motion.span
-                key="carshow"
-                initial={{ opacity: 0, scale: 0.3, y: 50 }}
-                animate={{
-                  opacity: 1,
-                  scale: 1,
-                  y: 0,
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 150,
-                  damping: 12
-                }}
-                className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-brand-orange inline-block"
-              >
-                Car Show
-              </motion.span>
-            )}
-          </AnimatePresence>
-          <br />
-          <AnimatePresence>
-            {titleIndex >= 2 && (
-              <motion.span
-                key="3.0"
-                initial={{ opacity: 0, scale: 2, rotate: -10 }}
-                animate={{
-                  opacity: 1,
-                  scale: 1,
-                  rotate: 0,
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 10
-                }}
-                className="inline-block"
-              >
-                3.0
-              </motion.span>
-            )}
+            {titleIndex >= 0 && <motion.span key="i" initial={{ opacity: 0, scale: 0.3 }} animate={{ opacity: 1, scale: 1 }}>Ilorin </motion.span>}
+            {titleIndex >= 1 && <motion.span key="c" initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-brand-orange">Car Show </motion.span>}
+            {titleIndex >= 2 && <motion.span key="3" initial={{ opacity: 0, scale: 2 }} animate={{ opacity: 1, scale: 1 }}>3.0</motion.span>}
           </AnimatePresence>
         </div>
 
-        {/* The Reborn Edition */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="font-accent mt-2 text-brand-orange text-base sm:text-xl md:text-2xl italic tracking-wider"
-        >
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-accent mt-2 text-brand-orange text-base sm:text-2xl italic">
           [The Reborn Edition]
         </motion.p>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="mt-4 mx-auto max-w-4xl"
-        >
-          {/* Icon-based event categories - like the flyer design */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6">
-            {/* Drift Championship */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="flex flex-col items-center"
-            >
-              <div className="p-3 rounded-full bg-blue-500/20 mb-2">
-                <Zap className="w-6 h-6 md:w-8 md:h-8 text-blue-400" />
-              </div>
-              <p className="text-white/80 text-xs md:text-sm font-semibold uppercase tracking-widest">Drift</p>
-            </motion.div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 mb-6">
+          <div className="flex flex-col items-center"><Zap className="w-6 h-6 text-blue-400 mb-2" /><p className="text-white/80 text-xs uppercase font-semibold">Drift</p></div>
+          <div className="flex flex-col items-center"><Trophy className="w-6 h-6 text-yellow-400 mb-2" /><p className="text-white/80 text-xs uppercase font-semibold">Keke Race</p></div>
+          <div className="flex flex-col items-center"><Flame className="w-6 h-6 text-red-400 mb-2" /><p className="text-white/80 text-xs uppercase font-semibold">Drag Race</p></div>
+          <div className="flex flex-col items-center"><Music className="w-6 h-6 text-purple-400 mb-2" /><p className="text-white/80 text-xs uppercase font-semibold">Stunts</p></div>
+        </div>
 
-            {/* Keke Race */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.55 }}
-              className="flex flex-col items-center"
-            >
-              <div className="p-3 rounded-full bg-yellow-500/20 mb-2">
-                <Trophy className="w-6 h-6 md:w-8 md:h-8 text-yellow-400" />
-              </div>
-              <p className="text-white/80 text-xs md:text-sm font-semibold uppercase tracking-widest">Keke Race</p>
-            </motion.div>
-
-            {/* Drag Race */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="flex flex-col items-center"
-            >
-              <div className="p-3 rounded-full bg-red-500/20 mb-2">
-                <Flame className="w-6 h-6 md:w-8 md:h-8 text-red-400" />
-              </div>
-              <p className="text-white/80 text-xs md:text-sm font-semibold uppercase tracking-widest">Drag Race</p>
-            </motion.div>
-
-            {/* Stunts & More */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.65 }}
-              className="flex flex-col items-center"
-            >
-              <div className="p-3 rounded-full bg-purple-500/20 mb-2">
-                <Music className="w-6 h-6 md:w-8 md:h-8 text-purple-400" />
-              </div>
-              <p className="text-white/80 text-xs md:text-sm font-semibold uppercase tracking-widest">Stunts & More</p>
-            </motion.div>
-          </div>
-
-          <p className="font-sans font-light text-white/70 text-sm sm:text-lg md:text-xl tracking-wide">
-            The Biggest Auto Experience in Northern Nigeria
-          </p>
+        <motion.div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center items-center text-white/80 font-semibold">
+          <div className="flex items-center gap-2"><Calendar className="w-5 h-5 text-brand-orange" /><span>May 30, 2026</span></div>
+          <span className="hidden sm:block opacity-40">|</span>
+          <div className="flex items-center gap-2"><MapPin className="w-5 h-5 text-brand-blue" /><span className="font-light">{EVENT_VENUE}</span></div>
         </motion.div>
 
-        {/* Event Date & Venue */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="mt-6 flex flex-col sm:flex-row gap-4 justify-center items-center text-white/80"
-        >
-          <a
-            href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Ilorin%20Car%20Show%203.0%20-%20The%20Reborn%20Edition&dates=20260530T080000Z/20260530T200000Z&details=The%20Biggest%20Auto%20Experience%20in%20Northern%20Nigeria&location=Metropolitan%20Square%2C%20Asadam%20Road%2C%20Ilorin"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 hover:text-brand-orange transition-colors cursor-pointer group"
-          >
-            <Calendar className="w-5 h-5 text-brand-orange group-hover:scale-110 transition-transform" />
-            <span className="font-sans text-sm md:text-base font-semibold tracking-wide group-hover:underline">May 30, 2026</span>
-            <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </a>
-          <span className="hidden sm:block text-white/40">|</span>
-          <a
-            href={`https://www.google.com/maps/dir/?api=1&destination=${VENUE_COORDS}&travelmode=driving`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 hover:text-brand-blue transition-colors cursor-pointer group"
-          >
-            <MapPin className="w-5 h-5 text-brand-blue group-hover:scale-110 transition-transform" />
-            <span className="font-sans text-sm md:text-base font-light tracking-wide group-hover:underline">{EVENT_VENUE}</span>
-            <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </a>
-        </motion.div>
-
-        {/* Countdown Timer */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.6 }}
-          className="mt-8"
-        >
-          <p className="font-sans font-medium text-white/50 text-[10px] sm:text-xs uppercase tracking-[0.35em] mb-3">Countdown to Event</p>
+        <div className="mt-8">
+          <p className="text-white/50 text-[10px] uppercase tracking-[0.35em] mb-3">Countdown to Event</p>
           <CountdownTimer targetDate={EVENT_DATE} />
-        </motion.div>
-        
-{/* CTA Buttons - Row 1 */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className="mt-10 flex flex-wrap gap-3 justify-center items-center"
-        >
-          <Link href="/register">
-            <Button size="lg" className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-green-900/20">
-              🎤 Register
-            </Button>
-          </Link>
-          <Button onClick={() => setShowComingSoonModal('tickets')} size="lg" className="bg-brand-orange hover:bg-orange-600 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-orange-900/20">
-            🎟️ Get Tickets
+        </div>
+
+        {/* CTA Buttons - Consolidated Row */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-10 flex flex-wrap gap-4 justify-center items-center">
+          <Button asChild size="lg" className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold px-8 py-6 rounded-full uppercase">
+            <Link href="/register">🎤 Register</Link>
           </Button>
-          <Button onClick={() => setShowComingSoonModal('merch')} size="lg" className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-purple-900/20">
-            🛍️ Get Merch
+
+          <Button asChild size="lg" className="bg-brand-orange hover:bg-orange-600 text-white font-bold px-8 py-6 rounded-full uppercase shadow-xl">
+            <a href={STORE_URL} target="_blank" rel="noopener noreferrer">🎟️ Get Tickets/Merch</a>
           </Button>
-          <Link href="/vendors">
-            <Button asChild size="lg" className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-blue-900/20">
-  <Link href="/vendors">
-    🏪 Vendors
-  </Link>
-</Button>
-          </Link>
-          <Button onClick={() => setShowComingSoonModal('logistics')} size="lg" className="bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-600 hover:to-indigo-600 text-white font-bold text-base px-6 py-5 rounded-full uppercase shadow-lg shadow-indigo-900/20">
+
+          <Button asChild size="lg" className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold px-8 py-6 rounded-full uppercase">
+            <Link href="/vendors">🏪 Vendors</Link>
+          </Button>
+
+          <Button variant="outline" onClick={() => setShowComingSoonModal('logistics')} size="lg" className="border-white/20 text-white hover:bg-white/10 px-8 py-6 rounded-full uppercase">
             🚌 Logistics
           </Button>
         </motion.div>
       </div>
 
-      {/* Coming Soon Modals */}
       <AnimatePresence>
         {showComingSoonModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-            onClick={() => setShowComingSoonModal(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] border-2 border-brand-orange/50 rounded-2xl p-8 max-w-md w-full shadow-2xl"
-            >
-              <div className="text-center">
-                <div className="text-5xl mb-4">⏰</div>
-                <h3 className="text-2xl font-bold text-white mb-2 uppercase tracking-widest">Coming Soon!</h3>
-                <p className="text-gray-300 mb-6">
-                  {showComingSoonModal === 'tickets' && "🎟️ Ticket sales will be available soon!"}
-                  {showComingSoonModal === 'merch' && "🛍️ Our merchandise store is coming soon!"}
-                  {showComingSoonModal === 'logistics' && "🚌 Logistics information will be available soon!"}
-                </p>
-                <p className="text-brand-orange text-sm font-semibold mb-6">Stay tuned for updates!</p>
-                <Button
-                  onClick={() => setShowComingSoonModal(null)}
-                  className="bg-gradient-to-r from-brand-orange to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-6 py-2 rounded-full"
-                >
-                  Got It
-                </Button>
-              </div>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" onClick={() => setShowComingSoonModal(null)}>
+            <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }} onClick={(e) => e.stopPropagation()} className="bg-gray-900 border border-brand-orange rounded-2xl p-8 max-w-md w-full text-center">
+              <div className="text-5xl mb-4">⏰</div>
+              <h3 className="text-2xl font-bold text-white mb-2 uppercase">Coming Soon!</h3>
+              <p className="text-gray-400 mb-6">Logistics information and shuttle routes will be available soon!</p>
+              <Button onClick={() => setShowComingSoonModal(null)} className="bg-brand-orange text-white w-full">Got It</Button>
             </motion.div>
           </motion.div>
         )}
