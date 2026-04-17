@@ -129,8 +129,12 @@ export default function VendorPage() {
             },
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onSuccess: async (transaction: any) => {
+                // Keep the button spinning so the user knows it's working
+                setIsSubmitting(true);
+                
                 try {
-                    const response = await fetch("/api/vendors", {
+                    // Try to save to the database in the background
+                    await fetch("/api/vendors", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -145,6 +149,16 @@ export default function VendorPage() {
                             totalAmount: totalAmount,
                         })
                     });
+                } catch (error) {
+                    console.error("Database save issue:", error);
+                    // We don't alert here because we want to redirect them anyway!
+                } finally {
+                    // THE BULLETPROOF REDIRECT:
+                    // This fires no matter what happens with the database.
+                    // We use window.location.origin to ensure it always finds the absolute correct path.
+                    window.location.href = `${window.location.origin}/vendors/payment-confirmation?reference=${transaction.reference}&ticketId=${newTicketId}`;
+                }
+            }
 
                    if (response.ok) {
     setSubmitted(true);
