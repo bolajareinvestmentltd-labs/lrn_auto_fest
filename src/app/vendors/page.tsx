@@ -25,6 +25,7 @@ export default function VendorPage() {
     const [submitted, setSubmitted] = useState(false);
     const [paystackLoaded, setPaystackLoaded] = useState(false);
     const [ticketId, setTicketId] = useState("");
+    const [paymentRef, setPaymentRef] = useState(""); // Track reference for the fallback button
     const [confirmedVendors, setConfirmedVendors] = useState(0);
     const [countLoading, setCountLoading] = useState(true);
 
@@ -123,14 +124,22 @@ export default function VendorPage() {
             currency: "NGN",
             onClose: () => {
                 setIsSubmitting(false);
-                alert("Payment cancelled. Your application was not submitted.");
+                alert("Payment window closed.");
             },
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onSuccess: async (transaction: any) => {
-                setIsSubmitting(true); // Keep the button spinning
-                
+                // 1. Instantly update UI so the user sees success
+                setPaymentRef(transaction.reference);
+                setTicketId(newTicketId);
+                setSubmitted(true);
+                setIsSubmitting(false);
+
+                // 2. IMPORTANT: Set your exact URL path here! 
+                // If your file is in 'src/app/vendors/payment-confirmation/page.tsx', change this to `/vendors/payment-confirmation`
+                const redirectUrl = `/vendor-payment-confirmation?reference=${transaction.reference}&ticketId=${newTicketId}`;
+
                 try {
-                    // Try to save to the database in the background
+                    // 3. Save to database
                     await fetch("/api/vendors", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -149,8 +158,10 @@ export default function VendorPage() {
                 } catch (error) {
                     console.error("Database save issue:", error);
                 } finally {
-                    // BULLETPROOF REDIRECT - Happens instantly after payment closes
-                    window.location.href = `/vendors/payment-confirmation?reference=${transaction.reference}&ticketId=${newTicketId}`;
+                    // 4. Wait 1.5 seconds for Paystack to close, then force redirect
+                    setTimeout(() => {
+                        window.location.href = redirectUrl;
+                    }, 1500);
                 }
             }
         });
@@ -264,8 +275,19 @@ export default function VendorPage() {
                             <div className="text-center space-y-6 py-8">
                                 <div className="text-5xl animate-bounce"><CheckCircle className="w-16 h-16 text-green-400 mx-auto" /></div>
                                 <div>
-                                    <p className="text-xl font-bold text-green-400 mb-2">✅ Application Approved!</p>
+                                    <p className="text-xl font-bold text-green-400 mb-2">✅ Payment Successful!</p>
                                     <p className="text-sm text-gray-300 mb-4">Redirecting you to your QR pass...</p>
+                                </div>
+                                
+                                {/* THE FAIL-SAFE BUTTON */}
+                                <div className="bg-brand-blue/10 border border-brand-blue/30 p-6 rounded-lg space-y-4">
+                                    <p className="text-sm text-gray-300">If you are not redirected automatically within 3 seconds, click the button below to view your Vendor Pass.</p>
+                                    <Button asChild className="w-full bg-brand-orange hover:bg-orange-600 text-white font-bold py-6 text-lg uppercase">
+                                        {/* CRITICAL: Update this URL if your folder name is different! */}
+                                        <a href={`/vendor-payment-confirmation?reference=${paymentRef}&ticketId=${ticketId}`}>
+                                            View My QR Pass Now
+                                        </a>
+                                    </Button>
                                 </div>
                             </div>
                         ) : (
