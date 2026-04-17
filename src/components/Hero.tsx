@@ -76,8 +76,11 @@ export default function Hero() {
         <source src={selectedVideo} type="video/mp4" />
       </video>
 
-      <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-black/50 to-black/30 z-10" />
-
+     <div 
+  onClick={toggleSound} 
+  className="absolute inset-0 bg-gradient-to-t from-[#050505] via-black/50 to-black/30 z-10 cursor-pointer" 
+  title="Tap anywhere to toggle sound"
+/>
       {isPresaleActive && (
         <motion.div
           initial={{ y: -100 }}
