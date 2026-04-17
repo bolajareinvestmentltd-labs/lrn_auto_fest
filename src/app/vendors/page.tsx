@@ -30,10 +30,8 @@ export default function VendorPage() {
 
     const slotsLeft = Math.max(MAX_VENDORS - confirmedVendors, 0);
 
-    // Get booking fee (no additional charges or VAT)
     const getTotal = () => VENDOR_BOOKING_FEE;
 
-    // Load Paystack script
     useEffect(() => {
         const script = document.createElement("script");
         script.src = "https://js.paystack.co/v1/inline.js";
@@ -108,7 +106,6 @@ export default function VendorPage() {
         const newTicketId = generateTicketId();
         const totalAmount = getTotal();
 
-        // Use environment variable for Paystack key
         const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
 
         if (!paystackKey) {
@@ -121,7 +118,7 @@ export default function VendorPage() {
         const handler = ((window as unknown) as Record<string, any>).PaystackPop.setup({
             key: paystackKey,
             email: formData.email,
-            amount: totalAmount * 100, // Paystack uses kobo (multiply by 100)
+            amount: totalAmount * 100,
             ref: newTicketId,
             currency: "NGN",
             onClose: () => {
@@ -131,7 +128,6 @@ export default function VendorPage() {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onSuccess: async (transaction: any) => {
                 try {
-                    // Save vendor application to database
                     const response = await fetch("/api/vendors", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -151,8 +147,8 @@ export default function VendorPage() {
                     if (response.ok) {
                         setSubmitted(true);
                         setTicketId(newTicketId);
-                        // Redirect to vendor payment confirmation page to show success with QR code
-                        window.location.href = `/vendor-payment-confirmation?reference=${transaction.reference}&ticketId=${newTicketId}`;
+                        // Redirect to vendor payment confirmation page
+                        window.location.href = `/vendors/payment-confirmation?reference=${transaction.reference}&ticketId=${newTicketId}`;
                     } else {
                         throw new Error("Failed to save vendor application");
                     }
