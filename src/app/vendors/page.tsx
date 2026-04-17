@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -31,6 +32,7 @@ export default function VendorPage() {
     const slotsLeft = Math.max(MAX_VENDORS - confirmedVendors, 0);
 
     const getTotal = () => VENDOR_BOOKING_FEE;
+    const router = useRouter();
 
     useEffect(() => {
         const script = document.createElement("script");
@@ -144,14 +146,15 @@ export default function VendorPage() {
                         })
                     });
 
-                    if (response.ok) {
-                        setSubmitted(true);
-                        setTicketId(newTicketId);
-                        // Redirect to vendor payment confirmation page
-                        window.location.href = `/vendors/payment-confirmation?reference=${transaction.reference}&ticketId=${newTicketId}`;
-                    } else {
-                        throw new Error("Failed to save vendor application");
-                    }
+                   if (response.ok) {
+    setSubmitted(true);
+    setTicketId(newTicketId);
+    
+    // Using Next.js router. CHANGE THIS URL IF YOUR FOLDER NAME IS DIFFERENT!
+    router.push(`/vendor-payment-confirmation?reference=${transaction.reference}&ticketId=${newTicketId}`);
+} else {
+    throw new Error("Failed to save vendor application");
+}
                 } catch (error) {
                     console.error("Error:", error);
                     alert("Payment verified but failed to save application. Please contact support.");
