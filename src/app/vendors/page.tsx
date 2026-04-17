@@ -1,5 +1,4 @@
 "use client";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -32,7 +31,6 @@ export default function VendorPage() {
     const slotsLeft = Math.max(MAX_VENDORS - confirmedVendors, 0);
 
     const getTotal = () => VENDOR_BOOKING_FEE;
-    const router = useRouter();
 
     useEffect(() => {
         const script = document.createElement("script");
@@ -129,8 +127,7 @@ export default function VendorPage() {
             },
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onSuccess: async (transaction: any) => {
-                // Keep the button spinning so the user knows it's working
-                setIsSubmitting(true);
+                setIsSubmitting(true); // Keep the button spinning
                 
                 try {
                     // Try to save to the database in the background
@@ -151,28 +148,9 @@ export default function VendorPage() {
                     });
                 } catch (error) {
                     console.error("Database save issue:", error);
-                    // We don't alert here because we want to redirect them anyway!
                 } finally {
-                    // THE BULLETPROOF REDIRECT:
-                    // This fires no matter what happens with the database.
-                    // We use window.location.origin to ensure it always finds the absolute correct path.
-                    window.location.href = `${window.location.origin}/vendors/payment-confirmation?reference=${transaction.reference}&ticketId=${newTicketId}`;
-                }
-            }
-
-                   if (response.ok) {
-    setSubmitted(true);
-    setTicketId(newTicketId);
-    
-    // Using Next.js router. CHANGE THIS URL IF YOUR FOLDER NAME IS DIFFERENT!
-    router.push(`/vendor-payment-confirmation?reference=${transaction.reference}&ticketId=${newTicketId}`);
-} else {
-    throw new Error("Failed to save vendor application");
-}
-                } catch (error) {
-                    console.error("Error:", error);
-                    alert("Payment verified but failed to save application. Please contact support.");
-                    setIsSubmitting(false);
+                    // BULLETPROOF REDIRECT - Happens instantly after payment closes
+                    window.location.href = `/vendors/payment-confirmation?reference=${transaction.reference}&ticketId=${newTicketId}`;
                 }
             }
         });
@@ -181,9 +159,7 @@ export default function VendorPage() {
 
     return (
         <main className="bg-[#050505] min-h-screen text-white">
-
             <div className="container mx-auto px-4 py-32">
-                
                 {/* Header */}
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <h1 className="font-heading text-4xl md:text-6xl font-black italic uppercase">
@@ -251,6 +227,7 @@ export default function VendorPage() {
                                             key={product.id}
                                             type="button"
                                             onClick={() => setFormData((prev) => ({ ...prev, productType: product.id }))}
+                                            disabled={isSubmitting || slotsLeft <= 0}
                                             className={`rounded-xl border px-4 py-4 text-left transition ${isSelected
                                                 ? "border-brand-orange bg-brand-orange/10 text-white"
                                                 : "border-white/10 bg-black/20 text-gray-400 hover:border-brand-orange/40"
@@ -288,23 +265,7 @@ export default function VendorPage() {
                                 <div className="text-5xl animate-bounce"><CheckCircle className="w-16 h-16 text-green-400 mx-auto" /></div>
                                 <div>
                                     <p className="text-xl font-bold text-green-400 mb-2">✅ Application Approved!</p>
-                                    <p className="text-sm text-gray-300 mb-4">Your payment has been verified, your vendor slot is confirmed, and the admin team has been notified.</p>
-                                </div>
-
-                                <div className="bg-brand-orange/10 border border-brand-orange/50 p-4 rounded-lg">
-                                    <p className="text-xs text-gray-500 uppercase mb-1">Your Confirmation Ticket ID</p>
-                                    <p className="text-lg font-mono font-bold text-brand-orange break-all">{ticketId}</p>
-                                    <p className="text-xs text-gray-400 mt-3">📧 Confirmation email sent to your registered email address with your vendor booking details.</p>
-                                </div>
-
-                                <div className="bg-blue-500/10 border border-brand-blue/30 p-3 rounded-lg text-left">
-                                    <p className="text-xs text-gray-400">💡 <strong>Next Steps:</strong></p>
-                                    <ul className="text-xs text-gray-400 mt-2 space-y-1">
-                                        <li>✓ Check your email for your payment receipt and confirmation</li>
-                                        <li>✓ Your vendor slot is confirmed for food, drink, or eatables sales</li>
-                                        <li>✓ Event setup details will be shared before the festival</li>
-                                        <li>✓ Admin will reach out if additional coordination is needed</li>
-                                    </ul>
+                                    <p className="text-sm text-gray-300 mb-4">Redirecting you to your QR pass...</p>
                                 </div>
                             </div>
                         ) : (
