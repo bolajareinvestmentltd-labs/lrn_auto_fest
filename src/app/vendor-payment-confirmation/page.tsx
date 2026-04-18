@@ -40,7 +40,7 @@ function VendorPaymentConfirmationContent() {
 
             try {
                 // Verify payment with our API
-                const response = await fetch("/api/paystack/verify", {
+                const response = await fetch("/api/paystack/verify-vendor", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ reference }),

@@ -63,8 +63,24 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
+    const ticketId = searchParams.get("ticketId");
     const status = searchParams.get("status") || "CONFIRMED";
 
+    // If ticketId is provided, fetch specific vendor
+    if (ticketId) {
+      const vendor = await prisma.vendor.findFirst({
+        where: { ticketId },
+        select: { id: true, ticketId: true, businessName: true, contactPerson: true, email: true, phone: true, boothType: true, productType: true, bookingFee: true, status: true, createdAt: true, paidAt: true }
+      });
+
+      if (vendor) {
+        return NextResponse.json({ success: true, ...vendor }, { status: 200 });
+      } else {
+        return NextResponse.json({ success: false, error: "Vendor not found" }, { status: 404 });
+      }
+    }
+
+    // Otherwise, fetch all vendors with given status
     const vendors = await prisma.vendor.findMany({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       where: { status: status as any },

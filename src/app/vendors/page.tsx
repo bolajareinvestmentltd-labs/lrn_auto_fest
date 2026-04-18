@@ -148,7 +148,7 @@ export default function VendorPage() {
                         setSubmitted(true);
                         setTicketId(newTicketId);
                         // Redirect to vendor payment confirmation page
-                        window.location.href = `/vendors/payment-confirmation?reference=${transaction.reference}&ticketId=${newTicketId}`;
+                        window.location.href = `/vendor-payment-confirmation?reference=${transaction.reference}&ticketId=${newTicketId}`;
                     } else {
                         throw new Error("Failed to save vendor application");
                     }
