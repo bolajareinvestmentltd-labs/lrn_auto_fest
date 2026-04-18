@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import CountdownTimer from "./CountdownTimer";
-import { Calendar, MapPin, ExternalLink, Zap, Flame, Trophy, Music, Volume2, VolumeX } from "lucide-react";
+import { Calendar, MapPin, ExternalLink, Zap, Flame, Trophy, Music } from "lucide-react";
 import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 
@@ -92,15 +92,6 @@ export default function Hero() {
           </p>
         </motion.div>
       )}
-
-      {/* Floating Sound Toggle Button */}
-      <button 
-        onClick={toggleSound}
-        className="absolute bottom-6 right-6 z-40 bg-black/40 hover:bg-brand-orange/80 border border-white/20 backdrop-blur-md p-4 rounded-full text-white transition-all duration-300 shadow-lg"
-        aria-label="Toggle video sound"
-      >
-        {isMuted ? <VolumeX className="w-6 h-6" /> : <Volume2 className="w-6 h-6" />}
-      </button>
 
       <div className="relative z-20 text-center px-4 max-w-5xl mx-auto mt-16">
         <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="mb-1">

@@ -147,8 +147,11 @@ export default function VendorPage() {
                     if (response.ok) {
                         setSubmitted(true);
                         setTicketId(newTicketId);
-                        // Redirect to vendor payment confirmation page
-                        window.location.href = `/vendor-payment-confirmation?reference=${transaction.reference}&ticketId=${newTicketId}`;
+                        // Ensure state is updated before redirect
+                        // Small delay to allow Paystack iframe to close cleanly on mobile
+                        setTimeout(() => {
+                            window.location.href = `/vendor-payment-confirmation?reference=${transaction.reference}&ticketId=${newTicketId}`;
+                        }, 300);
                     } else {
                         throw new Error("Failed to save vendor application");
                     }

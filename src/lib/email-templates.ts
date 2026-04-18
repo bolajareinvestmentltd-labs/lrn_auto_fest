@@ -79,13 +79,27 @@ export function generateTicketPurchaseEmail(data: TicketPurchaseData): string {
 
 // 2. VENDOR CONFIRMATION TEMPLATE
 export function generateVendorConfirmationEmail(data: VendorConfirmationData): string {
+    const formattedAmount = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(data.amount);
     return `<!DOCTYPE html><html><head><style>${BASE_STYLES}</style></head><body>
         <div class="container">
-            <div class="header"><h1>🎊 Vendor Approved!</h1></div>
+            <div class="header"><h1>🎊 Vendor Approved!</h1><p>Ilorin Automotive Festival 2026</p></div>
             <div class="content">
-                <p>Hi ${data.contactPerson}, your vendor spot for <strong>${data.businessName}</strong> is confirmed for IAF 2026!</p>
-                <div class="ticket-box"><p class="ticket-id">${data.ticketId}</p></div>
-                <p>Booth Type: ${data.boothType} | Category: ${data.productType}</p>
+                <p>Hi <strong>${data.contactPerson}</strong>, your vendor spot for <strong>${data.businessName}</strong> is confirmed for IAF 2026!</p>
+                <div class="ticket-box">
+                    <p style="margin: 0 0 10px 0; color: #999; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Your Vendor Ticket ID</p>
+                    <p class="ticket-id">${data.ticketId}</p>
+                </div>
+                <div class="qr-section">
+                    <p style="margin: 0 0 15px 0; color: #999; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Your Vendor Pass QR Code</p>
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${data.ticketId}" alt="Vendor QR Code" class="qr-code" />
+                </div>
+                <div class="details-grid">
+                    <div class="detail-item"><p style="margin: 0 0 5px 0; color: #999; font-size: 11px; text-transform: uppercase;">Business</p><p class="detail-value">${data.businessName}</p></div>
+                    <div class="detail-item"><p style="margin: 0 0 5px 0; color: #999; font-size: 11px; text-transform: uppercase;">Category</p><p class="detail-value" style="text-transform: capitalize;">${data.productType}</p></div>
+                    <div class="detail-item"><p style="margin: 0 0 5px 0; color: #999; font-size: 11px; text-transform: uppercase;">Booth Type</p><p class="detail-value">${data.boothType}</p></div>
+                    <div class="detail-item"><p style="margin: 0 0 5px 0; color: #999; font-size: 11px; text-transform: uppercase;">Amount</p><p class="detail-value">${formattedAmount}</p></div>
+                </div>
+                <p style="color: #999; font-size: 13px; margin-top: 20px; line-height: 1.6;">Your vendor booking is confirmed. You'll receive additional setup details and event logistics before May 30, 2026. If you have any questions, please don't hesitate to reach out.</p>
             </div>
             <div class="footer"><p>© 2026 Ilorin Automotive Festival</p></div>
         </div>
