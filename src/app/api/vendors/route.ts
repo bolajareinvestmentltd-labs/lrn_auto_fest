@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db"; // Ensure this path matches your Drizzle db export
+import { vendors } from "@/lib/schema"; // Ensure this path matches your Drizzle schema
+import { eq, ne, desc } from "drizzle-orm";
 import { generateVendorConfirmationEmail, generateAdminNotificationEmail, sendEmail } from "@/lib/email-templates";
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
@@ -25,11 +27,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Vendor booking fee must be ₦${VENDOR_BOOKING_FEE.toLocaleString()}` }, { status: 400 });
     }
 
-    const currentVendorCount = await prisma.vendor.count({
-      where: { NOT: { status: "CANCELLED" } }
-    });
-
-    if (currentVendorCount >= MAX_VENDORS) {
+    // Drizzle ORM: Count current confirmed vendors
+    const currentVendorsList = await db.select().from(vendors).where(ne(vendors.status, "CANCELLED"));
+    if (currentVendorsList.length >= MAX_VENDORS) {
       return NextResponse.json({ error: "Vendor booking limit reached" }, { status: 409 });
     }
 
@@ -38,14 +38,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Payment verification failed" }, { status: 400 });
     }
 
-    const vendor = await prisma.vendor.create({
-      data: {
-        ticketId, businessName, contactPerson, email, phone, productType,
-        boothType: "food_drink_eatables", bookingFee: VENDOR_BOOKING_FEE,
-        paymentRefId: paymentReference, status: "CONFIRMED",
-        paidAt: new Date(), bookedAt: new Date()
-      }
-    });
+    // Drizzle ORM: Insert new vendor
+    const [vendor] = await db.insert(vendors).values({
+      ticketId, 
+      businessName, 
+      contactPerson, 
+      email, 
+      phone, 
+      productType,
+      boothType: "food_drink_eatables", 
+      bookingFee: VENDOR_BOOKING_FEE,
+      paymentRefId: paymentReference, 
+      status: "CONFIRMED",
+      paidAt: new Date(), 
+      bookedAt: new Date()
+    }).returning();
 
     await sendVendorConfirmationEmailToVendor(vendor);
     await sendAdminNotificationEmailForVendor(vendor);
@@ -66,12 +73,9 @@ export async function GET(request: NextRequest) {
     const ticketId = searchParams.get("ticketId");
     const status = searchParams.get("status") || "CONFIRMED";
 
-    // If ticketId is provided, fetch specific vendor
     if (ticketId) {
-      const vendor = await prisma.vendor.findFirst({
-        where: { ticketId },
-        select: { id: true, ticketId: true, businessName: true, contactPerson: true, email: true, phone: true, boothType: true, productType: true, bookingFee: true, status: true, createdAt: true, paidAt: true }
-      });
+      // Drizzle ORM: Fetch specific vendor
+      const [vendor] = await db.select().from(vendors).where(eq(vendors.ticketId, ticketId)).limit(1);
 
       if (vendor) {
         return NextResponse.json({ success: true, ...vendor }, { status: 200 });
@@ -80,20 +84,19 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Otherwise, fetch all vendors with given status
-    const vendors = await prisma.vendor.findMany({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      where: { status: status as any },
-      orderBy: { createdAt: "desc" },
-      select: { id: true, ticketId: true, businessName: true, contactPerson: true, email: true, phone: true, boothType: true, productType: true, bookingFee: true, status: true, createdAt: true, paidAt: true }
-    });
+    // Drizzle ORM: Fetch all vendors
+    const allVendors = await db.select()
+      .from(vendors)
+      .where(eq(vendors.status, status))
+      .orderBy(desc(vendors.createdAt));
 
-    return NextResponse.json({ success: true, count: vendors.length, vendors }, { status: 200 });
+    return NextResponse.json({ success: true, count: allVendors.length, vendors: allVendors }, { status: 200 });
   } catch (error) {
     console.error("Vendor fetch error:", error);
     return NextResponse.json({ error: "Failed to fetch vendors" }, { status: 500 });
   }
 }
+
 async function verifyPaystackPayment(reference: string): Promise<boolean> {
   try {
     const response = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
@@ -147,4 +150,5 @@ function formatBoothType(type: string): string {
     "food_drink_eatables": "🍔 Food / Drink / Eatables Vendor Slot - ₦103,500"
   };
   return types[type] || type;
-}
+        }
+      
