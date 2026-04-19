@@ -1,10 +1,10 @@
 "use client";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import { Loader2, CheckCircle, Store, AlertTriangle } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const VENDOR_BOOKING_FEE = 103500;
 const MAX_VENDORS = 10;
@@ -15,6 +15,7 @@ const PRODUCT_TYPES = [
 ] as const;
 
 export default function VendorPage() {
+    const router = useRouter();
     const [formData, setFormData] = useState({
         businessName: "",
         contactPerson: "",
@@ -32,7 +33,6 @@ export default function VendorPage() {
     const slotsLeft = Math.max(MAX_VENDORS - confirmedVendors, 0);
 
     const getTotal = () => VENDOR_BOOKING_FEE;
-    const router = useRouter();
 
     useEffect(() => {
         const script = document.createElement("script");
@@ -127,7 +127,7 @@ export default function VendorPage() {
                 setIsSubmitting(false);
                 alert("Payment cancelled. Your application was not submitted.");
             },
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onSuccess: async (transaction: any) => {
                 try {
                     const response = await fetch("/api/vendors", {
@@ -147,8 +147,12 @@ export default function VendorPage() {
                     });
 
                     if (response.ok) {
-                        // Immediately push to the success page using Next.js router
+                        setSubmitted(true);
+                        setTicketId(newTicketId);
+                        
+                        // Using Next.js router for a clean, guaranteed redirect
                         router.push(`/vendor-payment-confirmation?reference=${transaction.reference}&ticketId=${newTicketId}`);
+                        
                     } else {
                         throw new Error("Failed to save vendor application");
                     }
@@ -158,7 +162,6 @@ export default function VendorPage() {
                     setIsSubmitting(false);
                 }
             }
-
         });
         handler.openIframe();
     };
@@ -273,22 +276,6 @@ export default function VendorPage() {
                                 <div>
                                     <p className="text-xl font-bold text-green-400 mb-2">✅ Application Approved!</p>
                                     <p className="text-sm text-gray-300 mb-4">Your payment has been verified, your vendor slot is confirmed, and the admin team has been notified.</p>
-                                </div>
-
-                                <div className="bg-brand-orange/10 border border-brand-orange/50 p-4 rounded-lg">
-                                    <p className="text-xs text-gray-500 uppercase mb-1">Your Confirmation Ticket ID</p>
-                                    <p className="text-lg font-mono font-bold text-brand-orange break-all">{ticketId}</p>
-                                    <p className="text-xs text-gray-400 mt-3">📧 Confirmation email sent to your registered email address with your vendor booking details.</p>
-                                </div>
-
-                                <div className="bg-blue-500/10 border border-brand-blue/30 p-3 rounded-lg text-left">
-                                    <p className="text-xs text-gray-400">💡 <strong>Next Steps:</strong></p>
-                                    <ul className="text-xs text-gray-400 mt-2 space-y-1">
-                                        <li>✓ Check your email for your payment receipt and confirmation</li>
-                                        <li>✓ Your vendor slot is confirmed for food, drink, or eatables sales</li>
-                                        <li>✓ Event setup details will be shared before the festival</li>
-                                        <li>✓ Admin will reach out if additional coordination is needed</li>
-                                    </ul>
                                 </div>
                             </div>
                         ) : (
