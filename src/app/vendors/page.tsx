@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -31,6 +32,7 @@ export default function VendorPage() {
     const slotsLeft = Math.max(MAX_VENDORS - confirmedVendors, 0);
 
     const getTotal = () => VENDOR_BOOKING_FEE;
+    const router = useRouter();
 
     useEffect(() => {
         const script = document.createElement("script");
@@ -125,7 +127,7 @@ export default function VendorPage() {
                 setIsSubmitting(false);
                 alert("Payment cancelled. Your application was not submitted.");
             },
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onSuccess: async (transaction: any) => {
                 try {
                     const response = await fetch("/api/vendors", {
@@ -145,13 +147,8 @@ export default function VendorPage() {
                     });
 
                     if (response.ok) {
-                        setSubmitted(true);
-                        setTicketId(newTicketId);
-                        // Ensure state is updated before redirect
-                        // Small delay to allow Paystack iframe to close cleanly on mobile
-                        setTimeout(() => {
-                            window.location.href = `/vendor-payment-confirmation?reference=${transaction.reference}&ticketId=${newTicketId}`;
-                        }, 300);
+                        // Immediately push to the success page using Next.js router
+                        router.push(`/vendor-payment-confirmation?reference=${transaction.reference}&ticketId=${newTicketId}`);
                     } else {
                         throw new Error("Failed to save vendor application");
                     }
@@ -161,6 +158,7 @@ export default function VendorPage() {
                     setIsSubmitting(false);
                 }
             }
+
         });
         handler.openIframe();
     };
