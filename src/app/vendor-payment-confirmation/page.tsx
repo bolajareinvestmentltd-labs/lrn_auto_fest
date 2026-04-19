@@ -27,7 +27,7 @@ function VendorPaymentConfirmationContent() {
     const [qrCode, setQrCode] = useState("");
     const [copied, setCopied] = useState(false);
 
-    useEffect(() => {
+        useEffect(() => {
         const verifyVendorPayment = async () => {
             const reference = searchParams.get("reference");
             const ticketId = searchParams.get("ticketId");
@@ -39,62 +39,47 @@ function VendorPaymentConfirmationContent() {
             }
 
             try {
-                // Verify payment with our API
-                const response = await fetch("/api/paystack/verify-vendor", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ reference }),
-                });
+                // Fetch vendor details directly from the database using the ticket ID
+                const vendorResponse = await fetch(`/api/vendors?ticketId=${ticketId}`);
+                const vendorData = await vendorResponse.json();
 
-                const data = await response.json();
+                if (vendorData.success && vendorData.status === "CONFIRMED") {
+                    setVendorDetails({
+                        success: true,
+                        ticketId: vendorData.ticketId,
+                        businessName: vendorData.businessName,
+                        contactPerson: vendorData.contactPerson,
+                        phone: vendorData.phone,
+                        email: vendorData.email,
+                        productType: vendorData.productType,
+                        amount: vendorData.bookingFee || 103500, // Handle property naming mapping
+                        paymentReference: reference,
+                    });
 
-                if (data.success) {
-                    // Fetch vendor details from database
-                    const vendorResponse = await fetch("/api/vendors?ticketId=" + ticketId);
-                    const vendorData = await vendorResponse.json();
-
-                    if (vendorData.success) {
-                        setVendorDetails({
-                            success: true,
-                            ticketId: vendorData.ticketId,
-                            businessName: vendorData.businessName,
-                            contactPerson: vendorData.contactPerson,
-                            phone: vendorData.phone,
-                            email: vendorData.email,
-                            productType: vendorData.productType,
-                            amount: vendorData.amount,
-                            paymentReference: reference,
-                        });
-
-                        // Generate QR code for vendor ticket
-                        const qrData = `VND:${vendorData.ticketId}:${vendorData.email}:VENDOR_PASS`;
-                        const qrImage = await QRCode.toDataURL(qrData, {
-                            width: 300,
-                            margin: 2,
-                            color: {
-                                dark: "#000000",
-                                light: "#FFFFFF",
-                            },
-                        });
-                        setQrCode(qrImage);
-                        setStatus("success");
-                    } else {
-                        setStatus("failed");
-                        setError("Failed to fetch vendor details");
-                    }
+                    // Generate QR code for vendor ticket
+                    const qrData = `VND:${vendorData.ticketId}:${vendorData.email}:VENDOR_PASS`;
+                    const qrImage = await QRCode.toDataURL(qrData, {
+                        width: 300,
+                        margin: 2,
+                        color: { dark: "#000000", light: "#FFFFFF" },
+                    });
+                    
+                    setQrCode(qrImage);
+                    setStatus("success");
                 } else {
                     setStatus("failed");
-                    setError(data.message || "Payment verification failed");
+                    setError("Failed to fetch verified vendor details from the database.");
                 }
             } catch (err) {
                 console.error("Verification error:", err);
                 setStatus("failed");
-                setError("Error verifying payment. Please contact support.");
+                setError("Error retrieving your booking. Please contact support.");
             }
         };
 
         verifyVendorPayment();
     }, [searchParams]);
+
 
     const handleCopyTicketId = () => {
         if (vendorDetails?.ticketId) {
