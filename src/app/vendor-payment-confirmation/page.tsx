@@ -27,7 +27,7 @@ function VendorPaymentConfirmationContent() {
     const [qrCode, setQrCode] = useState("");
     const [copied, setCopied] = useState(false);
 
-        useEffect(() => {
+    useEffect(() => {
         const verifyVendorPayment = async () => {
             const reference = searchParams.get("reference");
             const ticketId = searchParams.get("ticketId");
@@ -79,7 +79,6 @@ function VendorPaymentConfirmationContent() {
 
         verifyVendorPayment();
     }, [searchParams]);
-
 
     const handleCopyTicketId = () => {
         if (vendorDetails?.ticketId) {
@@ -329,13 +328,6 @@ function VendorPaymentConfirmationContent() {
                             <div className="flex flex-col gap-3 pt-4">
                                 <Button
                                     className="w-full bg-brand-orange hover:bg-orange-600 text-white font-bold py-3 rounded-lg text-lg uppercase tracking-wide transition-all hover:shadow-lg hover:shadow-orange-500/30"
-                                    asChild
-                                >
-                                    <Link href="/vendors">← Try Again</Link>
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    className="w-full text-white border-white/30 hover:bg-white/10 py-3 rounded-lg font-semibold"
                                     asChild
                                 >
                                     <Link href="/">Return to Home</Link>
