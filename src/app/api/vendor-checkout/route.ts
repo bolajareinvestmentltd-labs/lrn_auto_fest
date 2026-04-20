@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db"; // Ensure this path matches your Drizzle db export
-import { vendors } from "@/lib/schema"; // Ensure this path matches your Drizzle schema
-import { ne } from "drizzle-orm";
+import { prisma } from "@/lib/prisma";
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 const VENDOR_BOOKING_FEE = 103500;
@@ -23,26 +21,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Payment verification failed" }, { status: 400 });
     }
 
-    // 2. Check available slots 
-    const currentVendors = await db.select().from(vendors).where(ne(vendors.status, "CANCELLED"));
-    if (currentVendors.length >= MAX_VENDORS) {
+    // 2. Check available slots using Prisma
+    const currentVendorCount = await prisma.vendor.count({
+      where: { NOT: { status: "CANCELLED" } }
+    });
+
+    if (currentVendorCount >= MAX_VENDORS) {
       return NextResponse.json({ error: "Vendor booking limit reached" }, { status: 409 });
     }
 
-    // 3. Save vendor to database immediately
-    await db.insert(vendors).values({
-      ticketId,
-      businessName,
-      contactPerson,
-      email,
-      phone,
-      productType,
-      boothType: "food_drink_eatables",
-      bookingFee: VENDOR_BOOKING_FEE,
-      paymentRefId: paymentReference,
-      status: "CONFIRMED",
-      paidAt: new Date(),
-      bookedAt: new Date()
+    // 3. Save vendor to database immediately using Prisma
+    await prisma.vendor.create({
+      data: {
+        ticketId,
+        businessName,
+        contactPerson,
+        email,
+        phone,
+        productType,
+        boothType: "food_drink_eatables",
+        bookingFee: VENDOR_BOOKING_FEE,
+        paymentRefId: paymentReference,
+        status: "CONFIRMED",
+        paidAt: new Date(),
+        bookedAt: new Date()
+      }
     });
 
     // 4. Return success instantly to trigger frontend redirection
