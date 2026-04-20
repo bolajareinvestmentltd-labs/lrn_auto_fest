@@ -130,7 +130,7 @@ export default function VendorPage() {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onSuccess: async (transaction: any) => {
                 try {
-                    const response = await fetch("/api/vendors", {
+                    const response = await fetch("/api/vendor-checkout", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
