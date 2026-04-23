@@ -96,11 +96,6 @@ function PaymentConfirmationContent() {
 
         verifyPayment();
     }, [searchParams]);
-            }
-        };
-
-        verifyPayment();
-    }, [searchParams]);
 
     // NEW: Native Print Function for PDF Generation
     const handleDownload = () => {
