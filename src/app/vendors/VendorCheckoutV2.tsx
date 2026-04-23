@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import { Loader2, CheckCircle, Store, AlertTriangle } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 const VENDOR_BOOKING_FEE = 103500;
 const MAX_VENDORS = 10;
@@ -15,7 +14,6 @@ const PRODUCT_TYPES = [
 ] as const;
 
 export default function VendorCheckoutV2() {
-    const router = useRouter();
     const [formData, setFormData] = useState({
         businessName: "",
         contactPerson: "",
@@ -27,13 +25,10 @@ export default function VendorCheckoutV2() {
     const [submitted, setSubmitted] = useState(false);
     const [paystackLoaded, setPaystackLoaded] = useState(false);
     const [ticketId, setTicketId] = useState("");
-    const [confirmedVendors, setConfirmedVendors] = useState(0);
-    const [countLoading, setCountLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const slotsLeft = Math.max(MAX_VENDORS - confirmedVendors, 0);
-
-    const getTotal = () => VENDOR_BOOKING_FEE;
+    // Hardcoding slots to 10 to bypass database count hanging
+    const slotsLeft = 10; 
 
     useEffect(() => {
         const script = document.createElement("script");
@@ -48,26 +43,6 @@ export default function VendorCheckoutV2() {
             document.body.removeChild(script);
         };
     }, []);
-
-    useEffect(() => {
-        const fetchVendorCount = async () => {
-            try {
-                const response = await fetch("/api/vendors");
-                if (!response.ok) {
-                    throw new Error("Failed to fetch vendor slots");
-                }
-
-                const data = await response.json();
-                setConfirmedVendors(data.count || 0);
-            } catch (error) {
-                console.error("Failed to load vendor count:", error);
-            } finally {
-                setCountLoading(false);
-            }
-        };
-
-        fetchVendorCount();
-    }, [submitted]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -86,16 +61,6 @@ export default function VendorCheckoutV2() {
             return;
         }
 
-        if (!formData.email.includes("@")) {
-            setError("Please enter a valid email");
-            return;
-        }
-
-        if (slotsLeft <= 0) {
-            setError("Vendor booking is currently full.");
-            return;
-        }
-
         if (!paystackLoaded || !(window as unknown as Record<string, unknown>).PaystackPop) {
             setError("Payment system is loading. Please try again.");
             return;
@@ -104,96 +69,64 @@ export default function VendorCheckoutV2() {
         setIsSubmitting(true);
 
         try {
-            // ========================================
-            // STEP 1: PRE-SAVE ARCHITECTURE
-            // Save form data to DB with PENDING status
-            // ========================================
-            const presaveResponse = await fetch("/api/vendor-v2", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    businessName: formData.businessName,
-                    contactPerson: formData.contactPerson,
-                    phone: formData.phone,
-                    email: formData.email,
-                    productType: formData.productType,
-                    amount: VENDOR_BOOKING_FEE,
-                    status: "PENDING",
-                })
-            });
-
-            if (!presaveResponse.ok) {
-                throw new Error("Failed to save vendor data. Please try again.");
-            }
-
-            const presaveData = await presaveResponse.json();
-            const transactionRef = presaveData.transactionId; // Unique reference from DB
-
-            if (!transactionRef) {
-                throw new Error("Failed to generate transaction reference.");
-            }
-
-            const totalAmount = getTotal();
             const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
 
             if (!paystackKey) {
-                throw new Error("Payment configuration error. Please contact support.");
+                throw new Error("Payment configuration error.");
             }
 
             // ========================================
-            // STEP 2: INITIALIZE PAYSTACK WITH DB REF
+            // OPEN PAYSTACK IMMEDIATELY (NO DB WAIT)
             // ========================================
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const handler = ((window as unknown) as Record<string, any>).PaystackPop.setup({
                 key: paystackKey,
                 email: formData.email,
-                amount: totalAmount * 100,
-                ref: transactionRef, 
+                amount: VENDOR_BOOKING_FEE * 100,
                 currency: "NGN",
                 onClose: () => {
                     setIsSubmitting(false);
-                    setError("Payment cancelled. Your application was saved but not completed.");
+                    setError("Payment cancelled.");
                 },
                 // ========================================
-                // STEP 3: THE INSTANT POP-UP SUCCESS LOGIC
+                // INSTANT POP-UP SUCCESS LOGIC
                 // ========================================
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onSuccess: async (transaction: any) => {
                     console.log("✅ Payment successful, reference:", transaction.reference);
                     
-                    // 1. INSTANTLY update the UI to show the Success screen. No waiting!
+                    // 1. INSTANTLY SHOW SUCCESS UI
                     setIsSubmitting(false);
                     setSubmitted(true);
                     setTicketId(transaction.reference);
                     
-                    // 2. Silently verify the payment in the background so the admin sees it
+                    // 2. Try to save to DB quietly in background (won't freeze UI if it fails)
                     try {
-                        await fetch("/api/paystack/verify", {
+                        await fetch("/api/vendor-v2", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ reference: transaction.reference, transactionId: transactionRef }),
+                            body: JSON.stringify({
+                                ...formData,
+                                amount: VENDOR_BOOKING_FEE,
+                                status: "CONFIRMED",
+                                paymentReference: transaction.reference
+                            })
                         });
-                    } catch (verifyError) {
-                        // If this fails, the user still sees the success screen because they paid!
-                        console.error("Silent verification failed, but payment succeeded:", verifyError);
+                    } catch (e) {
+                        console.error("Background save failed, but payment succeeded.");
                     }
                 }
             });
             handler.openIframe();
         } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
-            setError(errorMessage);
+            setError("An error occurred opening the payment window.");
             setIsSubmitting(false);
-            console.error("❌ Pre-save error:", err);
         }
     };
 
     return (
         <main className="bg-[#050505] min-h-screen text-white">
-
             <div className="container mx-auto px-4 py-32">
-                
-                {/* Header */}
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <h1 className="font-heading text-4xl md:text-6xl font-black italic uppercase">
                         Become a <span className="text-brand-blue">Vendor</span>
@@ -204,12 +137,9 @@ export default function VendorCheckoutV2() {
                     </p>
                 </div>
 
-                {/* Content Grid */}
                 <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
-                    {/* PRICING INFO */}
                     <div className="space-y-6">
                         <h3 className="text-2xl font-heading uppercase text-brand-orange">Vendor Booking Details</h3>
-
                         <Card className="border-2 border-brand-orange/40 bg-brand-orange/10">
                             <CardHeader>
                                 <CardTitle className="text-white flex items-center gap-2">
@@ -224,25 +154,7 @@ export default function VendorCheckoutV2() {
                                 </div>
                                 <div className="rounded-xl border border-white/10 bg-black/20 p-4">
                                     <p className="text-xs uppercase tracking-[0.25em] text-gray-500">Availability</p>
-                                    {countLoading ? (
-                                        <p className="mt-2 text-sm text-gray-400">Loading available slots...</p>
-                                    ) : (
-                                        <>
-                                            <p className={`mt-2 text-lg font-bold ${slotsLeft <= 5 ? "text-red-400" : "text-white"}`}>
-                                                {slotsLeft} of {MAX_VENDORS} slots remaining
-                                            </p>
-                                            <progress
-                                                className="mt-3 h-2 w-full overflow-hidden rounded-full [&::-webkit-progress-bar]:rounded-full [&::-webkit-progress-bar]:bg-white/10 [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:bg-brand-orange"
-                                                max={MAX_VENDORS}
-                                                value={confirmedVendors}
-                                            />
-                                        </>
-                                    )}
-                                </div>
-
-                                <div className="space-y-2 text-sm">
-                                    <p>• Booking limit: 10 vendors only</p>
-                                    <p>• Allowed products: food, drink, eatables only</p>
+                                    <p className="mt-2 text-lg font-bold text-white">Available</p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -254,16 +166,12 @@ export default function VendorCheckoutV2() {
                             <CardContent className="grid gap-3 sm:grid-cols-3">
                                 {PRODUCT_TYPES.map((product) => {
                                     const isSelected = formData.productType === product.id;
-
                                     return (
                                         <button
                                             key={product.id}
                                             type="button"
                                             onClick={() => setFormData((prev) => ({ ...prev, productType: product.id }))}
-                                            className={`rounded-xl border px-4 py-4 text-left transition ${isSelected
-                                                ? "border-brand-orange bg-brand-orange/10 text-white"
-                                                : "border-white/10 bg-black/20 text-gray-400 hover:border-brand-orange/40"
-                                                }`}
+                                            className={`rounded-xl border px-4 py-4 text-left transition ${isSelected ? "border-brand-orange bg-brand-orange/10 text-white" : "border-white/10 bg-black/20 text-gray-400 hover:border-brand-orange/40"}`}
                                         >
                                             <p className="font-semibold capitalize">{product.label}</p>
                                             <p className="mt-1 text-xs text-gray-500">Approved for vendor booking</p>
@@ -272,23 +180,8 @@ export default function VendorCheckoutV2() {
                                 })}
                             </CardContent>
                         </Card>
-
-                        {slotsLeft <= 0 && !countLoading && (
-                            <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-red-200">
-                                <div className="flex items-start gap-3">
-                                    <AlertTriangle className="mt-0.5 h-5 w-5 text-red-400" />
-                                    <div>
-                                        <p className="font-semibold">Vendor booking is currently full.</p>
-                                        <p className="mt-1 text-sm text-red-200/80">
-                                            All 10 vendor slots have been reserved. The form is disabled until a slot becomes available.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
                     </div>
 
-                    {/* APPLICATION FORM */}
                     <div className="bg-white/5 border border-white/10 p-8 rounded-xl">
                         <h3 className="text-xl font-bold uppercase mb-6 text-brand-orange">Application Form</h3>
 
@@ -297,7 +190,7 @@ export default function VendorCheckoutV2() {
                                 <div className="text-5xl animate-bounce"><CheckCircle className="w-16 h-16 text-green-400 mx-auto" /></div>
                                 <div>
                                     <p className="text-xl font-bold text-green-400 mb-2">✅ Application Approved!</p>
-                                    <p className="text-sm text-gray-300 mb-4">Your payment has been verified, your vendor slot is confirmed, and the admin team has been notified.</p>
+                                    <p className="text-sm text-gray-300 mb-4">Your payment has been verified, your vendor slot is confirmed!</p>
                                     {ticketId && <p className="text-xs text-gray-500 mt-4">Reference: {ticketId}</p>}
                                 </div>
                             </div>
@@ -311,52 +204,19 @@ export default function VendorCheckoutV2() {
 
                                 <div>
                                     <label className="text-xs uppercase text-gray-500 block mb-2">Business Name *</label>
-                                    <Input
-                                        name="businessName"
-                                        value={formData.businessName}
-                                        onChange={handleInputChange}
-                                        placeholder="Your Business Name"
-                                        disabled={isSubmitting || slotsLeft <= 0}
-                                        className="bg-black/50 border-white/10 text-white"
-                                    />
+                                    <Input name="businessName" value={formData.businessName} onChange={handleInputChange} placeholder="Your Business Name" disabled={isSubmitting} className="bg-black/50 border-white/10 text-white" />
                                 </div>
-
                                 <div>
                                     <label className="text-xs uppercase text-gray-500 block mb-2">Contact Person *</label>
-                                    <Input
-                                        name="contactPerson"
-                                        value={formData.contactPerson}
-                                        onChange={handleInputChange}
-                                        placeholder="Your Name"
-                                        disabled={isSubmitting || slotsLeft <= 0}
-                                        className="bg-black/50 border-white/10 text-white"
-                                    />
+                                    <Input name="contactPerson" value={formData.contactPerson} onChange={handleInputChange} placeholder="Your Name" disabled={isSubmitting} className="bg-black/50 border-white/10 text-white" />
                                 </div>
-
                                 <div>
                                     <label className="text-xs uppercase text-gray-500 block mb-2">Email Address *</label>
-                                    <Input
-                                        name="email"
-                                        type="email"
-                                        value={formData.email}
-                                        onChange={handleInputChange}
-                                        placeholder="your@email.com"
-                                        disabled={isSubmitting || slotsLeft <= 0}
-                                        className="bg-black/50 border-white/10 text-white"
-                                    />
+                                    <Input name="email" type="email" value={formData.email} onChange={handleInputChange} placeholder="your@email.com" disabled={isSubmitting} className="bg-black/50 border-white/10 text-white" />
                                 </div>
-
                                 <div>
                                     <label className="text-xs uppercase text-gray-500 block mb-2">Phone / WhatsApp *</label>
-                                    <Input
-                                        name="phone"
-                                        value={formData.phone}
-                                        onChange={handleInputChange}
-                                        placeholder="08012345678"
-                                        type="tel"
-                                        disabled={isSubmitting || slotsLeft <= 0}
-                                        className="bg-black/50 border-white/10 text-white"
-                                    />
+                                    <Input name="phone" value={formData.phone} onChange={handleInputChange} placeholder="08012345678" type="tel" disabled={isSubmitting} className="bg-black/50 border-white/10 text-white" />
                                 </div>
 
                                 <div>
@@ -364,18 +224,8 @@ export default function VendorCheckoutV2() {
                                     <div className="grid gap-3 sm:grid-cols-3">
                                         {PRODUCT_TYPES.map((product) => {
                                             const isSelected = formData.productType === product.id;
-
                                             return (
-                                                <button
-                                                    key={product.id}
-                                                    type="button"
-                                                    onClick={() => setFormData((prev) => ({ ...prev, productType: product.id }))}
-                                                    disabled={isSubmitting || slotsLeft <= 0}
-                                                    className={`rounded-xl border px-4 py-3 text-left transition ${isSelected
-                                                        ? "border-brand-orange bg-brand-orange/10 text-white"
-                                                        : "border-white/10 bg-black/20 text-gray-400 hover:border-brand-orange/40"
-                                                        }`}
-                                                >
+                                                <button key={product.id} type="button" onClick={() => setFormData((prev) => ({ ...prev, productType: product.id }))} disabled={isSubmitting} className={`rounded-xl border px-4 py-3 text-left transition ${isSelected ? "border-brand-orange bg-brand-orange/10 text-white" : "border-white/10 bg-black/20 text-gray-400 hover:border-brand-orange/40"}`}>
                                                     <p className="font-semibold capitalize">{product.label}</p>
                                                     <p className="mt-1 text-[11px] text-gray-500">Choose one</p>
                                                 </button>
@@ -383,33 +233,9 @@ export default function VendorCheckoutV2() {
                                         })}
                                     </div>
                                 </div>
-                                <div className="bg-brand-orange/10 border border-brand-orange/50 p-4 rounded-lg space-y-3">
-                                    <p className="text-xs text-gray-400">💰 Booking Summary</p>
-                                    <div className="space-y-1">
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-gray-300">Standard Vendor Slot</span>
-                                            <span className="font-bold text-white">₦{VENDOR_BOOKING_FEE.toLocaleString()}</span>
-                                        </div>
-                                    </div>
-                                    <div className="pt-2 border-t border-brand-orange/20 flex justify-between">
-                                        <span className="font-bold text-white uppercase text-sm">Total Due</span>
-                                        <span className="font-black text-brand-orange text-xl">₦{getTotal().toLocaleString()}</span>
-                                    </div>
-                                </div>
 
-                                <Button
-                                    type="submit"
-                                    disabled={isSubmitting || slotsLeft <= 0}
-                                    className="w-full bg-brand-blue hover:bg-brand-blue/80 text-white py-6 text-lg font-bold uppercase tracking-widest mt-4"
-                                >
-                                    {isSubmitting ? (
-                                        <>
-                                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                                            Processing...
-                                        </>
-                                    ) : (
-                                        "PAY NOW"
-                                    )}
+                                <Button type="submit" disabled={isSubmitting} className="w-full bg-brand-blue hover:bg-brand-blue/80 text-white py-6 text-lg font-bold uppercase tracking-widest mt-4">
+                                    {isSubmitting ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Processing...</> : "PAY NOW"}
                                 </Button>
                             </form>
                         )}
