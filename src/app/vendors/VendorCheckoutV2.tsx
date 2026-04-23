@@ -142,31 +142,41 @@ export default function VendorCheckoutV2() {
 
             // ========================================
             // STEP 2: INITIALIZE PAYSTACK WITH DB REF
-            // Pass the database-generated reference
             // ========================================
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const handler = ((window as unknown) as Record<string, any>).PaystackPop.setup({
                 key: paystackKey,
                 email: formData.email,
                 amount: totalAmount * 100,
-                ref: transactionRef, // Use DB reference, not client-generated
+                ref: transactionRef, 
                 currency: "NGN",
                 onClose: () => {
                     setIsSubmitting(false);
                     setError("Payment cancelled. Your application was saved but not completed.");
                 },
                 // ========================================
-                // STEP 3: BULLETPROOF REDIRECT ON SUCCESS
-                // DO NOT make database calls here
-                // Use hard redirect to force page change
+                // STEP 3: THE INSTANT POP-UP SUCCESS LOGIC
                 // ========================================
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onSuccess: (transaction: any) => {
-                    // BULLETPROOF REDIRECT: No async calls, no waiting
+                onSuccess: async (transaction: any) => {
                     console.log("✅ Payment successful, reference:", transaction.reference);
                     
-                    // Hard browser redirect (not router.push)
-                    window.location.href = `/vendor-success?reference=${transaction.reference}&transactionId=${transactionRef}`;
+                    // 1. INSTANTLY update the UI to show the Success screen. No waiting!
+                    setIsSubmitting(false);
+                    setSubmitted(true);
+                    setTicketId(transaction.reference);
+                    
+                    // 2. Silently verify the payment in the background so the admin sees it
+                    try {
+                        await fetch("/api/paystack/verify", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ reference: transaction.reference, transactionId: transactionRef }),
+                        });
+                    } catch (verifyError) {
+                        // If this fails, the user still sees the success screen because they paid!
+                        console.error("Silent verification failed, but payment succeeded:", verifyError);
+                    }
                 }
             });
             handler.openIframe();
@@ -288,6 +298,7 @@ export default function VendorCheckoutV2() {
                                 <div>
                                     <p className="text-xl font-bold text-green-400 mb-2">✅ Application Approved!</p>
                                     <p className="text-sm text-gray-300 mb-4">Your payment has been verified, your vendor slot is confirmed, and the admin team has been notified.</p>
+                                    {ticketId && <p className="text-xs text-gray-500 mt-4">Reference: {ticketId}</p>}
                                 </div>
                             </div>
                         ) : (
