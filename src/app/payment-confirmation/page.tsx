@@ -31,14 +31,18 @@ function PaymentConfirmationContent() {
         const verifyPayment = async () => {
             const reference = searchParams.get("reference");
 
+            console.log("🔍 Payment confirmation page loaded with reference:", reference);
+
             if (!reference) {
+                console.error("❌ Missing payment reference in URL");
                 setStatus("failed");
                 setError("No payment reference found in URL");
                 return;
             }
 
             try {
-                // Verify payment with our API
+                // Verify payment with our API (this also creates the order if needed)
+                console.log("📥 Verifying payment with backend...");
                 const response = await fetch("/api/paystack/verify", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -47,17 +51,51 @@ function PaymentConfirmationContent() {
 
                 const data = await response.json();
 
+                console.log("✅ Verification response:", data);
+
                 if (data.success) {
+                    // Verification successful, payment is confirmed
+                    console.log("✅ Payment verified successfully");
+                    
+                    // Fetch the full ticket details for display
+                    try {
+                        const detailsResponse = await fetch(
+                            `/api/payment-details?reference=${reference}&type=${data.ticketType || "regular"}`
+                        );
+                        const detailsData = await detailsResponse.json();
+                        
+                        console.log("📥 Ticket details:", detailsData);
+                        
+                        setOrderDetails({
+                            success: true,
+                            orderId: data.orderId,
+                            orderNumber: data.orderNumber,
+                            ticketType: data.ticketType || detailsData.ticketType,
+                            quantity: data.quantity || detailsData.quantity,
+                            customerName: data.customerName || detailsData.customerName,
+                            customerEmail: data.customerEmail || detailsData.customerEmail,
+                            tickets: detailsData.tickets || []
+                        });
+                    } catch (detailsErr) {
+                        console.warn("⚠️ Could not fetch additional ticket details, using verification data:", detailsErr);
+                        setOrderDetails(data);
+                    }
+                    
                     setStatus("success");
-                    setOrderDetails(data);
                 } else {
+                    console.error("❌ Payment verification failed:", data);
                     setStatus("failed");
-                    setError(data.error || data.message || "Payment verification failed");
+                    setError(data.error || data.message || "Payment verification failed. Please contact support.");
                 }
             } catch (err) {
-                console.error("Verification error:", err);
+                console.error("❌ Verification error:", err);
                 setStatus("failed");
-                setError("Network error verifying payment. Please contact support.");
+                setError("Network error verifying payment. Please check your email for confirmation or contact support.");
+            }
+        };
+
+        verifyPayment();
+    }, [searchParams]);
             }
         };
 

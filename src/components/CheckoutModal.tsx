@@ -181,11 +181,40 @@ export default function CheckoutModal({
             onClose: () => {
                 setIsProcessing(false);
             },
-            // FIXED: Raw Paystack JS uses 'callback', not 'onSuccess'
+            // FIXED: Use onSuccess callback to verify payment before redirecting
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            callback: (response: any) => {
-                // Redirect directly to your confirmation page with the reference
-                window.location.href = `/payment-confirmation?reference=${response.reference}`;
+            onSuccess: async (response: any) => {
+                console.log("✅ Payment successful on client:", response.reference);
+                
+                try {
+                    // Step 1: Verify payment with backend (ensures order is created)
+                    console.log("📥 Verifying payment with backend...");
+                    const verifyResponse = await fetch("/api/paystack/verify", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ reference: response.reference }),
+                    });
+
+                    const verifyData = await verifyResponse.json();
+                    console.log("✅ Verification response:", verifyData);
+
+                    if (verifyData.success) {
+                        // Step 2: Payment verified, order created - redirect to confirmation page
+                        console.log("🔗 Redirecting to confirmation page...");
+                        window.location.href = `/payment-confirmation?reference=${response.reference}`;
+                    } else {
+                        // Payment verified by Paystack but backend verification failed
+                        console.error("❌ Backend verification failed:", verifyData);
+                        setIsProcessing(false);
+                        alert(`Payment successful but verification failed: ${verifyData.error || "Unknown error"}`);
+                    }
+                } catch (error) {
+                    console.error("❌ Error in onSuccess:", error);
+                    setIsProcessing(false);
+                    alert(
+                        `Payment successful but failed to verify: ${error instanceof Error ? error.message : "Unknown error"}\n\nPayment Reference: ${response.reference}`
+                    );
+                }
             }
         });
         handler.openIframe();
