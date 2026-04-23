@@ -20,7 +20,7 @@ export default function Hero() {
   const [titleIndex, setTitleIndex] = useState(0);
   const [selectedVideo, setSelectedVideo] = useState<string>("");
   const [showComingSoonModal, setShowComingSoonModal] = useState<string | null>(null);
-  const [isMuted, setIsMuted] = useState(true); // Sound state added here
+  const [isMuted, setIsMuted] = useState(false); // Sound ENABLED by default
 
   useEffect(() => {
     const videos = ["/videos/hero-video-primary.mp4", "/videos/hero-video-secondary.mp4"];
@@ -43,7 +43,7 @@ export default function Hero() {
     const playVideo = async () => {
       if (videoRef.current) {
         try {
-          videoRef.current.muted = true;
+          videoRef.current.muted = false; // Allow sound to play
           await videoRef.current.play();
         } catch (err) {
           console.log("Autoplay blocked");
@@ -76,11 +76,13 @@ export default function Hero() {
         <source src={selectedVideo} type="video/mp4" />
       </video>
 
-     <div 
-  onClick={toggleSound} 
-  className="absolute inset-0 bg-gradient-to-t from-[#050505] via-black/50 to-black/30 z-10 cursor-pointer" 
-  title="Tap anywhere to toggle sound"
-/>
+      {/* Invisible overlay - tap anywhere to mute/unmute sound */}
+      <div 
+        onClick={toggleSound} 
+        className="absolute inset-0 z-10 cursor-pointer" 
+        title={isMuted ? "Tap to unmute" : "Tap to mute"}
+      />
+
       {isPresaleActive && (
         <motion.div
           initial={{ y: -100 }}
