@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useState, useEffect, useCallback } from "react";
 import { Loader2, CheckCircle, Store, AlertTriangle } from "lucide-react";
 
-// TEMPORARILY SET TO 100 FOR LIVE CARD TESTING (Change back to 103500 when done!)
+// TEMPORARILY SET TO 100 FOR LIVE TESTING
 const VENDOR_BOOKING_FEE = 100; 
 const MAX_VENDORS = 10;
 const PRODUCT_TYPES = [
@@ -25,7 +25,6 @@ export default function VendorCheckoutV2() {
     
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const [paystackLoaded, setPaystackLoaded] = useState(false);
     const [ticketId, setTicketId] = useState("");
     const [error, setError] = useState<string | null>(null);
 
@@ -33,10 +32,8 @@ export default function VendorCheckoutV2() {
     const [countLoading, setCountLoading] = useState(true);
     const slotsLeft = Math.max(MAX_VENDORS - confirmedVendors, 0);
 
-    // Fetch vendor count (Wrapped in useCallback so we can trigger it manually after payment)
     const fetchVendorCount = useCallback(async () => {
         try {
-            // ?t= timestamp forces Next.js to ignore cache and check the real DB
             const response = await fetch(`/api/vendors?t=${Date.now()}`, { cache: "no-store" });
             if (response.ok) {
                 const data = await response.json();
@@ -49,7 +46,7 @@ export default function VendorCheckoutV2() {
         }
     }, []);
 
-    // 1. THE REDIRECT CATCHER (This forces the green UI after Paystack reloads the page)
+    // 1. THE REDIRECT CATCHER: This runs when Paystack sends the user back!
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const urlParams = new URLSearchParams(window.location.search);
@@ -57,63 +54,24 @@ export default function VendorCheckoutV2() {
             const ref = urlParams.get("reference");
 
             if (isSuccess === "true" && ref) {
-                // Instantly show the green UI
+                // Instantly show the green UI!
                 setSubmitted(true);
                 setTicketId(ref);
 
-                // Grab the saved form data from the phone's memory
-                const savedDataStr = localStorage.getItem("pendingVendorForm");
-                if (savedDataStr) {
-                    try {
-                        const savedData = JSON.parse(savedDataStr);
-                        
-                        // Save to database silently
-                        fetch("/api/vendor-v2", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                ...savedData,
-                                amount: VENDOR_BOOKING_FEE,
-                                status: "CONFIRMED",
-                                paymentReference: ref
-                            })
-                        }).then(() => {
-                            // Fetch the updated slot count so it drops to 9!
-                            fetchVendorCount();
-                        });
-                        
-                        // Clear the temporary phone memory
-                        localStorage.removeItem("pendingVendorForm");
-                    } catch(e) {
-                        console.error("Error saving data:", e);
-                    }
-                }
+                // Silently tell your backend to verify the payment and drop the slot count
+                fetch("/api/paystack/verify", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ reference: ref })
+                }).then(() => fetchVendorCount());
                 
-                // Clean up the URL so it looks professional
+                // Clean up the URL
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
         }
     }, [fetchVendorCount]);
 
-    // 2. BULLETPROOF PAYSTACK LOADER
-    useEffect(() => {
-        // Prevent loading multiple scripts or deleting it during React re-renders
-        if (document.getElementById("paystack-script")) {
-            setPaystackLoaded(true);
-            return;
-        }
-
-        const script = document.createElement("script");
-        script.id = "paystack-script";
-        script.src = "https://js.paystack.co/v1/inline.js";
-        script.async = true;
-        script.onload = () => setPaystackLoaded(true);
-        document.body.appendChild(script);
-        
-        // WE DO NOT REMOVE THE SCRIPT ON CLEANUP. This fixes the freezing bug!
-    }, []);
-
-    // 3. Load Initial Slots
+    // 2. Load Initial Slots
     useEffect(() => {
         fetchVendorCount();
     }, [fetchVendorCount]);
@@ -137,54 +95,31 @@ export default function VendorCheckoutV2() {
             return;
         }
 
-        if (!paystackLoaded || !(window as unknown as Record<string, unknown>).PaystackPop) {
-            setError("Payment script is still loading. Please wait a moment.");
-            return;
-        }
-
         setIsSubmitting(true);
 
         try {
-            const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
+            // Ask your backend to generate the secure Paystack link
+            const response = await fetch("/api/vendor-v2", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    ...formData,
+                    amount: VENDOR_BOOKING_FEE
+                })
+            });
 
-            if (!paystackKey) {
-                setError("Payment configuration error. Please contact support.");
-                setIsSubmitting(false);
-                return;
+            const data = await response.json();
+
+            if (!response.ok || !data.authorization_url) {
+                throw new Error(data.error || "Failed to connect to payment gateway");
             }
 
-            const cleanEmail = formData.email.toLowerCase().trim();
-            const safeAmount = Math.round(VENDOR_BOOKING_FEE * 100);
-            const uniqueReference = `VND-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+            // MAGIC BULLET: Redirect the browser directly to Paystack's official site
+            window.location.href = data.authorization_url;
 
-            // Save form to phone memory so we can retrieve it after Paystack redirects
-            localStorage.setItem("pendingVendorForm", JSON.stringify({
-                businessName: formData.businessName,
-                contactPerson: formData.contactPerson,
-                phone: formData.phone,
-                email: cleanEmail,
-                productType: formData.productType
-            }));
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const handler = ((window as unknown) as Record<string, any>).PaystackPop.setup({
-                key: paystackKey,
-                email: cleanEmail,
-                amount: safeAmount, 
-                ref: uniqueReference, 
-                currency: "NGN",
-                onClose: () => {
-                    setIsSubmitting(false);
-                },
-                // THE GUARANTEED FIX: Hard browser redirect on success!
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onSuccess: (transaction: any) => {
-                    window.location.href = `${window.location.pathname}?payment_success=true&reference=${transaction.reference}`;
-                }
-            });
-            handler.openIframe();
         } catch (err) {
-            setError("A secure connection to the payment gateway could not be established.");
+            const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred.";
+            setError(errorMessage);
             setIsSubmitting(false);
         }
     };
@@ -341,4 +276,5 @@ export default function VendorCheckoutV2() {
             </div>
         </main>
     );
-                        }
+    }
+                        
