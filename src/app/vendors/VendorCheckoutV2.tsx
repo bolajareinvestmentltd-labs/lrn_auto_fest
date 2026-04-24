@@ -47,8 +47,7 @@ export default function VendorCheckoutV2() {
         }
     }, []);
 
-    // 1. THE REDIRECT CATCHER (Now waits for verification!)
-        // 1. THE REDIRECT CATCHER (Now with advanced error tracking!)
+        // 1. THE REDIRECT CATCHER (URL corrected to perfectly match your backend folder!)
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const urlParams = new URLSearchParams(window.location.search);
@@ -68,15 +67,16 @@ export default function VendorCheckoutV2() {
                     }
                 }
 
-                fetch("/api/paystack/vendor-verify", {
+                // FIX IS HERE: Changed to verify-vendor to match your folder
+                fetch("/api/paystack/verify-vendor", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ reference: ref })
                 })
                 .then(async (res) => {
-                    const rawText = await res.text(); // Get the raw server response
+                    const rawText = await res.text();
                     try {
-                        const data = JSON.parse(rawText); // Try to read it normally
+                        const data = JSON.parse(rawText);
                         if (data.success) {
                             setTicketId(ref);
                             setSubmitted(true);
@@ -85,7 +85,6 @@ export default function VendorCheckoutV2() {
                             setError(`Verification Failed: ${data.error}`);
                         }
                     } catch (parseError) {
-                        // IF THE SERVER CRASHES WITH HTML, IT WILL SHOW HERE!
                         console.error("Raw Server Crash:", rawText);
                         setError(`Server Crash: ${rawText.substring(0, 80)}... Check Vercel Logs.`);
                     }
@@ -98,6 +97,7 @@ export default function VendorCheckoutV2() {
             }
         }
     }, [fetchVendorCount]);
+
 
     useEffect(() => {
         fetchVendorCount();
