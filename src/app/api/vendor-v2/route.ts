@@ -6,41 +6,35 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
         const { businessName, contactPerson, phone, email, productType, amount } = body;
 
-        // 1. Check Slot Availability
-        const confirmedVendors = await prisma.vendor.count({
-            where: { status: "CONFIRMED" }
-        });
-
-        if (confirmedVendors >= 10) {
-            return NextResponse.json({ error: "All vendor slots are full" }, { status: 409 });
-        }
-
-        // 2. Generate a unique Transaction Reference
+        // 1. Generate a unique Transaction Reference
         const transactionId = `VND-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
 
-        // 3. Save to Database as PENDING
-        await prisma.vendor.create({
-            data: {
-                transactionId,
-                businessName,
-                contactPerson,
-                phone,
-                email,
-                productType,
-                amount,
-                status: "PENDING",
-            },
-        });
-
-        // 4. Initialize Paystack Standard Checkout
-        const secretKey = process.env.PAYSTACK_SECRET_KEY; // MUST be the sk_live_... key!
-        
-        if (!secretKey) {
-            return NextResponse.json({ error: "Server missing Paystack configuration" }, { status: 500 });
+        // 2. Save to Database as PENDING
+        try {
+            await prisma.vendor.create({
+                data: {
+                    transactionId,
+                    businessName,
+                    contactPerson,
+                    phone,
+                    email,
+                    productType,
+                    amount: Number(amount),
+                    status: "PENDING",
+                },
+            });
+        } catch (dbError) {
+            return NextResponse.json({ error: "Database Error: Could not save vendor to Prisma." }, { status: 500 });
         }
 
-        // Tell Paystack to send the user back to your vendor page after success!
-        const origin = request.nextUrl.origin;
+        // 3. Initialize Paystack
+        const secretKey = process.env.PAYSTACK_SECRET_KEY; 
+        
+        if (!secretKey) {
+            return NextResponse.json({ error: "Missing PAYSTACK_SECRET_KEY in Vercel environment variables." }, { status: 500 });
+        }
+
+        const origin = request.nextUrl.origin || "https://your-website.com";
         const callbackUrl = `${origin}/vendors?payment_success=true&reference=${transactionId}`;
 
         const paystackRes = await fetch("https://api.paystack.co/transaction/initialize", {
@@ -51,7 +45,7 @@ export async function POST(request: NextRequest) {
             },
             body: JSON.stringify({
                 email: email.toLowerCase().trim(),
-                amount: amount * 100, // Convert to kobo
+                amount: Math.round(Number(amount) * 100), // Convert to kobo safely
                 reference: transactionId,
                 callback_url: callbackUrl
             })
@@ -59,18 +53,20 @@ export async function POST(request: NextRequest) {
 
         const paystackData = await paystackRes.json();
 
+        // IF PAYSTACK DECLINES THE REQUEST, THIS WILL SHOW THE EXACT REASON ON YOUR SCREEN:
         if (!paystackData.status) {
-            throw new Error(paystackData.message);
+            return NextResponse.json({ error: `Paystack API Error: ${paystackData.message}` }, { status: 500 });
         }
 
-        // 5. Send the Paystack Checkout URL back to the frontend
+        // 4. Send the Paystack Checkout URL back to the frontend
         return NextResponse.json({
             success: true,
             authorization_url: paystackData.data.authorization_url
         });
 
     } catch (error) {
-        console.error("❌ Backend Error:", error);
-        return NextResponse.json({ error: "Failed to initialize payment" }, { status: 500 });
+        const msg = error instanceof Error ? error.message : "Unknown backend error";
+        return NextResponse.json({ error: `Backend Crash: ${msg}` }, { status: 500 });
     }
-    }
+                                                                                                                 }
+                                      
