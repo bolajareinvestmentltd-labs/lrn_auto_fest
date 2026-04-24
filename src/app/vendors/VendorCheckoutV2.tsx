@@ -26,15 +26,20 @@ export default function VendorCheckoutV2() {
     const [paystackLoaded, setPaystackLoaded] = useState(false);
     const [ticketId, setTicketId] = useState("");
     const [error, setError] = useState<string | null>(null);
+    
+    // THE VISUAL DEBUGGER STATE
+    const [debugLog, setDebugLog] = useState<string>("Waiting for user action...");
 
     const slotsLeft = 10; 
 
     useEffect(() => {
+        setDebugLog("Loading Paystack script...");
         const script = document.createElement("script");
         script.src = "https://js.paystack.co/v1/inline.js";
         script.async = true;
         script.onload = () => {
             setPaystackLoaded(true);
+            setDebugLog("Paystack script loaded successfully.");
         };
         document.body.appendChild(script);
 
@@ -54,54 +59,62 @@ export default function VendorCheckoutV2() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
+        setDebugLog("1. 'Pay Now' clicked. Starting validation...");
 
         if (!formData.businessName || !formData.contactPerson || !formData.phone || !formData.email || !formData.productType) {
             setError("Please fill in all required fields");
+            setDebugLog("Error: Missing fields.");
             return;
         }
 
         if (!paystackLoaded || !(window as unknown as Record<string, unknown>).PaystackPop) {
             setError("Payment script is still loading. Please refresh the page.");
+            setDebugLog("Error: Paystack not loaded on window object.");
             return;
         }
 
         setIsSubmitting(true);
+        setDebugLog("2. Validation passed. Getting environment variables...");
 
         try {
-            // Aggressively check for the key under multiple common names
             const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || process.env.NEXT_PUBLIC_PAYSTACK_KEY;
 
             if (!paystackKey) {
-                alert("CRITICAL ERROR: Paystack Public Key is missing from Vercel Environment Variables.");
+                setDebugLog("CRITICAL ERROR: Paystack Key is missing!");
                 setIsSubmitting(false);
                 return;
             }
 
-            // Manually generate a unique reference to prevent Paystack from silently crashing
             const uniqueReference = `VND-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+            setDebugLog(`3. Reference generated: ${uniqueReference}. Opening Paystack...`);
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const handler = ((window as unknown) as Record<string, any>).PaystackPop.setup({
                 key: paystackKey,
                 email: formData.email,
-                amount: VENDOR_BOOKING_FEE * 100, // Convert to kobo
-                ref: uniqueReference, // Pass the manual reference
+                amount: VENDOR_BOOKING_FEE * 100, 
+                ref: uniqueReference, 
                 currency: "NGN",
                 onClose: () => {
                     setIsSubmitting(false);
-                    console.log("Paystack modal closed manually.");
+                    setDebugLog("Paystack modal was closed by the user.");
                 },
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onSuccess: async (transaction: any) => {
-                    console.log("✅ Payment successful, reference:", transaction.reference);
+                    // EXTREME DEBUGGING: Force a browser popup to prove this function ran
+                    alert(`PAYMENT SUCCESSFUL! Paystack Ref: ${transaction.reference}`);
                     
-                    // INSTANTLY SHOW SUCCESS UI
-                    setIsSubmitting(false);
-                    setSubmitted(true);
-                    setTicketId(transaction.reference);
-                    
-                    // Try to save to DB quietly in background
                     try {
+                        setDebugLog(`4. onSuccess triggered! Ref: ${transaction.reference}`);
+                        
+                        // INSTANTLY SHOW SUCCESS UI
+                        setIsSubmitting(false);
+                        setSubmitted(true);
+                        setTicketId(transaction.reference);
+                        
+                        setDebugLog("5. UI state updated to 'submitted'. Attempting background save...");
+                        
+                        // Try to save to DB quietly in background
                         await fetch("/api/vendor-v2", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
@@ -112,15 +125,16 @@ export default function VendorCheckoutV2() {
                                 paymentReference: transaction.reference
                             })
                         });
+                        setDebugLog("6. Background save completed.");
                     } catch (e) {
-                        console.error("Background save failed, but payment succeeded.");
+                        setDebugLog(`ERROR INSIDE ONSUCCESS: ${e}`);
+                        alert(`React State Error: ${e}`);
                     }
                 }
             });
             handler.openIframe();
         } catch (err) {
-            alert("A JavaScript error occurred while trying to open Paystack.");
-            console.error(err);
+            setDebugLog(`JAVASCRIPT CRASH: ${err}`);
             setIsSubmitting(false);
         }
     };
@@ -132,10 +146,6 @@ export default function VendorCheckoutV2() {
                     <h1 className="font-heading text-4xl md:text-6xl font-black italic uppercase">
                         Become a <span className="text-brand-blue">Vendor</span>
                     </h1>
-                    <p className="text-gray-400 mt-6 text-lg">
-                        Vendor slots is strictly limited to Food, Drinks and Eatables only.<br />
-                        <span className="text-brand-orange font-bold">Only 10 slots available!</span>
-                    </p>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
@@ -152,10 +162,6 @@ export default function VendorCheckoutV2() {
                                 <div className="space-y-2">
                                     <p className="text-xs uppercase tracking-[0.25em] text-gray-500">Total Amount</p>
                                     <p className="text-4xl font-black text-brand-orange">₦{VENDOR_BOOKING_FEE.toLocaleString()}</p>
-                                </div>
-                                <div className="rounded-xl border border-white/10 bg-black/20 p-4">
-                                    <p className="text-xs uppercase tracking-[0.25em] text-gray-500">Availability</p>
-                                    <p className="mt-2 text-lg font-bold text-white">Available</p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -183,9 +189,14 @@ export default function VendorCheckoutV2() {
                         </Card>
                     </div>
 
-                    <div className="bg-white/5 border border-white/10 p-8 rounded-xl">
-                        {/* We know we are in the right place because of this heading! */}
+                    <div className="bg-white/5 border border-white/10 p-8 rounded-xl relative">
                         <h3 className="text-xl font-bold uppercase mb-6 text-brand-orange">Application Form LIVE</h3>
+
+                        {/* LIVE DEBUGGER CONSOLE */}
+                        <div className="mb-6 p-4 bg-yellow-500/20 border border-yellow-500/50 rounded-lg text-yellow-200 font-mono text-xs break-words">
+                            <strong>System Log:</strong> <br/>
+                            {debugLog}
+                        </div>
 
                         {submitted ? (
                             <div className="text-center space-y-6 py-8">
@@ -221,21 +232,6 @@ export default function VendorCheckoutV2() {
                                     <Input name="phone" value={formData.phone} onChange={handleInputChange} placeholder="08012345678" type="tel" disabled={isSubmitting} className="bg-black/50 border-white/10 text-white" />
                                 </div>
 
-                                <div>
-                                    <label className="text-xs uppercase text-gray-500 block mb-2">Product Type *</label>
-                                    <div className="grid gap-3 sm:grid-cols-3">
-                                        {PRODUCT_TYPES.map((product) => {
-                                            const isSelected = formData.productType === product.id;
-                                            return (
-                                                <button key={product.id} type="button" onClick={() => setFormData((prev) => ({ ...prev, productType: product.id }))} disabled={isSubmitting} className={`rounded-xl border px-4 py-3 text-left transition ${isSelected ? "border-brand-orange bg-brand-orange/10 text-white" : "border-white/10 bg-black/20 text-gray-400 hover:border-brand-orange/40"}`}>
-                                                    <p className="font-semibold capitalize">{product.label}</p>
-                                                    <p className="mt-1 text-[11px] text-gray-500">Choose one</p>
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-
                                 <Button type="submit" disabled={isSubmitting} className="w-full bg-brand-blue hover:bg-brand-blue/80 text-white py-6 text-lg font-bold uppercase tracking-widest mt-4">
                                     {isSubmitting ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Processing...</> : "PAY NOW"}
                                 </Button>
@@ -246,4 +242,5 @@ export default function VendorCheckoutV2() {
             </div>
         </main>
     );
-}
+                                                }
+                
