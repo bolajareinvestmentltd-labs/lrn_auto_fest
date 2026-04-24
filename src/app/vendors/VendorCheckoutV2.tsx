@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useState, useEffect, useCallback } from "react";
 import { Loader2, CheckCircle, Store, AlertTriangle } from "lucide-react";
 
-// TEMPORARILY SET TO 100 FOR LIVE TESTING
+// SET TO REAL PRICE FOR LIVE
 const VENDOR_BOOKING_FEE = 100; 
 const MAX_VENDORS = 10;
 const PRODUCT_TYPES = [
@@ -46,7 +46,7 @@ export default function VendorCheckoutV2() {
         }
     }, []);
 
-    // 1. THE REDIRECT CATCHER: This runs when Paystack sends the user back!
+    // 1. THE REDIRECT CATCHER
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const urlParams = new URLSearchParams(window.location.search);
@@ -56,6 +56,18 @@ export default function VendorCheckoutV2() {
             if (isSuccess === "true" && ref) {
                 setSubmitted(true);
                 setTicketId(ref);
+
+                // RESTORE DATA SO THE UI CAN SHOW THE DETAILS
+                const savedDataStr = localStorage.getItem("pendingVendorForm");
+                if (savedDataStr) {
+                    try {
+                        const savedData = JSON.parse(savedDataStr);
+                        setFormData(savedData); // Puts the data back in state!
+                        localStorage.removeItem("pendingVendorForm");
+                    } catch(e) {
+                        console.error("Error parsing memory:", e);
+                    }
+                }
 
                 fetch("/api/paystack/vendor-verify", {
                     method: "POST",
@@ -94,7 +106,15 @@ export default function VendorCheckoutV2() {
         setIsSubmitting(true);
 
         try {
-            // Ask your backend to generate the secure Paystack link
+            // Save form to phone memory BEFORE redirect
+            localStorage.setItem("pendingVendorForm", JSON.stringify({
+                businessName: formData.businessName,
+                contactPerson: formData.contactPerson,
+                phone: formData.phone,
+                email: formData.email,
+                productType: formData.productType
+            }));
+
             const response = await fetch("/api/vendor-v2", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -110,7 +130,7 @@ export default function VendorCheckoutV2() {
                 throw new Error(data.error || "Failed to connect to payment gateway");
             }
 
-            // Redirect the browser directly to Paystack's official site
+            // Redirect to Paystack
             window.location.href = data.authorization_url;
 
         } catch (err) {
@@ -141,7 +161,7 @@ export default function VendorCheckoutV2() {
                             <CardHeader>
                                 <CardTitle className="text-white flex items-center gap-2">
                                     <Store className="w-5 h-5 text-brand-orange" />
-                                    Standard Vendor Slot (Live Test)
+                                    Standard Vendor Slot
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4 text-gray-300">
@@ -219,8 +239,16 @@ export default function VendorCheckoutV2() {
                                 <div className="text-5xl animate-bounce"><CheckCircle className="w-16 h-16 text-green-400 mx-auto" /></div>
                                 <div>
                                     <p className="text-xl font-bold text-green-400 mb-2">✅ Application Approved!</p>
-                                    <p className="text-sm text-gray-300 mb-4">Your payment has been verified, and your vendor slot is confirmed!</p>
-                                    {ticketId && <p className="text-xs text-gray-500 mt-4">Reference: {ticketId}</p>}
+                                    <p className="text-sm text-gray-300 mb-6">Your payment has been verified, and your vendor slot is confirmed!</p>
+                                    
+                                    {/* THE NEW DETAILED SUMMARY BLOCK */}
+                                    <div className="bg-black/30 border border-white/10 rounded-xl p-6 text-left space-y-3">
+                                        <p className="text-brand-orange font-bold uppercase mb-4 border-b border-brand-orange/20 pb-2">Booking Summary</p>
+                                        <p className="text-sm"><span className="text-gray-500">Business Name:</span> <br/><span className="text-white font-semibold">{formData.businessName}</span></p>
+                                        <p className="text-sm"><span className="text-gray-500">Contact Person:</span> <br/><span className="text-white font-semibold">{formData.contactPerson}</span></p>
+                                        <p className="text-sm"><span className="text-gray-500">Product Type:</span> <br/><span className="text-white font-semibold uppercase">{formData.productType || "Selected Package"}</span></p>
+                                        {ticketId && <p className="text-sm mt-4 pt-4 border-t border-white/5"><span className="text-gray-500">Reference ID:</span> <br/><span className="text-white font-mono text-xs text-brand-blue">{ticketId}</span></p>}
+                                    </div>
                                 </div>
                             </div>
                         ) : (
@@ -272,5 +300,5 @@ export default function VendorCheckoutV2() {
             </div>
         </main>
     );
-                }
-                                
+}
+
