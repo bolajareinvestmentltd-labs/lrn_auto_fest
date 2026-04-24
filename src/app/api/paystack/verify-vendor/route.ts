@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 export async function POST(request: NextRequest) {
     try {
@@ -6,43 +7,44 @@ export async function POST(request: NextRequest) {
         const { reference } = body;
 
         if (!reference) {
-            return NextResponse.json(
-                { error: "Reference is required" },
-                { status: 400 }
-            );
+            return NextResponse.json({ error: "No reference provided" }, { status: 400 });
         }
 
-        // Verify payment with Paystack
-        const verifyUrl = `https://api.paystack.co/transaction/verify/${reference}`;
+        const secretKey = process.env.PAYSTACK_SECRET_KEY; 
+        
+        if (!secretKey) {
+            return NextResponse.json({ error: "Missing Paystack Secret Key" }, { status: 500 });
+        }
 
-        const paystackResponse = await fetch(verifyUrl, {
+        // 1. Ask Paystack if this payment actually succeeded
+        const verifyRes = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
             method: "GET",
             headers: {
-                Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+                Authorization: `Bearer ${secretKey}`,
             },
         });
 
-        const paystackData = await paystackResponse.json();
+        const paystackData = await verifyRes.json();
 
-        if (!paystackData.status || paystackData.data.status !== "success") {
-            return NextResponse.json(
-                { success: false, message: "Payment verification failed" },
-                { status: 400 }
-            );
+        // 2. If Paystack says yes...
+        if (paystackData.status && paystackData.data.status === "success") {
+            
+            // 3. Update the Vendor database from PENDING_PAYMENT to CONFIRMED!
+            await prisma.vendor.updateMany({
+                where: { paymentRefId: reference },
+                data: { 
+                    status: "CONFIRMED",
+                    paidAt: new Date()
+                },
+            });
+
+            return NextResponse.json({ success: true, message: "Vendor confirmed!" });
+        } else {
+            return NextResponse.json({ error: "Payment verification failed" }, { status: 400 });
         }
 
-        return NextResponse.json({
-            success: true,
-            message: "Payment verified successfully",
-            reference: paystackData.data.reference,
-            amount: paystackData.data.amount / 100, // Convert kobo to Naira
-            status: paystackData.data.status,
-        });
-    } catch (error: any) {
-        console.error("Paystack verification error:", error);
-        return NextResponse.json(
-            { error: error.message || "Verification failed" },
-            { status: 500 }
-        );
+    } catch (error) {
+        console.error("Verification Crash:", error);
+        return NextResponse.json({ error: "Server crashed during verification" }, { status: 500 });
     }
 }
