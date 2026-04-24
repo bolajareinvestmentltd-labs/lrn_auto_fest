@@ -23,8 +23,9 @@ export async function POST(request: NextRequest) {
                     status: "PENDING",
                 },
             });
-        } catch (dbError) {
-            return NextResponse.json({ error: "Database Error: Could not save vendor to Prisma." }, { status: 500 });
+        } catch (dbError: any) {
+            // THIS WILL NOW SHOW THE EXACT PRISMA ERROR ON YOUR SCREEN
+            return NextResponse.json({ error: `Prisma Error: ${dbError?.message || 'Unknown DB error'}` }, { status: 500 });
         }
 
         // 3. Initialize Paystack
@@ -53,7 +54,6 @@ export async function POST(request: NextRequest) {
 
         const paystackData = await paystackRes.json();
 
-        // IF PAYSTACK DECLINES THE REQUEST, THIS WILL SHOW THE EXACT REASON ON YOUR SCREEN:
         if (!paystackData.status) {
             return NextResponse.json({ error: `Paystack API Error: ${paystackData.message}` }, { status: 500 });
         }
@@ -68,5 +68,4 @@ export async function POST(request: NextRequest) {
         const msg = error instanceof Error ? error.message : "Unknown backend error";
         return NextResponse.json({ error: `Backend Crash: ${msg}` }, { status: 500 });
     }
-                                                                                                                 }
-                                      
+}
