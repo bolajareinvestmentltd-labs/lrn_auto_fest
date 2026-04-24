@@ -23,9 +23,18 @@ export async function POST(request: NextRequest) {
         // 2. If success, update DB and SEND EMAIL
         if (paystackData.status && paystackData.data.status === "success") {
             
-            // Update the vendor status to CONFIRMED
+            // THE FIX: Find the vendor first safely!
+            const vendor = await prisma.vendor.findFirst({
+                where: { paymentRefId: reference }
+            });
+
+            if (!vendor) {
+                return NextResponse.json({ error: "Vendor not found in database" }, { status: 404 });
+            }
+
+            // Update the vendor safely using their exact ID
             const updatedVendor = await prisma.vendor.update({
-                where: { paymentRefId: reference },
+                where: { id: vendor.id },
                 data: { status: "CONFIRMED", paidAt: new Date() },
             });
 
