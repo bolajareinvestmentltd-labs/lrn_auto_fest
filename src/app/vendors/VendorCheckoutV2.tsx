@@ -27,7 +27,6 @@ export default function VendorCheckoutV2() {
     const [ticketId, setTicketId] = useState("");
     const [error, setError] = useState<string | null>(null);
 
-    // Hardcoding slots to 10 to bypass database count hanging
     const slotsLeft = 10; 
 
     useEffect(() => {
@@ -62,45 +61,46 @@ export default function VendorCheckoutV2() {
         }
 
         if (!paystackLoaded || !(window as unknown as Record<string, unknown>).PaystackPop) {
-            setError("Payment system is loading. Please try again.");
+            setError("Payment script is still loading. Please refresh the page.");
             return;
         }
 
         setIsSubmitting(true);
 
         try {
-            const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
+            // Aggressively check for the key under multiple common names
+            const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || process.env.NEXT_PUBLIC_PAYSTACK_KEY;
 
             if (!paystackKey) {
-                throw new Error("Payment configuration error.");
+                alert("CRITICAL ERROR: Paystack Public Key is missing from Vercel Environment Variables.");
+                setIsSubmitting(false);
+                return;
             }
 
-            // ========================================
-            // OPEN PAYSTACK IMMEDIATELY (NO DB WAIT)
-            // ========================================
+            // Manually generate a unique reference to prevent Paystack from silently crashing
+            const uniqueReference = `VND-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const handler = ((window as unknown) as Record<string, any>).PaystackPop.setup({
                 key: paystackKey,
                 email: formData.email,
-                amount: VENDOR_BOOKING_FEE * 100,
+                amount: VENDOR_BOOKING_FEE * 100, // Convert to kobo
+                ref: uniqueReference, // Pass the manual reference
                 currency: "NGN",
                 onClose: () => {
                     setIsSubmitting(false);
-                    setError("Payment cancelled.");
+                    console.log("Paystack modal closed manually.");
                 },
-                // ========================================
-                // INSTANT POP-UP SUCCESS LOGIC
-                // ========================================
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onSuccess: async (transaction: any) => {
                     console.log("✅ Payment successful, reference:", transaction.reference);
                     
-                    // 1. INSTANTLY SHOW SUCCESS UI
+                    // INSTANTLY SHOW SUCCESS UI
                     setIsSubmitting(false);
                     setSubmitted(true);
                     setTicketId(transaction.reference);
                     
-                    // 2. Try to save to DB quietly in background (won't freeze UI if it fails)
+                    // Try to save to DB quietly in background
                     try {
                         await fetch("/api/vendor-v2", {
                             method: "POST",
@@ -119,7 +119,8 @@ export default function VendorCheckoutV2() {
             });
             handler.openIframe();
         } catch (err) {
-            setError("An error occurred opening the payment window.");
+            alert("A JavaScript error occurred while trying to open Paystack.");
+            console.error(err);
             setIsSubmitting(false);
         }
     };
@@ -183,7 +184,8 @@ export default function VendorCheckoutV2() {
                     </div>
 
                     <div className="bg-white/5 border border-white/10 p-8 rounded-xl">
-formFORM                        <h3 className="text-xl font-bold uppercase mb-6 text-brand-orange">Applivation LIVE</h3>
+                        {/* We know we are in the right place because of this heading! */}
+                        <h3 className="text-xl font-bold uppercase mb-6 text-brand-orange">Application Form LIVE</h3>
 
                         {submitted ? (
                             <div className="text-center space-y-6 py-8">
