@@ -33,7 +33,51 @@ export default function VendorCheckoutV2() {
     const [countLoading, setCountLoading] = useState(true);
     const slotsLeft = Math.max(MAX_VENDORS - confirmedVendors, 0);
 
-    // 1. Load Paystack Script
+    // 1. The "URL Redirect" Success Catcher
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const urlParams = new URLSearchParams(window.location.search);
+            const isSuccess = urlParams.get("payment_success");
+            const ref = urlParams.get("reference");
+
+            // If Paystack redirected us back with success tags...
+            if (isSuccess === "true" && ref) {
+                // Instantly show the green success screen
+                setSubmitted(true);
+                setTicketId(ref);
+
+                // Grab the form data we saved to the phone's memory before paying
+                const savedDataStr = localStorage.getItem("pendingVendorForm");
+                if (savedDataStr) {
+                    try {
+                        const savedData = JSON.parse(savedDataStr);
+                        
+                        // Save it to the database silently
+                        fetch("/api/vendor-v2", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                ...savedData,
+                                amount: VENDOR_BOOKING_FEE,
+                                status: "CONFIRMED",
+                                paymentReference: ref
+                            })
+                        });
+                        
+                        // Clear the phone's memory
+                        localStorage.removeItem("pendingVendorForm");
+                    } catch(e) {
+                        console.error("Error saving data post-redirect:", e);
+                    }
+                }
+                
+                // Clean up the URL so it looks normal again
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+    }, []);
+
+    // 2. Load Paystack Script
     useEffect(() => {
         const script = document.createElement("script");
         script.src = "https://js.paystack.co/v1/inline.js";
@@ -46,11 +90,10 @@ export default function VendorCheckoutV2() {
         };
     }, []);
 
-    // 2. Load Slot Availability (With aggressive cache-busting)
+    // 3. Load Slot Availability
     useEffect(() => {
         const fetchVendorCount = async () => {
             try {
-                // The ?t= timestamp forces Next.js to skip the cache and check the real DB
                 const response = await fetch(`/api/vendors?t=${Date.now()}`, { cache: "no-store" });
                 if (response.ok) {
                     const data = await response.json();
@@ -62,7 +105,6 @@ export default function VendorCheckoutV2() {
                 setCountLoading(false);
             }
         };
-
         fetchVendorCount();
     }, [submitted]);
 
@@ -105,6 +147,18 @@ export default function VendorCheckoutV2() {
             const safeAmount = Math.round(VENDOR_BOOKING_FEE * 100);
             const uniqueReference = `VND-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
+            // SAVE DATA TO PHONE MEMORY BEFORE OPENING PAYSTACK
+            localStorage.setItem("pendingVendorForm", JSON.stringify({
+                businessName: formData.businessName,
+                contactPerson: formData.contactPerson,
+                phone: formData.phone,
+                email: cleanEmail,
+                productType: formData.productType
+            }));
+
+            // Create the redirect URL
+            const callbackUrl = `${window.location.origin}${window.location.pathname}?payment_success=true&reference=${uniqueReference}`;
+
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const handler = ((window as unknown) as Record<string, any>).PaystackPop.setup({
                 key: paystackKey,
@@ -112,32 +166,15 @@ export default function VendorCheckoutV2() {
                 amount: safeAmount, 
                 ref: uniqueReference, 
                 currency: "NGN",
+                // THIS IS THE MAGIC BULLET: Paystack will force the browser to this URL upon success
+                callback_url: callbackUrl, 
                 onClose: () => {
                     setIsSubmitting(false);
                 },
+                // Fallback just in case the iframe DOES work on some devices
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onSuccess: async (transaction: any) => {
-                    // 1. INSTANT UI UPDATE
-                    setIsSubmitting(false);
-                    setSubmitted(true);
-                    setTicketId(transaction.reference);
-                    
-                    // 2. BACKGROUND DATABASE SAVE & EMAIL TRIGGER
-                    try {
-                        await fetch("/api/vendor-v2", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                ...formData,
-                                email: cleanEmail,
-                                amount: VENDOR_BOOKING_FEE,
-                                status: "CONFIRMED",
-                                paymentReference: transaction.reference
-                            })
-                        });
-                    } catch (e) {
-                        console.error("Background save failed, but payment succeeded.");
-                    }
+                onSuccess: async () => {
+                    window.location.href = callbackUrl;
                 }
             });
             handler.openIframe();
@@ -168,7 +205,7 @@ export default function VendorCheckoutV2() {
                             <CardHeader>
                                 <CardTitle className="text-white flex items-center gap-2">
                                     <Store className="w-5 h-5 text-brand-orange" />
-                                    Standard Vendor Slot (LIVE TEST)
+                                    Standard Vendor Slot
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4 text-gray-300">
@@ -299,4 +336,5 @@ export default function VendorCheckoutV2() {
             </div>
         </main>
     );
-}
+                              }
+                             
