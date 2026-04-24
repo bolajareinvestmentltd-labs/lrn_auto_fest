@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useState, useEffect, useCallback } from "react";
 import { Loader2, CheckCircle, Store, AlertTriangle } from "lucide-react";
 
-// SET TO 100 FOR LIVE TESTING
+// TEMPORARILY SET TO 100 FOR LIVE CARD TESTING (Change back to 103500 when done!)
 const VENDOR_BOOKING_FEE = 100; 
 const MAX_VENDORS = 10;
 const PRODUCT_TYPES = [
@@ -33,10 +33,10 @@ export default function VendorCheckoutV2() {
     const [countLoading, setCountLoading] = useState(true);
     const slotsLeft = Math.max(MAX_VENDORS - confirmedVendors, 0);
 
-    // Fetch vendor count - wrapped in useCallback so we can call it after success
+    // Fetch vendor count (Wrapped in useCallback so we can trigger it manually after payment)
     const fetchVendorCount = useCallback(async () => {
         try {
-            // The ?t= timestamp and 'no-store' forcefully breaks the Next.js cache
+            // ?t= timestamp forces Next.js to ignore cache and check the real DB
             const response = await fetch(`/api/vendors?t=${Date.now()}`, { cache: "no-store" });
             if (response.ok) {
                 const data = await response.json();
@@ -49,7 +49,7 @@ export default function VendorCheckoutV2() {
         }
     }, []);
 
-    // 1. THE HARD REDIRECT CATCHER
+    // 1. THE REDIRECT CATCHER (This forces the green UI after Paystack reloads the page)
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const urlParams = new URLSearchParams(window.location.search);
@@ -57,17 +57,17 @@ export default function VendorCheckoutV2() {
             const ref = urlParams.get("reference");
 
             if (isSuccess === "true" && ref) {
-                // Instantly show the green UI!
+                // Instantly show the green UI
                 setSubmitted(true);
                 setTicketId(ref);
 
-                // Grab the saved data from local storage
+                // Grab the saved form data from the phone's memory
                 const savedDataStr = localStorage.getItem("pendingVendorForm");
                 if (savedDataStr) {
                     try {
                         const savedData = JSON.parse(savedDataStr);
                         
-                        // Save to DB
+                        // Save to database silently
                         fetch("/api/vendor-v2", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
@@ -78,35 +78,39 @@ export default function VendorCheckoutV2() {
                                 paymentReference: ref
                             })
                         }).then(() => {
-                            // Fetch the new slot count so the UI updates to 9!
+                            // Fetch the updated slot count so it drops to 9!
                             fetchVendorCount();
                         });
                         
+                        // Clear the temporary phone memory
                         localStorage.removeItem("pendingVendorForm");
                     } catch(e) {
                         console.error("Error saving data:", e);
                     }
                 }
                 
-                // Clean the URL up
+                // Clean up the URL so it looks professional
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
         }
     }, [fetchVendorCount]);
 
-    // 2. Load Paystack Script
+    // 2. BULLETPROOF PAYSTACK LOADER
     useEffect(() => {
+        // Prevent loading multiple scripts or deleting it during React re-renders
+        if (document.getElementById("paystack-script")) {
+            setPaystackLoaded(true);
+            return;
+        }
+
         const script = document.createElement("script");
+        script.id = "paystack-script";
         script.src = "https://js.paystack.co/v1/inline.js";
         script.async = true;
         script.onload = () => setPaystackLoaded(true);
         document.body.appendChild(script);
-
-        return () => {
-            if (document.body.contains(script)) {
-                document.body.removeChild(script);
-            }
-        };
+        
+        // WE DO NOT REMOVE THE SCRIPT ON CLEANUP. This fixes the freezing bug!
     }, []);
 
     // 3. Load Initial Slots
@@ -134,7 +138,7 @@ export default function VendorCheckoutV2() {
         }
 
         if (!paystackLoaded || !(window as unknown as Record<string, unknown>).PaystackPop) {
-            setError("Payment script is still loading. Please refresh the page.");
+            setError("Payment script is still loading. Please wait a moment.");
             return;
         }
 
@@ -153,7 +157,7 @@ export default function VendorCheckoutV2() {
             const safeAmount = Math.round(VENDOR_BOOKING_FEE * 100);
             const uniqueReference = `VND-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
-            // Save form to browser memory
+            // Save form to phone memory so we can retrieve it after Paystack redirects
             localStorage.setItem("pendingVendorForm", JSON.stringify({
                 businessName: formData.businessName,
                 contactPerson: formData.contactPerson,
@@ -172,7 +176,7 @@ export default function VendorCheckoutV2() {
                 onClose: () => {
                     setIsSubmitting(false);
                 },
-                // THIS IS THE GUARANTEED FIX: Hard redirect on success!
+                // THE GUARANTEED FIX: Hard browser redirect on success!
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onSuccess: (transaction: any) => {
                     window.location.href = `${window.location.pathname}?payment_success=true&reference=${transaction.reference}`;
@@ -260,6 +264,20 @@ export default function VendorCheckoutV2() {
                                 })}
                             </CardContent>
                         </Card>
+
+                        {slotsLeft <= 0 && !countLoading && (
+                            <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-red-200">
+                                <div className="flex items-start gap-3">
+                                    <AlertTriangle className="mt-0.5 h-5 w-5 text-red-400" />
+                                    <div>
+                                        <p className="font-semibold">Vendor booking is currently full.</p>
+                                        <p className="mt-1 text-sm text-red-200/80">
+                                            All 10 vendor slots have been reserved. The form is disabled until a slot becomes available.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className="bg-white/5 border border-white/10 p-8 rounded-xl relative">
@@ -323,5 +341,4 @@ export default function VendorCheckoutV2() {
             </div>
         </main>
     );
-                }
-                                
+                        }
