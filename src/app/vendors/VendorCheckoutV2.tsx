@@ -57,7 +57,7 @@ export default function VendorCheckoutV2() {
                 setSubmitted(true);
                 setTicketId(ref);
 
-                fetch("/api/paystack/verify", {
+                fetch("/api/paystack/vendor-verify", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ reference: ref })
