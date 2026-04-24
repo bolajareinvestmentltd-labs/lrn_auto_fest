@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Loader2, CheckCircle, Store, AlertTriangle } from "lucide-react";
 
 // TEMPORARILY 100 FOR YOUR NEXT TEST
-const VENDOR_BOOKING_FEE = 100; 
+const VENDOR_BOOKING_FEE = 103500; 
 const MAX_VENDORS = 10;
 const PRODUCT_TYPES = [
     { id: "food", label: "Food" },
