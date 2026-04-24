@@ -2,10 +2,10 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Loader2, CheckCircle, Store, AlertTriangle } from "lucide-react";
 
-// SET TO 100 FOR LIVE TESTING (Change back to 103500 when done!)
+// SET TO 100 FOR LIVE TESTING
 const VENDOR_BOOKING_FEE = 100; 
 const MAX_VENDORS = 10;
 const PRODUCT_TYPES = [
@@ -33,7 +33,23 @@ export default function VendorCheckoutV2() {
     const [countLoading, setCountLoading] = useState(true);
     const slotsLeft = Math.max(MAX_VENDORS - confirmedVendors, 0);
 
-    // 1. THE REDIRECT CATCHER (This runs when Paystack sends the user back)
+    // Fetch vendor count - wrapped in useCallback so we can call it after success
+    const fetchVendorCount = useCallback(async () => {
+        try {
+            // The ?t= timestamp and 'no-store' forcefully breaks the Next.js cache
+            const response = await fetch(`/api/vendors?t=${Date.now()}`, { cache: "no-store" });
+            if (response.ok) {
+                const data = await response.json();
+                setConfirmedVendors(data.count || 0);
+            }
+        } catch (err) {
+            console.error("Failed to load vendor count:", err);
+        } finally {
+            setCountLoading(false);
+        }
+    }, []);
+
+    // 1. THE HARD REDIRECT CATCHER
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const urlParams = new URLSearchParams(window.location.search);
@@ -41,17 +57,17 @@ export default function VendorCheckoutV2() {
             const ref = urlParams.get("reference");
 
             if (isSuccess === "true" && ref) {
-                // Instantly show the green success screen!
+                // Instantly show the green UI!
                 setSubmitted(true);
                 setTicketId(ref);
 
-                // Grab the form data we saved to the phone's memory before they paid
+                // Grab the saved data from local storage
                 const savedDataStr = localStorage.getItem("pendingVendorForm");
                 if (savedDataStr) {
                     try {
                         const savedData = JSON.parse(savedDataStr);
                         
-                        // Save it to your database silently
+                        // Save to DB
                         fetch("/api/vendor-v2", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
@@ -61,20 +77,22 @@ export default function VendorCheckoutV2() {
                                 status: "CONFIRMED",
                                 paymentReference: ref
                             })
+                        }).then(() => {
+                            // Fetch the new slot count so the UI updates to 9!
+                            fetchVendorCount();
                         });
                         
-                        // Clear the memory
                         localStorage.removeItem("pendingVendorForm");
                     } catch(e) {
                         console.error("Error saving data:", e);
                     }
                 }
                 
-                // Clean the URL so it looks professional
+                // Clean the URL up
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
         }
-    }, []);
+    }, [fetchVendorCount]);
 
     // 2. Load Paystack Script
     useEffect(() => {
@@ -84,26 +102,17 @@ export default function VendorCheckoutV2() {
         script.onload = () => setPaystackLoaded(true);
         document.body.appendChild(script);
 
-        return () => document.body.removeChild(script);
-    }, []);
-
-    // 3. Load Slots (Aggressively bypasses cache so the number drops!)
-    useEffect(() => {
-        const fetchVendorCount = async () => {
-            try {
-                const response = await fetch(`/api/vendors?t=${Date.now()}`, { cache: "no-store" });
-                if (response.ok) {
-                    const data = await response.json();
-                    setConfirmedVendors(data.count || 0);
-                }
-            } catch (err) {
-                console.error("Failed to load vendor count:", err);
-            } finally {
-                setCountLoading(false);
+        return () => {
+            if (document.body.contains(script)) {
+                document.body.removeChild(script);
             }
         };
+    }, []);
+
+    // 3. Load Initial Slots
+    useEffect(() => {
         fetchVendorCount();
-    }, [submitted]);
+    }, [fetchVendorCount]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -144,7 +153,7 @@ export default function VendorCheckoutV2() {
             const safeAmount = Math.round(VENDOR_BOOKING_FEE * 100);
             const uniqueReference = `VND-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
-            // SAVE DATA TO PHONE MEMORY FIRST
+            // Save form to browser memory
             localStorage.setItem("pendingVendorForm", JSON.stringify({
                 businessName: formData.businessName,
                 contactPerson: formData.contactPerson,
@@ -153,9 +162,6 @@ export default function VendorCheckoutV2() {
                 productType: formData.productType
             }));
 
-            // Create the exact URL Paystack must return to
-            const callbackUrl = `${window.location.origin}${window.location.pathname}?payment_success=true&reference=${uniqueReference}`;
-
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const handler = ((window as unknown) as Record<string, any>).PaystackPop.setup({
                 key: paystackKey,
@@ -163,11 +169,14 @@ export default function VendorCheckoutV2() {
                 amount: safeAmount, 
                 ref: uniqueReference, 
                 currency: "NGN",
-                callback_url: callbackUrl, // PAYSTACK WILL FORCE THIS REDIRECT
                 onClose: () => {
                     setIsSubmitting(false);
+                },
+                // THIS IS THE GUARANTEED FIX: Hard redirect on success!
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onSuccess: (transaction: any) => {
+                    window.location.href = `${window.location.pathname}?payment_success=true&reference=${transaction.reference}`;
                 }
-                // NOTICE: onSuccess IS GONE! Paystack handles it now.
             });
             handler.openIframe();
         } catch (err) {
@@ -197,7 +206,7 @@ export default function VendorCheckoutV2() {
                             <CardHeader>
                                 <CardTitle className="text-white flex items-center gap-2">
                                     <Store className="w-5 h-5 text-brand-orange" />
-                                    Standard Vendor Slot
+                                    Standard Vendor Slot (Live Test)
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4 text-gray-300">
@@ -314,5 +323,5 @@ export default function VendorCheckoutV2() {
             </div>
         </main>
     );
-               }
-            
+                }
+                                
