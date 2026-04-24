@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import { Loader2, CheckCircle, Store, AlertTriangle } from "lucide-react";
 
-const VENDOR_BOOKING_FEE = 103500;
+// TEMPORARILY SET TO 100 FOR LIVE CARD TESTING
+const VENDOR_BOOKING_FEE = 100; 
 const MAX_VENDORS = 10;
 const PRODUCT_TYPES = [
     { id: "food", label: "Food" },
@@ -28,7 +29,6 @@ export default function VendorCheckoutV2() {
     const [ticketId, setTicketId] = useState("");
     const [error, setError] = useState<string | null>(null);
 
-    // --- RESTORED: SLOT AVAILABILITY STATE ---
     const [confirmedVendors, setConfirmedVendors] = useState(0);
     const [countLoading, setCountLoading] = useState(true);
     const slotsLeft = Math.max(MAX_VENDORS - confirmedVendors, 0);
@@ -46,11 +46,12 @@ export default function VendorCheckoutV2() {
         };
     }, []);
 
-    // 2. Load Slot Availability
+    // 2. Load Slot Availability (With aggressive cache-busting)
     useEffect(() => {
         const fetchVendorCount = async () => {
             try {
-                const response = await fetch("/api/vendors");
+                // The ?t= timestamp forces Next.js to skip the cache and check the real DB
+                const response = await fetch(`/api/vendors?t=${Date.now()}`, { cache: "no-store" });
                 if (response.ok) {
                     const data = await response.json();
                     setConfirmedVendors(data.count || 0);
@@ -163,12 +164,11 @@ export default function VendorCheckoutV2() {
                     <div className="space-y-6">
                         <h3 className="text-2xl font-heading uppercase text-brand-orange">Vendor Booking Details</h3>
                         
-                        {/* RESTORED: SLOTS AND PRICING */}
                         <Card className="border-2 border-brand-orange/40 bg-brand-orange/10">
                             <CardHeader>
                                 <CardTitle className="text-white flex items-center gap-2">
                                     <Store className="w-5 h-5 text-brand-orange" />
-                                    Standard Vendor Slot
+                                    Standard Vendor Slot (LIVE TEST)
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4 text-gray-300">
@@ -223,7 +223,6 @@ export default function VendorCheckoutV2() {
                             </CardContent>
                         </Card>
 
-                        {/* RESTORED: FULL CAPACITY ALERT */}
                         {slotsLeft <= 0 && !countLoading && (
                             <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-red-200">
                                 <div className="flex items-start gap-3">
@@ -276,7 +275,6 @@ export default function VendorCheckoutV2() {
                                     <Input name="phone" value={formData.phone} onChange={handleInputChange} placeholder="08012345678" type="tel" disabled={isSubmitting || slotsLeft <= 0} className="bg-black/50 border-white/10 text-white" />
                                 </div>
 
-                                {/* RESTORED: PRICING SUMMARY BEFORE BUTTON */}
                                 <div className="bg-brand-orange/10 border border-brand-orange/50 p-4 rounded-lg space-y-3">
                                     <p className="text-xs text-gray-400">💰 Booking Summary</p>
                                     <div className="space-y-1">
@@ -301,5 +299,4 @@ export default function VendorCheckoutV2() {
             </div>
         </main>
     );
-              }
-                                
+}
