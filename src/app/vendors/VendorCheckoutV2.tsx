@@ -183,7 +183,7 @@ export default function VendorCheckoutV2() {
                     </div>
 
                     <div className="bg-white/5 border border-white/10 p-8 rounded-xl">
-                        <h3 className="text-xl font-bold uppercase mb-6 text-brand-orange">Application Form</h3>
+formFORM                        <h3 className="text-xl font-bold uppercase mb-6 text-brand-orange">Applivation LIVE</h3>
 
                         {submitted ? (
                             <div className="text-center space-y-6 py-8">
