@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import { Loader2, CheckCircle, Store, AlertTriangle } from "lucide-react";
 
-// TEMPORARILY SET TO 100 FOR LIVE CARD TESTING
+// SET TO 100 FOR LIVE TESTING (Change back to 103500 when done!)
 const VENDOR_BOOKING_FEE = 100; 
 const MAX_VENDORS = 10;
 const PRODUCT_TYPES = [
@@ -33,26 +33,25 @@ export default function VendorCheckoutV2() {
     const [countLoading, setCountLoading] = useState(true);
     const slotsLeft = Math.max(MAX_VENDORS - confirmedVendors, 0);
 
-    // 1. The "URL Redirect" Success Catcher
+    // 1. THE REDIRECT CATCHER (This runs when Paystack sends the user back)
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const urlParams = new URLSearchParams(window.location.search);
             const isSuccess = urlParams.get("payment_success");
             const ref = urlParams.get("reference");
 
-            // If Paystack redirected us back with success tags...
             if (isSuccess === "true" && ref) {
-                // Instantly show the green success screen
+                // Instantly show the green success screen!
                 setSubmitted(true);
                 setTicketId(ref);
 
-                // Grab the form data we saved to the phone's memory before paying
+                // Grab the form data we saved to the phone's memory before they paid
                 const savedDataStr = localStorage.getItem("pendingVendorForm");
                 if (savedDataStr) {
                     try {
                         const savedData = JSON.parse(savedDataStr);
                         
-                        // Save it to the database silently
+                        // Save it to your database silently
                         fetch("/api/vendor-v2", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
@@ -64,14 +63,14 @@ export default function VendorCheckoutV2() {
                             })
                         });
                         
-                        // Clear the phone's memory
+                        // Clear the memory
                         localStorage.removeItem("pendingVendorForm");
                     } catch(e) {
-                        console.error("Error saving data post-redirect:", e);
+                        console.error("Error saving data:", e);
                     }
                 }
                 
-                // Clean up the URL so it looks normal again
+                // Clean the URL so it looks professional
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
         }
@@ -85,12 +84,10 @@ export default function VendorCheckoutV2() {
         script.onload = () => setPaystackLoaded(true);
         document.body.appendChild(script);
 
-        return () => {
-            document.body.removeChild(script);
-        };
+        return () => document.body.removeChild(script);
     }, []);
 
-    // 3. Load Slot Availability
+    // 3. Load Slots (Aggressively bypasses cache so the number drops!)
     useEffect(() => {
         const fetchVendorCount = async () => {
             try {
@@ -147,7 +144,7 @@ export default function VendorCheckoutV2() {
             const safeAmount = Math.round(VENDOR_BOOKING_FEE * 100);
             const uniqueReference = `VND-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
-            // SAVE DATA TO PHONE MEMORY BEFORE OPENING PAYSTACK
+            // SAVE DATA TO PHONE MEMORY FIRST
             localStorage.setItem("pendingVendorForm", JSON.stringify({
                 businessName: formData.businessName,
                 contactPerson: formData.contactPerson,
@@ -156,7 +153,7 @@ export default function VendorCheckoutV2() {
                 productType: formData.productType
             }));
 
-            // Create the redirect URL
+            // Create the exact URL Paystack must return to
             const callbackUrl = `${window.location.origin}${window.location.pathname}?payment_success=true&reference=${uniqueReference}`;
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -166,16 +163,11 @@ export default function VendorCheckoutV2() {
                 amount: safeAmount, 
                 ref: uniqueReference, 
                 currency: "NGN",
-                // THIS IS THE MAGIC BULLET: Paystack will force the browser to this URL upon success
-                callback_url: callbackUrl, 
+                callback_url: callbackUrl, // PAYSTACK WILL FORCE THIS REDIRECT
                 onClose: () => {
                     setIsSubmitting(false);
-                },
-                // Fallback just in case the iframe DOES work on some devices
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onSuccess: async () => {
-                    window.location.href = callbackUrl;
                 }
+                // NOTICE: onSuccess IS GONE! Paystack handles it now.
             });
             handler.openIframe();
         } catch (err) {
@@ -259,20 +251,6 @@ export default function VendorCheckoutV2() {
                                 })}
                             </CardContent>
                         </Card>
-
-                        {slotsLeft <= 0 && !countLoading && (
-                            <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-red-200">
-                                <div className="flex items-start gap-3">
-                                    <AlertTriangle className="mt-0.5 h-5 w-5 text-red-400" />
-                                    <div>
-                                        <p className="font-semibold">Vendor booking is currently full.</p>
-                                        <p className="mt-1 text-sm text-red-200/80">
-                                            All 10 vendor slots have been reserved. The form is disabled until a slot becomes available.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
                     </div>
 
                     <div className="bg-white/5 border border-white/10 p-8 rounded-xl relative">
@@ -336,5 +314,5 @@ export default function VendorCheckoutV2() {
             </div>
         </main>
     );
-                              }
-                             
+               }
+            
