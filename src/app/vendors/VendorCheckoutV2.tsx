@@ -76,7 +76,6 @@ export default function VendorCheckoutV2() {
         setIsSubmitting(true);
         setDebugLog("2. Validation passed. Getting environment variables...");
 
-        
         try {
             // FIX 1: Next.js strict environment variable reading (No "||" operators)
             const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
@@ -145,6 +144,8 @@ export default function VendorCheckoutV2() {
             alert(`A JavaScript error occurred: ${err}`);
             setIsSubmitting(false);
         }
+    };
+
     return (
         <main className="bg-[#050505] min-h-screen text-white">
             <div className="container mx-auto px-4 py-32">
@@ -248,5 +249,5 @@ export default function VendorCheckoutV2() {
             </div>
         </main>
     );
-                                                }
-                
+            }
+            
