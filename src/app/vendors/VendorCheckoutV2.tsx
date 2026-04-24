@@ -48,6 +48,7 @@ export default function VendorCheckoutV2() {
     }, []);
 
     // 1. THE REDIRECT CATCHER (Now waits for verification!)
+        // 1. THE REDIRECT CATCHER (Now with advanced error tracking!)
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const urlParams = new URLSearchParams(window.location.search);
@@ -55,9 +56,8 @@ export default function VendorCheckoutV2() {
             const ref = urlParams.get("reference");
 
             if (isSuccess === "true" && ref) {
-                setIsVerifying(true); // Show full-screen loading
+                setIsVerifying(true);
 
-                // Restore form data so we can display it
                 const savedDataStr = localStorage.getItem("pendingVendorForm");
                 if (savedDataStr) {
                     try {
@@ -68,26 +68,31 @@ export default function VendorCheckoutV2() {
                     }
                 }
 
-                // Verify with backend, send email, update slots
                 fetch("/api/paystack/vendor-verify", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ reference: ref })
                 })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        setTicketId(ref);
-                        setSubmitted(true); // Now show the green screen
-                        fetchVendorCount(); // Refresh the slot count!
-                    } else {
-                        setError("Payment verification issue. If you were debited, please contact support.");
+                .then(async (res) => {
+                    const rawText = await res.text(); // Get the raw server response
+                    try {
+                        const data = JSON.parse(rawText); // Try to read it normally
+                        if (data.success) {
+                            setTicketId(ref);
+                            setSubmitted(true);
+                            fetchVendorCount();
+                        } else {
+                            setError(`Verification Failed: ${data.error}`);
+                        }
+                    } catch (parseError) {
+                        // IF THE SERVER CRASHES WITH HTML, IT WILL SHOW HERE!
+                        console.error("Raw Server Crash:", rawText);
+                        setError(`Server Crash: ${rawText.substring(0, 80)}... Check Vercel Logs.`);
                     }
                 })
-                .catch(() => setError("Network error during verification."))
+                .catch((err) => setError(`System Error: ${err.message}`))
                 .finally(() => {
                     setIsVerifying(false);
-                    // Clean the URL
                     window.history.replaceState({}, document.title, window.location.pathname);
                 });
             }
