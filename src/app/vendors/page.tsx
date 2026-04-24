@@ -1,7 +1,7 @@
 import VendorCheckoutV2 from "./VendorCheckoutV2";
 
 export const metadata = {
-  title: "Vendor Application | Ilorin Festival",
+  title: "Vendor Application LIVE| Ilorin Festival",
   description: "Apply for a vendor slot at the festival.",
 };
 
