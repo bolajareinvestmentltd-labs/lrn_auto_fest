@@ -23,37 +23,13 @@ export default function VendorCheckoutV2() {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const [paystackLoaded, setPaystackLoaded] = useState(false);
     const [ticketId, setTicketId] = useState("");
     const [error, setError] = useState<string | null>(null);
-    
-    // THE VISUAL DEBUGGER STATE
-    const [debugLog, setDebugLog] = useState<string>("Waiting for user action...");
-
-    const slotsLeft = 10; 
-
-    useEffect(() => {
-        setDebugLog("Loading Paystack script...");
-        const script = document.createElement("script");
-        script.src = "https://js.paystack.co/v1/inline.js";
-        script.async = true;
-        script.onload = () => {
-            setPaystackLoaded(true);
-            setDebugLog("Paystack script loaded successfully.");
-        };
-        document.body.appendChild(script);
-
-        return () => {
-            document.body.removeChild(script);
-        };
-    }, []);
+    const [debugLog, setDebugLog] = useState<string>("Bypass Mode Active. Ready.");
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -67,83 +43,40 @@ export default function VendorCheckoutV2() {
             return;
         }
 
-        if (!paystackLoaded || !(window as unknown as Record<string, unknown>).PaystackPop) {
-            setError("Payment script is still loading. Please refresh the page.");
-            setDebugLog("Error: Paystack not loaded on window object.");
-            return;
-        }
-
         setIsSubmitting(true);
-        setDebugLog("2. Validation passed. Getting environment variables...");
+        setDebugLog("2. Validation passed. BYPASSING PAYSTACK...");
 
-        try {
-            // FIX 1: Next.js strict environment variable reading (No "||" operators)
-            const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
-
-            if (!paystackKey) {
-                setDebugLog("CRITICAL ERROR: Paystack Key is missing!");
-                alert("CRITICAL ERROR: Paystack Key is missing from Vercel!");
-                setIsSubmitting(false);
-                return;
-            }
-
-            // FIX 2: Force email to lowercase and trim spaces (Paystack crashes on uppercase)
-            const cleanEmail = formData.email.toLowerCase().trim();
+        // Simulate a 2-second payment processing delay
+        setTimeout(async () => {
+            const fakeReference = `TEST-BYPASS-${Date.now()}`;
+            setDebugLog(`3. Payment simulated successfully. Ref: ${fakeReference}`);
             
-            // FIX 3: Force amount to an absolute integer to prevent decimal crashes
-            const safeAmount = Math.round(VENDOR_BOOKING_FEE * 100);
-
-            const uniqueReference = `VND-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-            setDebugLog(`3. Key found. Email: ${cleanEmail}. Opening Paystack...`);
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const handler = ((window as unknown) as Record<string, any>).PaystackPop.setup({
-                key: paystackKey,
-                email: cleanEmail,
-                amount: safeAmount, 
-                ref: uniqueReference, 
-                currency: "NGN",
-                onClose: () => {
-                    setIsSubmitting(false);
-                    setDebugLog("Paystack modal was closed by the user.");
-                },
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onSuccess: async (transaction: any) => {
-                    alert(`PAYMENT SUCCESSFUL! Paystack Ref: ${transaction.reference}`);
-                    
-                    try {
-                        setDebugLog(`4. onSuccess triggered! Ref: ${transaction.reference}`);
-                        
-                        setIsSubmitting(false);
-                        setSubmitted(true);
-                        setTicketId(transaction.reference);
-                        
-                        setDebugLog("5. UI state updated. Attempting background save...");
-                        
-                        await fetch("/api/vendor-v2", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                ...formData,
-                                email: cleanEmail, // Send the lowercase email to DB
-                                amount: VENDOR_BOOKING_FEE,
-                                status: "CONFIRMED",
-                                paymentReference: transaction.reference
-                            })
-                        });
-                        setDebugLog("6. Background save completed.");
-                    } catch (e) {
-                        setDebugLog(`ERROR INSIDE ONSUCCESS: ${e}`);
-                        alert(`React State Error: ${e}`);
-                    }
-                }
-            });
-            handler.openIframe();
-        } catch (err) {
-            setDebugLog(`JAVASCRIPT CRASH: ${err}`);
-            alert(`A JavaScript error occurred: ${err}`);
-            setIsSubmitting(false);
-        }
+            try {
+                // INSTANTLY SHOW SUCCESS UI
+                setIsSubmitting(false);
+                setSubmitted(true);
+                setTicketId(fakeReference);
+                
+                setDebugLog("4. UI state updated. Attempting background save to database...");
+                
+                // Try to save to DB
+                await fetch("/api/vendor-v2", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        ...formData,
+                        email: formData.email.toLowerCase().trim(),
+                        amount: VENDOR_BOOKING_FEE,
+                        status: "CONFIRMED",
+                        paymentReference: fakeReference
+                    })
+                });
+                
+                setDebugLog("5. Database save completed successfully!");
+            } catch (e) {
+                setDebugLog(`ERROR SAVING TO DB: ${e}`);
+            }
+        }, 2000);
     };
 
     return (
@@ -201,7 +134,7 @@ export default function VendorCheckoutV2() {
 
                         {/* LIVE DEBUGGER CONSOLE */}
                         <div className="mb-6 p-4 bg-yellow-500/20 border border-yellow-500/50 rounded-lg text-yellow-200 font-mono text-xs break-words">
-                            <strong>System Log:</strong> <br/>
+                            <strong>System Log (PAYSTACK BYPASSED):</strong> <br/>
                             {debugLog}
                         </div>
 
@@ -210,7 +143,7 @@ export default function VendorCheckoutV2() {
                                 <div className="text-5xl animate-bounce"><CheckCircle className="w-16 h-16 text-green-400 mx-auto" /></div>
                                 <div>
                                     <p className="text-xl font-bold text-green-400 mb-2">✅ Application Approved!</p>
-                                    <p className="text-sm text-gray-300 mb-4">Your payment has been verified, your vendor slot is confirmed!</p>
+                                    <p className="text-sm text-gray-300 mb-4">Your payment has been simulated, and your vendor slot is confirmed!</p>
                                     {ticketId && <p className="text-xs text-gray-500 mt-4">Reference: {ticketId}</p>}
                                 </div>
                             </div>
@@ -240,7 +173,7 @@ export default function VendorCheckoutV2() {
                                 </div>
 
                                 <Button type="submit" disabled={isSubmitting} className="w-full bg-brand-blue hover:bg-brand-blue/80 text-white py-6 text-lg font-bold uppercase tracking-widest mt-4">
-                                    {isSubmitting ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Processing...</> : "PAY NOW"}
+                                    {isSubmitting ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Processing...</> : "MOCK PAYMENT (TEST)"}
                                 </Button>
                             </form>
                         )}
@@ -249,5 +182,5 @@ export default function VendorCheckoutV2() {
             </div>
         </main>
     );
-            }
-            
+        }
+                                        
