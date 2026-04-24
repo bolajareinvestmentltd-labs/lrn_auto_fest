@@ -76,23 +76,32 @@ export default function VendorCheckoutV2() {
         setIsSubmitting(true);
         setDebugLog("2. Validation passed. Getting environment variables...");
 
+        
         try {
-            const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || process.env.NEXT_PUBLIC_PAYSTACK_KEY;
+            // FIX 1: Next.js strict environment variable reading (No "||" operators)
+            const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
 
             if (!paystackKey) {
                 setDebugLog("CRITICAL ERROR: Paystack Key is missing!");
+                alert("CRITICAL ERROR: Paystack Key is missing from Vercel!");
                 setIsSubmitting(false);
                 return;
             }
 
+            // FIX 2: Force email to lowercase and trim spaces (Paystack crashes on uppercase)
+            const cleanEmail = formData.email.toLowerCase().trim();
+            
+            // FIX 3: Force amount to an absolute integer to prevent decimal crashes
+            const safeAmount = Math.round(VENDOR_BOOKING_FEE * 100);
+
             const uniqueReference = `VND-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-            setDebugLog(`3. Reference generated: ${uniqueReference}. Opening Paystack...`);
+            setDebugLog(`3. Key found. Email: ${cleanEmail}. Opening Paystack...`);
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const handler = ((window as unknown) as Record<string, any>).PaystackPop.setup({
                 key: paystackKey,
-                email: formData.email,
-                amount: VENDOR_BOOKING_FEE * 100, 
+                email: cleanEmail,
+                amount: safeAmount, 
                 ref: uniqueReference, 
                 currency: "NGN",
                 onClose: () => {
@@ -101,25 +110,23 @@ export default function VendorCheckoutV2() {
                 },
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onSuccess: async (transaction: any) => {
-                    // EXTREME DEBUGGING: Force a browser popup to prove this function ran
                     alert(`PAYMENT SUCCESSFUL! Paystack Ref: ${transaction.reference}`);
                     
                     try {
                         setDebugLog(`4. onSuccess triggered! Ref: ${transaction.reference}`);
                         
-                        // INSTANTLY SHOW SUCCESS UI
                         setIsSubmitting(false);
                         setSubmitted(true);
                         setTicketId(transaction.reference);
                         
-                        setDebugLog("5. UI state updated to 'submitted'. Attempting background save...");
+                        setDebugLog("5. UI state updated. Attempting background save...");
                         
-                        // Try to save to DB quietly in background
                         await fetch("/api/vendor-v2", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
                                 ...formData,
+                                email: cleanEmail, // Send the lowercase email to DB
                                 amount: VENDOR_BOOKING_FEE,
                                 status: "CONFIRMED",
                                 paymentReference: transaction.reference
@@ -135,10 +142,9 @@ export default function VendorCheckoutV2() {
             handler.openIframe();
         } catch (err) {
             setDebugLog(`JAVASCRIPT CRASH: ${err}`);
+            alert(`A JavaScript error occurred: ${err}`);
             setIsSubmitting(false);
         }
-    };
-
     return (
         <main className="bg-[#050505] min-h-screen text-white">
             <div className="container mx-auto px-4 py-32">
