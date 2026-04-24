@@ -7,24 +7,23 @@ export async function POST(request: NextRequest) {
         const { businessName, contactPerson, phone, email, productType, amount } = body;
 
         // 1. Generate unique IDs
-        const transactionId = `VND-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
-        
-        // ✨ THE MISSING PIECE: Generate the required ticketId
+        const paystackReference = `VND-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
         const ticketId = `VND-TKT-${Date.now()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
 
-        // 2. Save to Database as PENDING
+        // 2. Save to Database (Perfectly matching your Prisma Schema)
         try {
             await prisma.vendor.create({
                 data: {
-                    ticketId: ticketId, // <--- Added this to fix the Prisma crash!
-                    transactionId: transactionId,
-                    businessName,
-                    contactPerson,
-                    phone,
-                    email,
-                    productType,
-                    amount: Number(amount),
-                    status: "PENDING",
+                    ticketId: ticketId,
+                    paymentRefId: paystackReference, 
+                    businessName: businessName,
+                    contactPerson: contactPerson,
+                    phone: phone,
+                    email: email,
+                    productType: productType,
+                    boothType: "STANDARD",
+                    bookingFee: Number(amount), 
+                    status: "PENDING_PAYMENT",  
                 },
             });
         } catch (dbError: any) {
@@ -39,7 +38,7 @@ export async function POST(request: NextRequest) {
         }
 
         const origin = request.nextUrl.origin || "https://your-website.com";
-        const callbackUrl = `${origin}/vendors?payment_success=true&reference=${transactionId}`;
+        const callbackUrl = `${origin}/vendors?payment_success=true&reference=${paystackReference}`;
 
         const paystackRes = await fetch("https://api.paystack.co/transaction/initialize", {
             method: "POST",
@@ -49,8 +48,8 @@ export async function POST(request: NextRequest) {
             },
             body: JSON.stringify({
                 email: email.toLowerCase().trim(),
-                amount: Math.round(Number(amount) * 100), // Convert to kobo safely
-                reference: transactionId,
+                amount: Math.round(Number(amount) * 100), 
+                reference: paystackReference,
                 callback_url: callbackUrl
             })
         });
