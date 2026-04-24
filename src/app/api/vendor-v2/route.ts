@@ -6,14 +6,18 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
         const { businessName, contactPerson, phone, email, productType, amount } = body;
 
-        // 1. Generate a unique Transaction Reference
+        // 1. Generate unique IDs
         const transactionId = `VND-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+        
+        // ✨ THE MISSING PIECE: Generate the required ticketId
+        const ticketId = `VND-TKT-${Date.now()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
 
         // 2. Save to Database as PENDING
         try {
             await prisma.vendor.create({
                 data: {
-                    transactionId,
+                    ticketId: ticketId, // <--- Added this to fix the Prisma crash!
+                    transactionId: transactionId,
                     businessName,
                     contactPerson,
                     phone,
@@ -24,7 +28,6 @@ export async function POST(request: NextRequest) {
                 },
             });
         } catch (dbError: any) {
-            // THIS WILL NOW SHOW THE EXACT PRISMA ERROR ON YOUR SCREEN
             return NextResponse.json({ error: `Prisma Error: ${dbError?.message || 'Unknown DB error'}` }, { status: 500 });
         }
 
