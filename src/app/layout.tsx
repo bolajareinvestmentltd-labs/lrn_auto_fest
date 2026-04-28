@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     'Ilorin Events',
   ],
   openGraph: {
-    title: 'Ilorin Car Show 3.0 - The Ribbon Edition',
+    title: 'Ilorin Car Show 3.0 - The Reborn Edition',
     description: 'The biggest automotive experience in Northern Nigeria',
     url: 'https://ilorinautofest.com',
     siteName: 'IAF 2026',
