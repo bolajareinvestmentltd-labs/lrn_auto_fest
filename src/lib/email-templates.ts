@@ -70,7 +70,7 @@ export function generateTicketPurchaseEmail(data: TicketPurchaseData): string {
                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${data.ticketId}" alt="QR" class="qr-code" />
                 </div>
                 <p>Tier: ${data.tier} | Package: ${groupLabel} | Amount: ${formattedAmount}</p>
-                <p>See you at Metropolitan Square on May 30th!</p>
+                <p>See you at Metropolitan Square on May 28th!</p>
             </div>
             <div class="footer"><p>© 2026 Ilorin Automotive Festival</p></div>
         </div>
@@ -99,7 +99,7 @@ export function generateVendorConfirmationEmail(data: VendorConfirmationData): s
                     <div class="detail-item"><p style="margin: 0 0 5px 0; color: #999; font-size: 11px; text-transform: uppercase;">Booth Type</p><p class="detail-value">${data.boothType}</p></div>
                     <div class="detail-item"><p style="margin: 0 0 5px 0; color: #999; font-size: 11px; text-transform: uppercase;">Amount</p><p class="detail-value">${formattedAmount}</p></div>
                 </div>
-                <p style="color: #999; font-size: 13px; margin-top: 20px; line-height: 1.6;">Your vendor booking is confirmed. You'll receive additional setup details and event logistics before May 30, 2026. If you have any questions, please don't hesitate to reach out.</p>
+                <p style="color: #999; font-size: 13px; margin-top: 20px; line-height: 1.6;">Your vendor booking is confirmed. You'll receive additional setup details and event logistics before May 28, 2026. If you have any questions, please don't hesitate to reach out.</p>
             </div>
             <div class="footer"><p>© 2026 Ilorin Automotive Festival</p></div>
         </div>
