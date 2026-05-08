@@ -32,7 +32,7 @@ export const allChampions: CategoryChampions[] = [
                 id: "drift-3",
                 name: "Real Sam",
                 title: "",
-                image: "/images/champions/real-sam.jpeg",
+                image: "/images/champions/real-sam.png",
                 bio: "",
                 instagram: "https://www.instagram.com/realsam09/",
             },
