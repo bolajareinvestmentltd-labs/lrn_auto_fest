@@ -18,7 +18,7 @@ const FAQ_CATEGORIES: { title: string; items: FAQItem[] }[] = [
     items: [
       {
         question: "What are the event dates and times?",
-        answer: "Ilorin Car Show 3.0 is scheduled for;<br/>Saturday, May 30 2026<br/>Starts: 2pm<br/>(Gates open 1pm)",
+        answer: "Ilorin Car Show 3.0 is scheduled for;<br/>Thursday, May 28 2026<br/>Starts: 2pm<br/>(Gates open 1pm)",
         icon: <Clock className="w-5 h-5" />
       },
       {
