@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Ilorin Car Show 3.0 - The Ribbon Edition',
+    title: 'Ilorin Car Show 3.0 - The Reborn Edition',
     description: 'The biggest automotive experience in Northern Nigeria',
   },
   robots: {
