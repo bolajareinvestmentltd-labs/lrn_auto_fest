@@ -24,7 +24,7 @@ export const allChampions: CategoryChampions[] = [
                 id: "drift-1",
                 name: "Mohammed Lexus",
                 title: "",
-                image: "/images/champions/mohammed-lexus.jpeg",
+                image: "/images/champions/mohammed-lexus.PNG",
                 bio: "",
                 instagram: "https://www.instagram.com/mohammed_lexus/",
             },
