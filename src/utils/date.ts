@@ -1,6 +1,6 @@
 // Utility functions for date and time operations
 
-export const EVENT_DATE = new Date('2026-05-30T00:00:00Z');
+export const EVENT_DATE = new Date('2026-05-28T00:00:00Z');
 export const PRESALE_END_DATE = new Date('2026-03-31T23:59:59Z');
 export const ONSALE_START_DATE = new Date('2026-04-01T00:00:00Z');
 
