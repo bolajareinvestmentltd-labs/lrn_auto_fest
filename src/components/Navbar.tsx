@@ -15,7 +15,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const Navbar = () => {
   const [showComingSoonModal, setShowComingSoonModal] = useState<string | null>(null);
 
-  const STORE_URL = "https://cusecho.store/";
+  const STORE_URL = "https://cusecho.store/ilorinautomotivefestival";
 
   return (
     <>
