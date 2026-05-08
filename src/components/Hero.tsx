@@ -8,7 +8,7 @@ import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 
 // Event configuration
-const EVENT_DATE = "2026-05-30T09:00:00";
+const EVENT_DATE = "2026-05-28T09:00:00";
 const PRESALE_END_DATE = "2026-03-31T23:59:59";
 const EVENT_VENUE = "Metropolitan Square, Asadam Road, Ilorin, Kwara State";
 const VENUE_COORDS = "8.4799,4.5418";
