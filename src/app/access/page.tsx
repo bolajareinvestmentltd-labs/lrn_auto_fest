@@ -331,7 +331,7 @@ export default function PublicAccessPage() {
             {/* Footer */}
             <footer className="p-4 text-center border-t border-white/10">
                 <p className="text-xs text-gray-500">
-                    IAF 2026 • Metropolitan Square, Ilorin • May 30, 2026
+                    IAF 2026 • Metropolitan Square, Ilorin • May 28, 2026
                 </p>
             </footer>
         </div>
