@@ -12,7 +12,7 @@ const EVENT_DATE = "2026-05-30T09:00:00";
 const PRESALE_END_DATE = "2026-03-31T23:59:59";
 const EVENT_VENUE = "Metropolitan Square, Asadam Road, Ilorin, Kwara State";
 const VENUE_COORDS = "8.4799,4.5418";
-const STORE_URL = "https://cusecho.store/";
+const STORE_URL = "https://cusecho.store/ilorinautomotivefestival";
 
 export default function Hero() {
   const isPresaleActive = new Date() < new Date(PRESALE_END_DATE);
