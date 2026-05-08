@@ -123,7 +123,7 @@ export default function Hero() {
         </div>
 
         <motion.div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center items-center text-white/80 font-semibold pointer-events-auto">
-          <div className="flex items-center gap-2"><Calendar className="w-5 h-5 text-brand-orange" /><span>May 30, 2026</span></div>
+          <div className="flex items-center gap-2"><Calendar className="w-5 h-5 text-brand-orange" /><span>May 28, 2026</span></div>
           <span className="hidden sm:block opacity-40">|</span>
           <div className="flex items-center gap-2"><MapPin className="w-5 h-5 text-brand-blue" /><span className="font-light">{EVENT_VENUE}</span></div>
         </motion.div>
