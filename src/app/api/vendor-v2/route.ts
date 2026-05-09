@@ -6,11 +6,30 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
         const { businessName, contactPerson, phone, email, productType, amount } = body;
 
+        // NEW: Server-Side Category Slot Validation
+        const CATEGORY_LIMITS: Record<string, number> = { food: 4, drink: 2, eatables: 4 };
+        const maxAllowed = CATEGORY_LIMITS[productType] || 0;
+
+        // NOTE: We exclude 'PENDING_PAYMENT' to only count people who successfully paid
+        const currentCount = await prisma.vendor.count({
+            where: {
+                productType: productType,
+                status: { not: "PENDING_PAYMENT" }
+            }
+        });
+
+        if (currentCount >= maxAllowed) {
+            return NextResponse.json(
+                { error: `Sorry, the ${productType} category is fully booked right now.` }, 
+                { status: 400 }
+            );
+        }
+
         // 1. Generate unique IDs
         const paystackReference = `VND-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
         const ticketId = `VND-TKT-${Date.now()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
 
-        // 2. Save to Database (Perfectly matching your Prisma Schema)
+        // 2. Save to Database
         try {
             await prisma.vendor.create({
                 data: {
@@ -60,7 +79,6 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: `Paystack API Error: ${paystackData.message}` }, { status: 500 });
         }
 
-        // 4. Send the Paystack Checkout URL back to the frontend
         return NextResponse.json({
             success: true,
             authorization_url: paystackData.data.authorization_url
