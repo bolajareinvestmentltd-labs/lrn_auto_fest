@@ -4,9 +4,15 @@ import { generateVendorConfirmationEmail, generateAdminNotificationEmail, sendEm
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || process.env.NEXT_PUBLIC_ADMIN_EMAIL || "admin@ilorincarshow.com";
-const MAX_VENDORS = 10;
 const VENDOR_BOOKING_FEE = 103500;
 const ALLOWED_PRODUCT_TYPES = new Set(["food", "drink", "eatables"]);
+
+// NEW: Category Limits Logic (4 Food, 2 Drink, 4 Eatables)
+const CATEGORY_LIMITS: Record<string, number> = {
+  food: 4,
+  drink: 2,
+  eatables: 4
+};
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,13 +31,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Vendor booking fee must be ₦${VENDOR_BOOKING_FEE.toLocaleString()}` }, { status: 400 });
     }
 
-    const currentVendorCount = await prisma.vendor.count({
-      where: { NOT: { status: "CANCELLED" } }
+    // ==============================================================
+    // NEW LOGIC: Check if the SPECIFIC category is full
+    // ==============================================================
+    const maxAllowed = CATEGORY_LIMITS[productType] || 0;
+
+    const currentCategoryCount = await prisma.vendor.count({
+      where: { 
+        productType: productType,
+        NOT: { status: "CANCELLED" } 
+      }
     });
 
-    if (currentVendorCount >= MAX_VENDORS) {
-      return NextResponse.json({ error: "Vendor booking limit reached" }, { status: 409 });
+    if (currentCategoryCount >= maxAllowed) {
+      return NextResponse.json({ error: `The ${productType} category is fully booked right now.` }, { status: 409 });
     }
+    // ==============================================================
 
     const paymentVerified = await verifyPaystackPayment(paymentReference);
     if (!paymentVerified) {
@@ -79,6 +94,13 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // ==============================================================
+    // NEW LOGIC: Count vendors by category for the frontend UI
+    // ==============================================================
+    const foods = await prisma.vendor.count({ where: { productType: 'food', NOT: { status: "CANCELLED" } } });
+    const drinks = await prisma.vendor.count({ where: { productType: 'drink', NOT: { status: "CANCELLED" } } });
+    const eatables = await prisma.vendor.count({ where: { productType: 'eatables', NOT: { status: "CANCELLED" } } });
+
     const vendors = await prisma.vendor.findMany({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       where: { status: status as any },
@@ -86,7 +108,14 @@ export async function GET(request: NextRequest) {
       select: { id: true, ticketId: true, businessName: true, contactPerson: true, email: true, phone: true, boothType: true, productType: true, bookingFee: true, status: true, createdAt: true, paidAt: true }
     });
 
-    return NextResponse.json({ success: true, count: vendors.length, vendors }, { status: 200 });
+    return NextResponse.json({ 
+      success: true, 
+      counts: { food: foods, drink: drinks, eatables: eatables }, // This powers the new frontend logic!
+      total: foods + drinks + eatables,
+      count: vendors.length, 
+      vendors 
+    }, { status: 200 });
+
   } catch (error) {
     console.error("Vendor fetch error:", error);
     return NextResponse.json({ error: "Failed to fetch vendors" }, { status: 500 });
@@ -146,5 +175,4 @@ function formatBoothType(type: string): string {
     "food_drink_eatables": "🍔 Food / Drink / Eatables Vendor Slot - ₦103,500"
   };
   return types[type] || type;
-      }
-      
+}
