@@ -7,7 +7,14 @@ import { Loader2, CheckCircle, Store, AlertTriangle } from "lucide-react";
 
 // TEMPORARILY 100 FOR YOUR NEXT TEST
 const VENDOR_BOOKING_FEE = 103500; 
-const MAX_VENDORS = 10;
+
+// NEW: Category Limits Logic
+const CATEGORY_LIMITS: Record<string, number> = {
+    food: 4,
+    drink: 2,
+    eatables: 4
+};
+
 const PRODUCT_TYPES = [
     { id: "food", label: "Food" },
     { id: "drink", label: "Drink" },
@@ -24,21 +31,22 @@ export default function VendorCheckoutV2() {
     });
     
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isVerifying, setIsVerifying] = useState(false); // NEW: Loading state for verification
+    const [isVerifying, setIsVerifying] = useState(false); 
     const [submitted, setSubmitted] = useState(false);
     const [ticketId, setTicketId] = useState("");
     const [error, setError] = useState<string | null>(null);
 
-    const [confirmedVendors, setConfirmedVendors] = useState(0);
+    // NEW: Tracking counts per category instead of a single global number
+    const [categoryCounts, setCategoryCounts] = useState({ food: 0, drink: 0, eatables: 0 });
     const [countLoading, setCountLoading] = useState(true);
-    const slotsLeft = Math.max(MAX_VENDORS - confirmedVendors, 0);
 
     const fetchVendorCount = useCallback(async () => {
         try {
             const response = await fetch(`/api/vendors?t=${Date.now()}`, { cache: "no-store" });
             if (response.ok) {
                 const data = await response.json();
-                setConfirmedVendors(data.count || 0);
+                // We now expect the API to return a breakdown: { counts: { food: 2, drink: 1, eatables: 0 } }
+                setCategoryCounts(data.counts || { food: 0, drink: 0, eatables: 0 });
             }
         } catch (err) {
             console.error("Failed to load vendor count:", err);
@@ -47,7 +55,7 @@ export default function VendorCheckoutV2() {
         }
     }, []);
 
-        // 1. THE REDIRECT CATCHER (URL corrected to perfectly match your backend folder!)
+    // 1. THE REDIRECT CATCHER
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const urlParams = new URLSearchParams(window.location.search);
@@ -67,7 +75,6 @@ export default function VendorCheckoutV2() {
                     }
                 }
 
-                // FIX IS HERE: Changed to verify-vendor to match your folder
                 fetch("/api/paystack/verify-vendor", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -98,7 +105,6 @@ export default function VendorCheckoutV2() {
         }
     }, [fetchVendorCount]);
 
-
     useEffect(() => {
         fetchVendorCount();
     }, [fetchVendorCount]);
@@ -108,17 +114,24 @@ export default function VendorCheckoutV2() {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    // NEW: Calculate active slots dynamically based on what the user has selected
+    const activeLimit = formData.productType ? CATEGORY_LIMITS[formData.productType] : 10; // Total
+    const activeCount = formData.productType 
+        ? categoryCounts[formData.productType as keyof typeof categoryCounts] 
+        : (categoryCounts.food + categoryCounts.drink + categoryCounts.eatables);
+    const slotsLeft = Math.max(activeLimit - activeCount, 0);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
 
         if (!formData.businessName || !formData.contactPerson || !formData.phone || !formData.email || !formData.productType) {
-            setError("Please fill in all required fields");
+            setError("Please fill in all required fields and select a category.");
             return;
         }
 
         if (slotsLeft <= 0) {
-            setError("Vendor booking is currently full.");
+            setError(`The ${formData.productType} category is fully booked.`);
             return;
         }
 
@@ -145,7 +158,6 @@ export default function VendorCheckoutV2() {
             const data = await response.json();
 
             if (!response.ok || !data.authorization_url) {
-                // Friendly error if email already exists
                 throw new Error(data.error || "Failed to connect to payment gateway");
             }
 
@@ -158,11 +170,6 @@ export default function VendorCheckoutV2() {
         }
     };
 
-    // ==========================================
-    // UI RENDERING
-    // ==========================================
-
-    // STATE 1: Verifying Payment (Full Screen Overlay)
     if (isVerifying) {
         return (
             <main className="bg-[#050505] min-h-screen text-white flex flex-col items-center justify-center p-4">
@@ -173,7 +180,6 @@ export default function VendorCheckoutV2() {
         );
     }
 
-    // STATE 2: Success Screen (Takes over the entire screen for mobile perfection)
     if (submitted) {
         return (
             <main className="bg-[#050505] min-h-screen text-white flex items-center justify-center p-4">
@@ -207,18 +213,16 @@ export default function VendorCheckoutV2() {
         );
     }
 
-    // STATE 3: The standard Vendor Booking Form
     return (
         <main className="bg-[#050505] min-h-screen text-white">
-            {/* The rest of your exact layout remains perfectly intact below */}
             <div className="container mx-auto px-4 py-32">
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <h1 className="font-heading text-4xl md:text-6xl font-black italic uppercase">
                         Become a <span className="text-brand-blue">Vendor</span>
                     </h1>
                     <p className="text-gray-400 mt-6 text-lg">
-                        Vendor slots is strictly limited to Food, Drinks and Eatables only.<br />
-                        <span className="text-brand-orange font-bold">Only 10 slots available!</span>
+                        Vendor slots are strictly limited by category to maintain balance.<br />
+                        <span className="text-brand-orange font-bold">Food (4), Drinks (2), Eatables (4)</span>
                     </p>
                 </div>
 
@@ -239,65 +243,61 @@ export default function VendorCheckoutV2() {
                                     <p className="text-4xl font-black text-brand-orange">₦{VENDOR_BOOKING_FEE.toLocaleString()}</p>
                                 </div>
                                 <div className="rounded-xl border border-white/10 bg-black/20 p-4">
-                                    <p className="text-xs uppercase tracking-[0.25em] text-gray-500">Availability</p>
+                                    <p className="text-xs uppercase tracking-[0.25em] text-gray-500">
+                                        {formData.productType ? `${formData.productType} Availability` : "Global Availability"}
+                                    </p>
                                     {countLoading ? (
                                         <p className="mt-2 text-sm text-gray-400">Loading available slots...</p>
                                     ) : (
                                         <>
-                                            <p className={`mt-2 text-lg font-bold ${slotsLeft <= 5 ? "text-red-400" : "text-white"}`}>
-                                                {slotsLeft} of {MAX_VENDORS} slots remaining
+                                            <p className={`mt-2 text-lg font-bold ${slotsLeft <= 1 ? "text-red-400" : "text-white"}`}>
+                                                {slotsLeft} of {activeLimit} slots remaining
                                             </p>
                                             <progress
                                                 className="mt-3 h-2 w-full overflow-hidden rounded-full [&::-webkit-progress-bar]:rounded-full [&::-webkit-progress-bar]:bg-white/10 [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:bg-brand-orange"
-                                                max={MAX_VENDORS}
-                                                value={confirmedVendors}
+                                                max={activeLimit}
+                                                value={activeCount}
                                             />
                                         </>
                                     )}
-                                </div>
-                                <div className="space-y-2 text-sm">
-                                    <p>• Booking limit: 10 vendors only</p>
-                                    <p>• Allowed products: food, drink, eatables only</p>
                                 </div>
                             </CardContent>
                         </Card>
 
                         <Card className="border-white/10 bg-white/5">
                             <CardHeader>
-                                <CardTitle className="text-white">Items of choice.</CardTitle>
+                                <CardTitle className="text-white">Select Category</CardTitle>
                             </CardHeader>
                             <CardContent className="grid gap-3 sm:grid-cols-3">
                                 {PRODUCT_TYPES.map((product) => {
                                     const isSelected = formData.productType === product.id;
+                                    const categoryCount = categoryCounts[product.id as keyof typeof categoryCounts];
+                                    const limit = CATEGORY_LIMITS[product.id];
+                                    const isFull = categoryCount >= limit;
+
                                     return (
                                         <button
                                             key={product.id}
                                             type="button"
                                             onClick={() => setFormData((prev) => ({ ...prev, productType: product.id }))}
-                                            disabled={isSubmitting || slotsLeft <= 0}
-                                            className={`rounded-xl border px-4 py-4 text-left transition ${isSelected ? "border-brand-orange bg-brand-orange/10 text-white" : "border-white/10 bg-black/20 text-gray-400 hover:border-brand-orange/40"}`}
+                                            disabled={isSubmitting || isFull || countLoading}
+                                            className={`rounded-xl border px-4 py-4 text-left transition relative overflow-hidden ${
+                                                isFull ? "border-red-500/30 bg-red-500/10 opacity-50 cursor-not-allowed" :
+                                                isSelected ? "border-brand-orange bg-brand-orange/10 text-white" : 
+                                                "border-white/10 bg-black/20 text-gray-400 hover:border-brand-orange/40"
+                                            }`}
                                         >
                                             <p className="font-semibold capitalize">{product.label}</p>
-                                            <p className="mt-1 text-xs text-gray-500">Approved for vendor booking</p>
+                                            {isFull ? (
+                                                <p className="mt-1 text-xs font-bold text-red-400">SOLD OUT</p>
+                                            ) : (
+                                                <p className="mt-1 text-xs text-gray-500">{limit - categoryCount} slots left</p>
+                                            )}
                                         </button>
                                     );
                                 })}
                             </CardContent>
                         </Card>
-
-                        {slotsLeft <= 0 && !countLoading && (
-                            <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-red-200">
-                                <div className="flex items-start gap-3">
-                                    <AlertTriangle className="mt-0.5 h-5 w-5 text-red-400" />
-                                    <div>
-                                        <p className="font-semibold">Vendor booking is currently full.</p>
-                                        <p className="mt-1 text-sm text-red-200/80">
-                                            All 10 vendor slots have been reserved. The form is disabled until a slot becomes available.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
                     </div>
 
                     <div className="bg-white/5 border border-white/10 p-8 rounded-xl relative">
@@ -327,21 +327,7 @@ export default function VendorCheckoutV2() {
                                 <Input name="phone" value={formData.phone} onChange={handleInputChange} placeholder="08012345678" type="tel" disabled={isSubmitting || slotsLeft <= 0} className="bg-black/50 border-white/10 text-white" />
                             </div>
 
-                            <div className="bg-brand-orange/10 border border-brand-orange/50 p-4 rounded-lg space-y-3">
-                                <p className="text-xs text-gray-400">💰 Booking Summary</p>
-                                <div className="space-y-1">
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-gray-300">Standard Vendor Slot</span>
-                                        <span className="font-bold text-white">₦{VENDOR_BOOKING_FEE.toLocaleString()}</span>
-                                    </div>
-                                </div>
-                                <div className="pt-2 border-t border-brand-orange/20 flex justify-between">
-                                    <span className="font-bold text-white uppercase text-sm">Total Due</span>
-                                    <span className="font-black text-brand-orange text-xl">₦{VENDOR_BOOKING_FEE.toLocaleString()}</span>
-                                </div>
-                            </div>
-
-                            <Button type="submit" disabled={isSubmitting || slotsLeft <= 0} className="w-full bg-brand-blue hover:bg-brand-blue/80 text-white py-6 text-lg font-bold uppercase tracking-widest mt-4">
+                            <Button type="submit" disabled={isSubmitting || slotsLeft <= 0 || !formData.productType} className="w-full bg-brand-blue hover:bg-brand-blue/80 text-white py-6 text-lg font-bold uppercase tracking-widest mt-4">
                                 {isSubmitting ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Processing...</> : "PAY NOW"}
                             </Button>
                         </form>
@@ -350,5 +336,4 @@ export default function VendorCheckoutV2() {
             </div>
         </main>
     );
-                }
-                                
+}
