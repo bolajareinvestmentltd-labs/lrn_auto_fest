@@ -16,10 +16,23 @@ const CATEGORY_LIMITS: Record<string, number> = {
 };
 
 const PRODUCT_TYPES = [
-    { id: "food", label: "Food" },
-    { id: "drink", label: "Drink" },
-    { id: "eatables", label: "Eatables" },
+    { 
+        id: "food", 
+        label: "Food",
+        description: "Rice, Pasta, Swallow & soup, Grilled chicken/fish with sides, Noodles, Local dishes and Continental meals."
+    },
+    { 
+        id: "drink", 
+        label: "Drink",
+        description: null
+    },
+    { 
+        id: "eatables", 
+        label: "Eatables",
+        description: "Ice cream, Cupcakes, Pastries, Popcorn, Small chops, Shawarma, Chips, Peanuts, Chin-chin, Chocolate, Sweets, Candy, Fruit cups."
+    },
 ] as const;
+
 
 export default function VendorCheckoutV2() {
     const [formData, setFormData] = useState({
@@ -277,23 +290,39 @@ export default function VendorCheckoutV2() {
 
                                     return (
                                         <button
-                                            key={product.id}
-                                            type="button"
-                                            onClick={() => setFormData((prev) => ({ ...prev, productType: product.id }))}
-                                            disabled={isSubmitting || isFull || countLoading}
-                                            className={`rounded-xl border px-4 py-4 text-left transition relative overflow-hidden ${
-                                                isFull ? "border-red-500/30 bg-red-500/10 opacity-50 cursor-not-allowed" :
-                                                isSelected ? "border-brand-orange bg-brand-orange/10 text-white" : 
-                                                "border-white/10 bg-black/20 text-gray-400 hover:border-brand-orange/40"
-                                            }`}
-                                        >
-                                            <p className="font-semibold capitalize">{product.label}</p>
-                                            {isFull ? (
-                                                <p className="mt-1 text-xs font-bold text-red-400">SOLD OUT</p>
-                                            ) : (
-                                                <p className="mt-1 text-xs text-gray-500">{limit - categoryCount} slots left</p>
-                                            )}
-                                        </button>
+    key={product.id}
+    type="button"
+    onClick={() => setFormData((prev) => ({ ...prev, productType: product.id }))}
+    disabled={isSubmitting || isFull || countLoading}
+    className={`rounded-xl border px-4 py-4 text-left transition relative overflow-hidden flex flex-col ${
+        isFull ? "border-red-500/30 bg-red-500/10 opacity-50 cursor-not-allowed" :
+        isSelected ? "border-brand-orange bg-brand-orange/10 text-white" : 
+        "border-white/10 bg-black/20 text-gray-400 hover:border-brand-orange/40"
+    }`}
+>
+    <p className="font-semibold capitalize text-lg">{product.label}</p>
+    
+    {/* NEW: Description Text */}
+    {product.description && (
+        <p className={`mt-2 mb-4 text-[11px] leading-relaxed flex-grow ${
+            isSelected ? "text-white/80" : "text-gray-500"
+        }`}>
+            {product.description}
+        </p>
+    )}
+
+    {/* Slots Left Area (Pushed to bottom) */}
+    <div className={`mt-auto pt-3 border-t w-full ${isSelected ? "border-brand-orange/30" : "border-white/5"}`}>
+        {isFull ? (
+            <p className="text-xs font-bold text-red-400">SOLD OUT</p>
+        ) : (
+            <p className={`text-xs ${isSelected ? "text-brand-orange" : "text-gray-500"}`}>
+                {limit - categoryCount} slots left
+            </p>
+        )}
+    </div>
+</button>
+
                                     );
                                 })}
                             </CardContent>
