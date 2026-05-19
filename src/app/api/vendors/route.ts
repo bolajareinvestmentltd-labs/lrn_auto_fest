@@ -32,14 +32,14 @@ export async function POST(request: NextRequest) {
     }
 
     // ==============================================================
-    // NEW LOGIC: Check if the SPECIFIC category is full
+    // FIXED LOGIC: Only count strictly CONFIRMED successful vendors
     // ==============================================================
     const maxAllowed = CATEGORY_LIMITS[productType] || 0;
 
     const currentCategoryCount = await prisma.vendor.count({
       where: { 
         productType: productType,
-        NOT: { status: "CANCELLED" } 
+        status: "CONFIRMED" // ✅ Fixed: Ignores PENDING_PAYMENT and CANCELLED entries completely
       }
     });
 
@@ -95,11 +95,11 @@ export async function GET(request: NextRequest) {
     }
 
     // ==============================================================
-    // NEW LOGIC: Count vendors by category for the frontend UI
+    // FIXED LOGIC: Count vendors strictly by CONFIRMED status for the UI
     // ==============================================================
-    const foods = await prisma.vendor.count({ where: { productType: 'food', NOT: { status: "CANCELLED" } } });
-    const drinks = await prisma.vendor.count({ where: { productType: 'drink', NOT: { status: "CANCELLED" } } });
-    const eatables = await prisma.vendor.count({ where: { productType: 'eatables', NOT: { status: "CANCELLED" } } });
+    const foods = await prisma.vendor.count({ where: { productType: 'food', status: "CONFIRMED" } });
+    const drinks = await prisma.vendor.count({ where: { productType: 'drink', status: "CONFIRMED" } });
+    const eatables = await prisma.vendor.count({ where: { productType: 'eatables', status: "CONFIRMED" } });
 
     const vendors = await prisma.vendor.findMany({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -110,7 +110,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ 
       success: true, 
-      counts: { food: foods, drink: drinks, eatables: eatables }, // This powers the new frontend logic!
+      counts: { food: foods, drink: drinks, eatables: eatables }, 
       total: foods + drinks + eatables,
       count: vendors.length, 
       vendors 
@@ -175,4 +175,4 @@ function formatBoothType(type: string): string {
     "food_drink_eatables": "🍔 Food / Drink / Eatables Vendor Slot - ₦103,500"
   };
   return types[type] || type;
-}
+    }
