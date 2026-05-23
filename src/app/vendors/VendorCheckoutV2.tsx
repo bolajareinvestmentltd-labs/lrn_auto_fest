@@ -58,8 +58,13 @@ export default function VendorCheckoutV2() {
             const response = await fetch(`/api/vendors?t=${Date.now()}`, { cache: "no-store" });
             if (response.ok) {
                 const data = await response.json();
-                // We now expect the API to return a breakdown: { counts: { food: 2, drink: 1, eatables: 0 } }
-                setCategoryCounts(data.counts || { food: 0, drink: 0, eatables: 0 });
+                
+                // MARKETING HACK: Artificially add +2 to Food and Eatables to simulate sales
+                setCategoryCounts({ 
+                    food: (data.counts?.food || 0) + 2, 
+                    drink: (data.counts?.drink || 0), 
+                    eatables: (data.counts?.eatables || 0) + 2 
+                });
             }
         } catch (err) {
             console.error("Failed to load vendor count:", err);
