@@ -102,7 +102,10 @@ export default function RegisterPage() {
         return categorySlots.max - categorySlots.registered;
     };
 
-    const handleRegisterClick = (category: Category) => {
+        const handleRegisterClick = (category: Category) => {
+        // 🚨 NEW FIX: Instantly block the click if the category is full
+        if (isCategoryFull(category.id)) return;
+
         // Only show modal for Drift Championship, else redirect directly to form
         if (category.id === "driftChampionship") {
             setSelectedCategoryId(category.id);
@@ -111,6 +114,7 @@ export default function RegisterPage() {
             window.open(category.googleFormUrl, "_blank");
         }
     };
+
 
     const handleProceedToForm = (category: Category) => {
         // Close modal and open Google Form
@@ -149,26 +153,7 @@ export default function RegisterPage() {
                 </motion.div>
 
                 {/* Category Selection */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="mb-12"
-                >
-
-                    {fetchingSlots ? (
-                        <div className="flex justify-center items-center py-12">
-                            <Loader2 className="w-8 h-8 animate-spin text-brand-orange" />
-                        </div>
-                    ) : (
-                        <div className="flex flex-col gap-8">
-                            {categories.map((category, index) => {
-                                const isFull = isCategoryFull(category.id);
-                                const availableSlots = getAvailableSlots(category.id);
-                                const champions = getChampionsByCategory(category.id);
-
-                                return (
-                                    <motion.div
+                                                    <motion.div
                                         key={category.id}
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
@@ -178,9 +163,9 @@ export default function RegisterPage() {
                                         {/* Category Header - Clickable */}
                                         <div
                                             onClick={() => handleRegisterClick(category)}
-                                            className={`w-full p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer ${isFull
-                                                ? "bg-white/5 border-white/20 opacity-60"
-                                                : "bg-gradient-to-r from-white/10 to-white/5 border-white/30 hover:border-brand-orange hover:bg-gradient-to-r hover:from-brand-orange/20 hover:to-brand-orange/10 hover:shadow-[0_0_30px_rgba(255,69,0,0.3)]"
+                                            className={`w-full p-6 rounded-xl border-2 transition-all duration-300 ${isFull
+                                                ? "bg-white/5 border-white/20 opacity-60 cursor-not-allowed" // Fixed cursor
+                                                : "bg-gradient-to-r from-white/10 to-white/5 border-white/30 hover:border-brand-orange hover:bg-gradient-to-r hover:from-brand-orange/20 hover:to-brand-orange/10 hover:shadow-[0_0_30px_rgba(255,69,0,0.3)] cursor-pointer"
                                                 }`}
                                         >
                                             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
@@ -193,8 +178,9 @@ export default function RegisterPage() {
                                                             {category.name}
                                                         </h3>
                                                         {isFull ? (
-                                                            <span className="flex items-center gap-1 text-red-400 text-sm">
-                                                                <XCircle className="w-4 h-4" /> Registration Closed
+                                                            // Standardized Automotive Closed Text
+                                                            <span className="flex items-center gap-1 text-red-500 font-bold text-sm tracking-widest">
+                                                                <XCircle className="w-4 h-4" /> 10/10 COMPLETED
                                                             </span>
                                                         ) : (
                                                             <span className="flex items-center gap-1 text-green-400 text-sm">
@@ -210,15 +196,18 @@ export default function RegisterPage() {
                                                 </div>
                                                 <div className="w-full sm:w-auto">
                                                     <Button
-                                                        onClick={() => handleRegisterClick(category)}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation(); // Prevents double-firing
+                                                            handleRegisterClick(category);
+                                                        }}
                                                         disabled={isFull}
-                                                        className={`w-full sm:w-auto transform transition-all duration-300 hover:scale-105 ${isFull
-                                                            ? "bg-gray-600 cursor-not-allowed"
-                                                            : `bg-gradient-to-r ${category.color} hover:opacity-100 hover:shadow-[0_0_25px_rgba(255,69,0,0.4)]`
-                                                            } text-white font-bold px-6 py-3 rounded-lg`}
+                                                        className={`w-full sm:w-auto transform transition-all duration-300 ${isFull
+                                                            ? "bg-gray-800 text-gray-400 border border-gray-600 cursor-not-allowed"
+                                                            : `hover:scale-105 bg-gradient-to-r ${category.color} hover:opacity-100 hover:shadow-[0_0_25px_rgba(255,69,0,0.4)] text-white`
+                                                            } font-bold px-6 py-3 rounded-lg`}
                                                     >
                                                         {isFull ? (
-                                                            "CLOSED"
+                                                            "SOLD OUT" // Standardized Button Text
                                                         ) : (
                                                             <>
                                                                 REGISTER
@@ -230,12 +219,73 @@ export default function RegisterPage() {
                                             </div>
                                         </div>
                                     </motion.div>
-                                );
-                            })}
-                        </div>
-                    )}
-                </motion.div>
-
+                                    <motion.div
+                                        key={category.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.1 * index }}
+                                        className="space-y-6"
+                                    >
+                                        {/* Category Header - Clickable */}
+                                        <div
+                                            onClick={() => handleRegisterClick(category)}
+                                            className={`w-full p-6 rounded-xl border-2 transition-all duration-300 ${isFull
+                                                ? "bg-white/5 border-white/20 opacity-60 cursor-not-allowed" // Fixed cursor
+                                                : "bg-gradient-to-r from-white/10 to-white/5 border-white/30 hover:border-brand-orange hover:bg-gradient-to-r hover:from-brand-orange/20 hover:to-brand-orange/10 hover:shadow-[0_0_30px_rgba(255,69,0,0.3)] cursor-pointer"
+                                                }`}
+                                        >
+                                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                                                <div className={`p-3 rounded-full bg-gradient-to-r ${category.color} text-white flex-shrink-0`}>
+                                                    {category.icon}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                                                        <h3 className="text-xl font-bold text-white">
+                                                            {category.name}
+                                                        </h3>
+                                                        {isFull ? (
+                                                            // Standardized Automotive Closed Text
+                                                            <span className="flex items-center gap-1 text-red-500 font-bold text-sm tracking-widest">
+                                                                <XCircle className="w-4 h-4" /> 10/10 COMPLETED
+                                                            </span>
+                                                        ) : (
+                                                            <span className="flex items-center gap-1 text-green-400 text-sm">
+                                                                <CheckCircle2 className="w-4 h-4" /> {availableSlots} slots left
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    {category.description && (
+                                                        <p className="text-sm text-gray-400 mb-2">
+                                                            {category.description}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                                <div className="w-full sm:w-auto">
+                                                    <Button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation(); // Prevents double-firing
+                                                            handleRegisterClick(category);
+                                                        }}
+                                                        disabled={isFull}
+                                                        className={`w-full sm:w-auto transform transition-all duration-300 ${isFull
+                                                            ? "bg-gray-800 text-gray-400 border border-gray-600 cursor-not-allowed"
+                                                            : `hover:scale-105 bg-gradient-to-r ${category.color} hover:opacity-100 hover:shadow-[0_0_25px_rgba(255,69,0,0.4)] text-white`
+                                                            } font-bold px-6 py-3 rounded-lg`}
+                                                    >
+                                                        {isFull ? (
+                                                            "SOLD OUT" // Standardized Button Text
+                                                        ) : (
+                                                            <>
+                                                                REGISTER
+                                                                <ExternalLink className="w-4 h-4 ml-2" />
+                                                            </>
+                                                        )}
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                
                 {/* Back to Home */}
                 <motion.div
                     initial={{ opacity: 0 }}
