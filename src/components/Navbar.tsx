@@ -42,7 +42,7 @@ const Navbar = () => {
                   <Link href="/register" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors px-3 py-2 text-sm tracking-widest uppercase">Performer</Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                  <a href={STORE_URL} target="_blank" rel="noopener noreferrer" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors px-3 py-2 text-sm tracking-widest uppercase">Tickets/Merch</a>
+                  <a href={STORE_URL} target="_blank" rel="noopener noreferrer" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors px-3 py-2 text-sm tracking-widest uppercase">Tickets</a>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                   <Link href="/vip" className="font-sans font-medium text-white/80 hover:text-brand-blue transition-colors px-3 py-2 text-sm tracking-widest uppercase">VIP</Link>
