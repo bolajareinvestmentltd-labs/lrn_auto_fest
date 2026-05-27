@@ -139,7 +139,7 @@ export default function Hero() {
           </Button>
 
           <Button asChild size="lg" className="bg-brand-orange hover:bg-orange-600 text-white font-bold px-8 py-6 rounded-full uppercase shadow-xl z-30 relative">
-            <a href={STORE_URL} target="_blank" rel="noopener noreferrer">🎟️ Get Tickets/Merch</a>
+            <a href={STORE_URL} target="_blank" rel="noopener noreferrer">🎟️ Get Tickets</a>
           </Button>
 
           <Button asChild size="lg" className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold px-8 py-6 rounded-full uppercase z-30 relative">
